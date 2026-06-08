@@ -7,8 +7,41 @@
       name="description"
       content="GAHEE is a Korean global game publisher for mobile, PC, and console titles across Korea and Asia."
     />
+    <meta name="theme-color" content="#cb2957" />
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="GAHEE" />
+    <meta property="og:title" content="GAHEE - Global Game Publishing" />
+    <meta
+      property="og:description"
+      content="우리가 발견한 게임, 세계가 즐기는 게임으로. 한국 기반 모바일·PC·콘솔 글로벌 게임 퍼블리셔."
+    />
+    <meta property="og:image" content="/assets/games/gahee-logo.png" />
+    <meta property="og:url" content="https://www.gahee.net/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="GAHEE - Global Game Publishing" />
+    <meta
+      name="twitter:description"
+      content="우리가 발견한 게임, 세계가 즐기는 게임으로. 한국 기반 모바일·PC·콘솔 글로벌 게임 퍼블리셔."
+    />
+    <meta name="twitter:image" content="/assets/games/gahee-logo.png" />
+
     <link rel="icon" type="image/png" href="/assets/games/gahee-logo.png" />
     <title>GAHEE - Global Game Publishing</title>
+
+    <!-- 저장된 테마를 페인트 전에 적용해 깜빡임(FOUC) 방지 -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("gahee-theme");
+          var theme = stored || "light";
+          document.documentElement.dataset.theme = theme;
+        } catch (e) {
+          document.documentElement.dataset.theme = "light";
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
