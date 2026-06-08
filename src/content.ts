@@ -1,5 +1,27 @@
 export type Locale = "ko" | "en";
 
+export type LocalizedText = { ko: string; en: string };
+
+export type Game = {
+  /** 슬러그: 스크린샷 폴더명/React key 로 사용 (public/assets/games/<slug>/) */
+  slug: string;
+  title: string;
+  titleKo: string;
+  genre: string;
+  image?: string;
+  icon?: string;
+  featured?: boolean;
+  placeholder?: boolean;
+  platforms: string[];
+  link?: string;
+  description: LocalizedText;
+  /** 모달용 긴 설명 (없으면 description 으로 폴백) */
+  detail?: LocalizedText;
+  /** 상세 모달 갤러리 이미지들 (없으면 image 1장으로 폴백)
+   *  추가 방법: public/assets/games/<slug>/shot-01.webp … 에 넣고 경로 등록 */
+  screenshots?: string[];
+};
+
 export const nav = {
   ko: [
     { label: "회사", href: "#company" },
@@ -45,7 +67,17 @@ export const copy = {
     contactText:
       "퍼블리싱, 사업 제휴, 채용 문의를 남겨주시면 담당자가 검토 후 연락드립니다.",
     submit: "문의 보내기",
-    submitted: "문의 내용이 준비되었습니다. biz@gahee.net으로 전달할 수 있도록 정리했습니다.",
+    sending: "전송 중…",
+    submitSuccess: "문의가 정상적으로 전송되었습니다. 담당자가 검토 후 연락드리겠습니다.",
+    submitMailto: "메일 앱을 열었습니다. 작성된 내용을 확인 후 보내주세요. (또는 biz@gahee.net)",
+    submitError: "전송에 실패했습니다. 잠시 후 다시 시도하거나 biz@gahee.net으로 보내주세요.",
+    detailCta: "자세히 보기",
+    themeToggle: "테마 전환",
+    menuToggle: "메뉴 열기",
+    closeLabel: "닫기",
+    prevLabel: "이전 이미지",
+    nextLabel: "다음 이미지",
+    topLabel: "맨 위로",
   },
   en: {
     heroTitle: "From games we discover to games the world enjoys.",
@@ -76,7 +108,17 @@ export const copy = {
     contactText:
       "Send a publishing, business, or recruiting inquiry and our team will review it.",
     submit: "Send Inquiry",
-    submitted: "Your inquiry is prepared. Please send it to biz@gahee.net.",
+    sending: "Sending…",
+    submitSuccess: "Your inquiry has been sent. Our team will review it and get back to you.",
+    submitMailto: "Your mail app is open. Please review the message and send it (or biz@gahee.net).",
+    submitError: "Sending failed. Please try again later or email biz@gahee.net.",
+    detailCta: "View details",
+    themeToggle: "Toggle theme",
+    menuToggle: "Open menu",
+    closeLabel: "Close",
+    prevLabel: "Previous image",
+    nextLabel: "Next image",
+    topLabel: "Back to top",
   },
 };
 
@@ -172,8 +214,9 @@ export const platformIcons: Record<string, string> = {
   PlayStation: "/assets/games/playstation.webp",
 };
 
-export const games = [
+export const games: Game[] = [
   {
+    slug: "mages-secret",
     title: "Mage's Secret",
     titleKo: "메이지스 시크릿",
     genre: "Casual Merge Puzzle",
@@ -188,6 +231,7 @@ export const games = [
     },
   },
   {
+    slug: "tap-tap-builder",
     title: "Tap Tap Builder",
     titleKo: "포켓시티빌더",
     genre: "Simulation",
@@ -201,6 +245,7 @@ export const games = [
     },
   },
   {
+    slug: "abyss",
     title: "Abyss",
     titleKo: "Abyss",
     genre: "MMORPG",
@@ -213,6 +258,7 @@ export const games = [
     },
   },
   {
+    slug: "supreme-car-racing",
     title: "Supreme Car Racing",
     titleKo: "슈프림 카레이싱",
     genre: "Racing",
@@ -225,6 +271,7 @@ export const games = [
     },
   },
   {
+    slug: "vulcan",
     title: "Vulcan - Blacksmith RPG",
     titleKo: "불칸",
     genre: "Idle RPG",
@@ -237,6 +284,7 @@ export const games = [
     },
   },
   {
+    slug: "coming-soon-1",
     title: "Title",
     titleKo: "Title",
     genre: "genre",
@@ -248,6 +296,7 @@ export const games = [
     },
   },
   {
+    slug: "coming-soon-2",
     title: "Title",
     titleKo: "Title",
     genre: "genre",
