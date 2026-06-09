@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import {
   capabilities,
   companyProfile,
@@ -117,10 +117,10 @@ function Header({ locale, setLocale, theme, toggleTheme, onOpenMenu }: HeaderPro
       </nav>
       <div className="headerActions">
         <div className="langToggle" aria-label="Language toggle">
-          <button className={locale === "ko" ? "active" : ""} onClick={() => setLocale("ko")}>
+          <button className={locale === "ko" ? "active" : ""} aria-pressed={locale === "ko"} onClick={() => setLocale("ko")}>
             KO
           </button>
-          <button className={locale === "en" ? "active" : ""} onClick={() => setLocale("en")}>
+          <button className={locale === "en" ? "active" : ""} aria-pressed={locale === "en"} onClick={() => setLocale("en")}>
             EN
           </button>
         </div>
@@ -147,11 +147,42 @@ type MobileNavProps = {
 
 function MobileNav({ open, onClose, locale, setLocale }: MobileNavProps) {
   const t = copy[locale];
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!open) {
+      triggerRef.current?.focus();
+      return;
+    }
+    triggerRef.current = document.activeElement as HTMLElement;
+    closeRef.current?.focus();
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Tab") return;
+      const panel = panelRef.current;
+      if (!panel) return;
+      const f = panel.querySelectorAll<HTMLElement>('a[href], button:not([disabled])');
+      if (f.length === 0) return;
+      const first = f[0];
+      const last = f[f.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
+
   return (
     <div className={`mobileNav ${open ? "open" : ""}`} aria-hidden={!open}>
       <div className="backdrop" onClick={onClose} />
-      <div className="panel" role="dialog" aria-modal="true" aria-label="Menu">
-        <button className="iconButton mobileClose" onClick={onClose} aria-label={t.closeLabel}>
+      <div className="panel" role="dialog" aria-modal="true" aria-label="Menu" ref={panelRef}>
+        <button ref={closeRef} className="iconButton mobileClose" onClick={onClose} aria-label={t.closeLabel}>
           <CloseIcon />
         </button>
         {nav[locale].map((item) => (
@@ -160,10 +191,10 @@ function MobileNav({ open, onClose, locale, setLocale }: MobileNavProps) {
           </a>
         ))}
         <div className="mobileLang">
-          <button className={locale === "ko" ? "active" : ""} onClick={() => setLocale("ko")}>
+          <button className={locale === "ko" ? "active" : ""} aria-pressed={locale === "ko"} onClick={() => setLocale("ko")}>
             KO
           </button>
-          <button className={locale === "en" ? "active" : ""} onClick={() => setLocale("en")}>
+          <button className={locale === "en" ? "active" : ""} aria-pressed={locale === "en"} onClick={() => setLocale("en")}>
             EN
           </button>
         </div>
@@ -178,6 +209,7 @@ function MobileNav({ open, onClose, locale, setLocale }: MobileNavProps) {
 function Hero({ locale }: { locale: Locale }) {
   const t = copy[locale];
   const heroGames = games.filter((game) => !game.placeholder).slice(0, 5);
+  const feature = heroGames[0];
 
   return (
     <section className="hero sectionPad" id="top">
@@ -185,7 +217,7 @@ function Hero({ locale }: { locale: Locale }) {
         <span className="heroKicker">{t.heroKicker}</span>
         <h1>{t.heroTitle}</h1>
         <p className="heroLead">{t.heroText}</p>
-        <ul className="heroStats" aria-label="GAHEE 주요 지표">
+        <ul className="heroStats" aria-label={t.keyFactsLabel}>
           {heroHighlights.map((item) => (
             <li className="heroStat" key={item.en}>
               {item[locale]}
@@ -204,17 +236,29 @@ function Hero({ locale }: { locale: Locale }) {
       </div>
 
       <div className="heroShowcase" aria-label="GAHEE game image showcase">
-        <div className="showcaseFeature">
-          <img src={heroGames[0].image} alt={heroGames[0].title} />
-          <div>
-            <strong>{heroGames[0].title}</strong>
-            <span>{heroGames[0].genre}</span>
+        {feature && (
+          <div className="showcaseFeature">
+            <img
+              src={feature.image}
+              alt={locale === "ko" ? feature.titleKo : feature.title}
+              fetchPriority="high"
+              decoding="async"
+            />
+            <div>
+              <strong>{locale === "ko" ? feature.titleKo : feature.title}</strong>
+              <span>{feature.genre}</span>
+            </div>
           </div>
-        </div>
+        )}
         <div className="showcaseRail">
           {heroGames.slice(1).map((game, index) => (
             <article className="miniGame" key={game.slug}>
-              <img src={game.image} alt={game.title} />
+              <img
+                src={game.image}
+                alt={locale === "ko" ? game.titleKo : game.title}
+                loading="lazy"
+                decoding="async"
+              />
               <span>{String(index + 2).padStart(2, "0")}</span>
             </article>
           ))}
@@ -331,7 +375,7 @@ function Games({ locale, onSelect }: { locale: Locale; onSelect: (game: Game) =>
             >
               <div className={game.placeholder ? "placeholderArt" : "gameArt"}>
                 {game.placeholder ? (
-                  <span>Coming Soon</span>
+                  <span>{t.comingSoon}</span>
                 ) : (
                   <img src={game.image} alt={`${game.title} game image`} loading="lazy" />
                 )}
@@ -339,26 +383,28 @@ function Games({ locale, onSelect }: { locale: Locale; onSelect: (game: Game) =>
               <div className="gameMeta">
                 <div>
                   <span className="redRule" />
-                  <h3>{title}</h3>
-                  <p className="gameSub">{game.title}</p>
+                  <h3>{game.placeholder ? t.comingSoon : title}</h3>
+                  {!game.placeholder && <p className="gameSub">{game.title}</p>}
                 </div>
-                <strong>{game.genre}</strong>
-                <p>{game.description[locale]}</p>
-                <div className="platforms">
-                  {game.platforms.map((platform) => (
-                    <a
-                      key={platform}
-                      href={game.link ?? contact.play}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label={`${game.title} ${platform}`}
-                      onClick={(event) => event.stopPropagation()}
-                    >
-                      <img src={platformIcons[platform]} alt="" />
-                      <span>{platform}</span>
-                    </a>
-                  ))}
-                </div>
+                {!game.placeholder && <strong>{game.genre}</strong>}
+                {!game.placeholder && <p>{game.description[locale]}</p>}
+                {!game.placeholder && (
+                  <div className="platforms">
+                    {game.platforms.map((platform) => (
+                      <a
+                        key={platform}
+                        href={game.link ?? contact.play}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={`${game.title} ${platform}`}
+                        onClick={(event) => event.stopPropagation()}
+                      >
+                        {platformIcons[platform] && <img src={platformIcons[platform]} alt="" />}
+                        <span>{platform}</span>
+                      </a>
+                    ))}
+                  </div>
+                )}
                 {clickable && (
                   <span className="cardCta">
                     {t.detailCta} <ChevronRight />
@@ -455,7 +501,8 @@ function GameModal({ game, locale, onClose }: { game: Game; locale: Locale; onCl
                 key={`${shot}-${i}`}
                 className={i === index ? "active" : ""}
                 onClick={() => setIndex(i)}
-                aria-label={`${t.nextLabel} ${i + 1}`}
+                aria-label={`${t.imageLabel} ${i + 1}`}
+                aria-current={i === index ? "true" : undefined}
               >
                 <img src={shot} alt="" />
               </button>
@@ -478,7 +525,7 @@ function GameModal({ game, locale, onClose }: { game: Game; locale: Locale; onCl
                 rel="noreferrer"
                 aria-label={`${game.title} ${platform}`}
               >
-                <img src={platformIcons[platform]} alt="" />
+                {platformIcons[platform] && <img src={platformIcons[platform]} alt="" />}
                 <span>{platform}</span>
               </a>
             ))}
@@ -560,16 +607,17 @@ function Contact({ locale }: { locale: Locale }) {
     }
   }
 
+  const fl = t.fieldLabels;
   const fields = [
-    { name: "name", label: locale === "ko" ? "이름" : "Name", type: "text" },
-    { name: "company", label: locale === "ko" ? "회사명" : "Company", type: "text" },
-    { name: "email", label: locale === "ko" ? "이메일" : "Email", type: "email" },
-    { name: "game", label: locale === "ko" ? "게임명" : "Game Title", type: "text" },
-    { name: "genre", label: locale === "ko" ? "장르" : "Genre", type: "text" },
-    { name: "platform", label: locale === "ko" ? "플랫폼" : "Platform", type: "text" },
-    { name: "status", label: locale === "ko" ? "출시 상태" : "Release Status", type: "text" },
-    { name: "video", label: locale === "ko" ? "게임 영상 링크" : "Gameplay Video Link", type: "url" },
-    { name: "store", label: locale === "ko" ? "스토어 링크" : "Store Link", type: "url" },
+    { name: "name", label: fl.name, type: "text" },
+    { name: "company", label: fl.company, type: "text" },
+    { name: "email", label: fl.email, type: "email" },
+    { name: "game", label: fl.game, type: "text" },
+    { name: "genre", label: fl.genre, type: "text" },
+    { name: "platform", label: fl.platform, type: "text" },
+    { name: "status", label: fl.status, type: "text" },
+    { name: "video", label: fl.video, type: "url" },
+    { name: "store", label: fl.store, type: "url" },
   ];
 
   const statusMessage =
@@ -603,15 +651,19 @@ function Contact({ locale }: { locale: Locale }) {
           ))}
         </div>
         <label>
-          <span>{locale === "ko" ? "소개 내용" : "Introduction"}</span>
+          <span>{fl.message}</span>
           <textarea name="message" rows={5} required />
         </label>
         <button className="button primary fullButton" type="submit" disabled={status === "sending"}>
           {status === "sending" ? t.sending : t.submit}
         </button>
-        {statusMessage && (
-          <p className={`formStatus ${status === "error" ? "err" : "ok"}`}>{statusMessage}</p>
-        )}
+        <p
+          className={`formStatus ${status === "error" ? "err" : "ok"}`}
+          role={status === "error" ? "alert" : "status"}
+          aria-live={status === "error" ? "assertive" : "polite"}
+        >
+          {statusMessage}
+        </p>
       </form>
     </section>
   );
@@ -658,7 +710,12 @@ function BackToTop({ label }: { label: string }) {
   return (
     <button
       className={`toTop ${show ? "show" : ""}`}
-      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      onClick={() =>
+        window.scrollTo({
+          top: 0,
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        })
+      }
       aria-label={label}
     >
       <ChevronUp />
@@ -685,6 +742,10 @@ export default function App() {
   }, [theme]);
 
   useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
+
+  useEffect(() => {
     document.body.classList.toggle("menu-open", menuOpen);
   }, [menuOpen]);
 
@@ -708,10 +769,10 @@ export default function App() {
     setSelectedGame(game);
   };
 
-  const closeGame = () => {
+  const closeGame = useCallback(() => {
     setSelectedGame(null);
     lastFocus.current?.focus();
-  };
+  }, []);
 
   return (
     <>

@@ -5,6 +5,7 @@
   --accent: #cb2957;
   --accent-hover: #b11f49;
   --accent-soft: rgba(203, 41, 87, 0.12);
+  --danger: #c81e3a;
 
   /* Semantic tokens — light theme */
   --bg: #eeeeee;
@@ -44,6 +45,7 @@
   --accent: #e8456f;
   --accent-hover: #f05a80;
   --accent-soft: rgba(232, 69, 111, 0.16);
+  --danger: #ff5e76;
 
   --bg: #0d0d11;
   --surface: #16161c;
@@ -126,7 +128,7 @@ textarea {
   border: 1px solid var(--header-border);
   border-radius: var(--radius);
   background: var(--header-bg);
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(12px);
   transition:
     background 280ms ease,
     border-color 280ms ease;
@@ -615,10 +617,10 @@ h1 {
 @keyframes floaty {
   0%,
   100% {
-    margin-top: 0;
+    translate: 0 0;
   }
   50% {
-    margin-top: -10px;
+    translate: 0 -10px;
   }
 }
 
@@ -1251,7 +1253,11 @@ textarea:focus {
 }
 
 .formStatus.err {
-  color: #d6334f;
+  color: var(--danger);
+}
+
+.formStatus:empty {
+  margin: 0;
 }
 
 /* ---------- Footer ---------- */
@@ -1304,7 +1310,6 @@ textarea:focus {
   transition:
     opacity 650ms cubic-bezier(0.22, 1, 0.36, 1),
     transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity, transform;
 }
 
 .reveal.in {
@@ -1627,8 +1632,8 @@ textarea:focus {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .marketPanel {
-    min-height: auto;
+  .gameCard.featured {
+    grid-row: span 1;
   }
 
   .contactCopy {
@@ -1704,7 +1709,7 @@ textarea:focus {
   .statItem,
   .processStep {
     border-right: 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    border-bottom: 1px solid var(--border);
   }
 
   .statItem {
@@ -1760,6 +1765,10 @@ textarea:focus {
   .button:hover,
   .gameCard.clickable:hover,
   .capabilityCard:hover {
+    transform: none;
+  }
+
+  .gameCard.clickable:hover .gameArt img {
     transform: none;
   }
 
