@@ -39,9 +39,10 @@ export const nav = {
 
 export const copy = {
   ko: {
+    heroKicker: "한국 기반 글로벌 게임 퍼블리셔",
     heroTitle: "우리가 발견한 게임, 세계가 즐기는 게임으로.",
     heroText:
-      "한국을 기반으로 아시아와 글로벌 시장까지 모바일, PC, 콘솔 게임의 출시와 성장을 함께 만듭니다.",
+      "2022년부터 모바일·PC·콘솔 6개 플랫폼에서 게임을 서비스하며, 8곳 이상의 글로벌 스튜디오와 출시부터 라이브 운영까지 함께합니다.",
     primaryCta: "파트너십 문의",
     secondaryCta: "게임 라인업 보기",
     oldHero: "We focus on your unique game's success!",
@@ -55,9 +56,9 @@ export const copy = {
       "We are not looking for one or two games, We are looking for a partner to walk with us for a long time.",
     publishingTitle: "퍼블리싱의 모든 과정, 한 팀이 책임집니다.",
     publishingText:
-      "게임 소싱부터 계약, 현지화, QA, 마케팅, 출시 이후 라이브 운영까지 GAHEE가 직접 수행합니다.",
+      "상담과 게임 검토부터 계약·현지화·런칭, 출시 후 라이브 운영까지 — 퍼블리싱 6단계 전 과정을 한 팀이 직접 수행합니다.",
     gamesTitle: "서비스 중인 타이틀",
-    gamesText: "기존 출시작과 준비 중인 라인업을 한눈에 확인하세요.",
+    gamesText: "모바일·PC·콘솔 6개 플랫폼에서 서비스하는 타이틀과 준비 중인 라인업을 한눈에 확인하세요.",
     gamesLegacy: "Enjoy the simple joys of life with our games!",
     companyTitle: "작지만 단단한 글로벌 퍼블리싱 팀",
     companyText:
@@ -80,9 +81,10 @@ export const copy = {
     topLabel: "맨 위로",
   },
   en: {
+    heroKicker: "Korea-based global game publisher",
     heroTitle: "From games we discover to games the world enjoys.",
     heroText:
-      "GAHEE publishes mobile, PC, and console games from Korea to Asia and beyond.",
+      "Since 2022 we've shipped mobile, PC, and console titles across 6 platforms, working with 8+ global studios from launch through live operations.",
     primaryCta: "Partnership Inquiry",
     secondaryCta: "View Games",
     oldHero: "We focus on your unique game's success!",
@@ -96,9 +98,9 @@ export const copy = {
       "We are not looking for one or two games, We are looking for a partner to walk with us for a long time.",
     publishingTitle: "One team handles the full publishing journey.",
     publishingText:
-      "GAHEE runs sourcing, contracts, localization, QA, marketing, launch, and live operations in one connected process.",
+      "From consultation and game review to contracts, localization, launch, and post-launch live ops — one team runs all six publishing stages.",
     gamesTitle: "Live titles",
-    gamesText: "Explore GAHEE's live games and reserved lineup cards.",
+    gamesText: "Explore our live titles across 6 platforms on mobile, PC, and console, plus the reserved lineup.",
     gamesLegacy: "Enjoy the simple joys of life with our games!",
     companyTitle: "A compact global publishing team",
     companyText:
@@ -133,6 +135,13 @@ export const stats = [
   { value: "6", label: { ko: "장르 경험", en: "Genres" } },
   { value: "12+", label: { ko: "아시아 출시 시장", en: "Asia Markets" } },
   { value: "8+", label: { ko: "글로벌 파트너", en: "Global Studios" } },
+];
+
+// 히어로 신뢰 배지 — 실제 수치만 사용 (영상: 뻔한 말 대신 구체적 숫자)
+export const heroHighlights: LocalizedText[] = [
+  { ko: "since 2022", en: "Since 2022" },
+  { ko: "글로벌 스튜디오 8곳+", en: "8+ global studios" },
+  { ko: "모바일 · PC · 콘솔", en: "Mobile · PC · Console" },
 ];
 
 export const capabilities = [

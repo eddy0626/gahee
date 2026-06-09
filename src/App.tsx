@@ -6,6 +6,7 @@ import {
   copy,
   Game,
   games,
+  heroHighlights,
   legacyCompanyIntro,
   Locale,
   markets,
@@ -181,8 +182,16 @@ function Hero({ locale }: { locale: Locale }) {
   return (
     <section className="hero sectionPad" id="top">
       <div className="heroCopy">
+        <span className="heroKicker">{t.heroKicker}</span>
         <h1>{t.heroTitle}</h1>
         <p className="heroLead">{t.heroText}</p>
+        <ul className="heroStats" aria-label="GAHEE 주요 지표">
+          {heroHighlights.map((item) => (
+            <li className="heroStat" key={item.en}>
+              {item[locale]}
+            </li>
+          ))}
+        </ul>
         <p className="legacyLine">{t.oldHero}</p>
         <div className="heroButtons">
           <a className="button primary" href="#contact">
@@ -266,8 +275,8 @@ function Publishing({ locale }: { locale: Locale }) {
           <h3>{locale === "ko" ? "아시아 출시 권역" : "Asia Launch Reach"}</h3>
           <p>
             {locale === "ko"
-              ? "타이틀별 전략에 맞춰 북아시아, 동남아, 인도차이나 권역을 구성합니다."
-              : "Market groups are configured by title across North Asia, Southeast Asia, and Indochina."}
+              ? "북아시아·동남아·인도차이나 13개 시장을 타이틀 전략에 맞춰 권역별로 구성합니다."
+              : "13 markets across North Asia, Southeast Asia, and Indochina, grouped by title strategy."}
           </p>
           <div className="marketTags">
             {markets.map((market) => (
