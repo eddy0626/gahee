@@ -45,10 +45,10 @@
   --accent-hover: #f05a80;
   --accent-soft: rgba(232, 69, 111, 0.16);
 
-  --bg: #121217;
-  --surface: #1b1b22;
-  --surface-2: #23232c;
-  --card-bg: rgba(255, 255, 255, 0.04);
+  --bg: #0d0d11;
+  --surface: #16161c;
+  --surface-2: #1f1f27;
+  --card-bg: rgba(255, 255, 255, 0.035);
   --text: #e8e8ee;
   --text-strong: #ffffff;
   --text-muted: #a2a4b0;
@@ -76,6 +76,7 @@ html {
 body {
   margin: 0;
   min-width: 320px;
+  overflow-x: clip;
   background: var(--bg);
   color: var(--text);
   transition:
@@ -269,6 +270,8 @@ textarea {
 }
 
 .hero {
+  position: relative;
+  z-index: 0;
   display: grid;
   grid-template-columns: minmax(0, 0.92fr) minmax(420px, 1fr);
   align-items: center;
@@ -276,6 +279,129 @@ textarea {
   min-height: calc(100vh - 70px);
   padding-top: 76px;
   padding-bottom: 64px;
+  color: #f4f4f7;
+}
+
+/* ---------- Hero — dark gaming tone (영상 적용: 히어로에서 톤 잠금) ---------- */
+/* 풀블리드 다크 배경 + 레드 글로우 */
+.hero::before {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  background:
+    radial-gradient(820px 460px at 18% 22%, rgba(203, 41, 87, 0.28), transparent 60%),
+    radial-gradient(680px 560px at 92% 88%, rgba(203, 41, 87, 0.16), transparent 62%),
+    linear-gradient(180deg, #08080b, #050507 62%, #060608);
+  content: "";
+}
+
+/* 은은한 테크 그리드 (가장자리로 페이드) */
+.hero::after {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  -webkit-mask-image: radial-gradient(circle at 28% 30%, #000, transparent 72%);
+  mask-image: radial-gradient(circle at 28% 30%, #000, transparent 72%);
+  content: "";
+}
+
+.hero h1 {
+  color: #fff;
+  text-shadow: 0 0 42px rgba(203, 41, 87, 0.28);
+}
+
+.heroKicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 18px;
+  padding: 7px 14px 7px 12px;
+  border: 1px solid rgba(203, 41, 87, 0.55);
+  border-radius: 999px;
+  background: rgba(203, 41, 87, 0.12);
+  color: #ff7196;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.heroKicker::before {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px 1px var(--accent);
+  content: "";
+}
+
+.heroStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 26px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.heroStat {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.045);
+  color: #ececed;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  backdrop-filter: blur(6px);
+}
+
+.hero .button.primary {
+  box-shadow: 0 16px 40px rgba(203, 41, 87, 0.45);
+}
+
+.hero .button.secondary {
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.05);
+  color: #f2f2f4;
+}
+
+.hero .button.secondary:hover {
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.hero .showcaseFeature {
+  border-color: rgba(203, 41, 87, 0.4);
+  background: rgba(18, 18, 24, 0.62);
+  box-shadow:
+    0 30px 70px rgba(0, 0, 0, 0.62),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+}
+
+.hero .showcaseFeature strong {
+  color: #fff;
+}
+
+.hero .miniGame {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(18, 18, 24, 0.55);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.5);
 }
 
 .heroCopy {
@@ -315,7 +441,7 @@ h1 {
 
 .heroLead {
   max-width: 620px;
-  color: var(--text);
+  color: rgba(240, 240, 245, 0.82);
   font-size: clamp(17px, 2.2vw, 21px);
   line-height: 1.65;
 }
@@ -522,8 +648,10 @@ h1 {
 .statItem strong {
   display: block;
   color: var(--accent);
-  font-size: 36px;
+  font-size: clamp(38px, 5vw, 52px);
+  font-weight: 800;
   line-height: 1;
+  text-shadow: 0 0 26px rgba(203, 41, 87, 0.4);
 }
 
 .statItem span {
@@ -549,6 +677,19 @@ h1 {
   letter-spacing: -0.01em;
   word-break: keep-all;
   overflow-wrap: break-word;
+}
+
+/* 섹션 공통 레드 아이라인 — 히어로 톤과 응집 */
+.sectionIntro h2::before,
+.contactCopy h2::before {
+  display: block;
+  width: 40px;
+  height: 4px;
+  margin-bottom: 18px;
+  border-radius: 3px;
+  background: var(--accent);
+  box-shadow: 0 0 14px rgba(203, 41, 87, 0.5);
+  content: "";
 }
 
 .sectionIntro p,
@@ -587,6 +728,7 @@ h1 {
 
 .processStep:hover {
   background: var(--surface-2);
+  box-shadow: inset 0 -3px 0 var(--accent);
 }
 
 .processStep span,
@@ -594,6 +736,7 @@ h1 {
   color: var(--accent);
   font-size: 13px;
   font-weight: 900;
+  text-shadow: 0 0 14px rgba(203, 41, 87, 0.3);
 }
 
 .processStep strong {
@@ -638,7 +781,9 @@ h1 {
 .capabilityCard:hover {
   transform: translateY(-4px);
   border-color: var(--accent);
-  box-shadow: var(--shadow-soft);
+  box-shadow:
+    var(--shadow-soft),
+    0 0 30px rgba(203, 41, 87, 0.18);
 }
 
 .capabilityCard h3 {
@@ -758,7 +903,9 @@ h1 {
 .gameCard.clickable:focus-visible {
   transform: translateY(-5px);
   border-color: var(--accent);
-  box-shadow: var(--shadow);
+  box-shadow:
+    var(--shadow),
+    0 0 36px rgba(203, 41, 87, 0.22);
 }
 
 .gameCard.featured {
