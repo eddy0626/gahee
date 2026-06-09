@@ -50,7 +50,7 @@ export const copy = {
     aboutBody:
       "GAHEE는 한국에 기반을 둔 모바일, PC, 콘솔 게임 퍼블리셔입니다. 디자인, 로컬라이제이션, 마케팅, 출시까지 전 과정을 직접 운영하며 검증된 글로벌 개발사와 함께 한국과 아시아 시장에 게임을 선보입니다.",
     legacyAbout:
-      "We aim to become a global game publisher, delivering games that everyone can enjoy.",
+      "모두가 즐길 수 있는 게임을 전하는 글로벌 게임 퍼블리셔가 되고자 합니다.",
     partnershipTitle: "오래 함께 걸을 파트너를 찾습니다.",
     partnershipBody:
       "한두 개의 게임이 아니라, 오래 함께 걸어갈 파트너를 찾습니다.",
@@ -154,10 +154,19 @@ export const copy = {
   },
 };
 
-export const legacyCompanyIntro = [
-  "Gahee is embarking on its journey as a mobile game publisher, rapidly expanding into Southeast Asia, one of the world's fastest-growing gaming markets. By 2025, we aim to establish ourselves as a leading global publisher for mobile games.",
-  "At Gahee, we excel in mobile game publishing with a proven track record of delivering outstanding results. Our team boasts extensive expertise in design, localization, translation, and comprehensive publishing. We are fully equipped to handle every aspect of the publishing process, ensuring a seamless and successful launch in new regions.",
-  "We have partnered with numerous developers and publishers worldwide, helping them introduce their titles to Korea and other Asian markets effectively.",
+export const legacyCompanyIntro: LocalizedText[] = [
+  {
+    ko: "GAHEE는 세계에서 가장 빠르게 성장하는 게임 시장 중 하나인 동남아시아로 확장하며 모바일 게임 퍼블리셔로서의 여정을 시작했습니다. 모바일 게임 분야의 선도적인 글로벌 퍼블리셔로 자리매김하는 것을 목표로 합니다.",
+    en: "Gahee is embarking on its journey as a mobile game publisher, rapidly expanding into Southeast Asia, one of the world's fastest-growing gaming markets. We aim to establish ourselves as a leading global publisher for mobile games.",
+  },
+  {
+    ko: "GAHEE는 검증된 성과를 바탕으로 모바일 게임 퍼블리싱에 강점을 가지고 있습니다. 디자인, 현지화, 번역, 종합 퍼블리싱 전반에 걸친 폭넓은 전문성을 보유하고 있으며, 퍼블리싱 전 과정을 직접 수행해 새로운 지역에서의 매끄럽고 성공적인 출시를 보장합니다.",
+    en: "At Gahee, we excel in mobile game publishing with a proven track record of delivering outstanding results. Our team boasts extensive expertise in design, localization, translation, and comprehensive publishing. We are fully equipped to handle every aspect of the publishing process, ensuring a seamless and successful launch in new regions.",
+  },
+  {
+    ko: "전 세계 다수의 개발사·퍼블리셔와 협력하여 그들의 타이틀을 한국과 아시아 시장에 효과적으로 선보여 왔습니다.",
+    en: "We have partnered with numerous developers and publishers worldwide, helping them introduce their titles to Korea and other Asian markets effectively.",
+  },
 ];
 
 export const stats = [

@@ -361,8 +361,8 @@ function Company({ locale }: { locale: Locale }) {
         <div className="reveal" style={{ marginTop: "clamp(40px, 5vw, 72px)" }}>
           <h3 className="subhead">{t.legacyIntroTitle}</h3>
           {legacyCompanyIntro.map((para) => (
-            <p key={para} className="section-lead" style={{ maxWidth: "70ch", marginTop: 0, marginBottom: 14 }}>
-              {para}
+            <p key={para.en} className="section-lead" style={{ maxWidth: "70ch", marginTop: 0, marginBottom: 14 }}>
+              {para[locale]}
             </p>
           ))}
         </div>
