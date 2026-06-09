@@ -185,42 +185,42 @@ export const heroHighlights: LocalizedText[] = [
 
 export const capabilities = [
   {
-    title: "Sourcing & Evaluation",
+    title: { ko: "소싱 & 평가", en: "Sourcing & Evaluation" },
     body: {
       ko: "글로벌 개발사로부터 게임을 수급하고 시장성과 완성도를 검증합니다.",
       en: "We source titles from global studios and evaluate market fit and readiness.",
     },
   },
   {
-    title: "Contract & Legal",
+    title: { ko: "계약 & 법무", en: "Contract & Legal" },
     body: {
       ko: "퍼블리싱 계약, NDA, 라이선스 협상까지 직접 진행합니다.",
       en: "We handle publishing contracts, NDAs, and licensing negotiations.",
     },
   },
   {
-    title: "Localization",
+    title: { ko: "현지화", en: "Localization" },
     body: {
       ko: "한국어, 일본어, 동남아 다국어 번역과 문화권별 검수를 수행합니다.",
       en: "We localize into Korean, Japanese, and Southeast Asian languages with cultural review.",
     },
   },
   {
-    title: "Build & QA",
+    title: { ko: "빌드 & QA", en: "Build & QA" },
     body: {
       ko: "심의 등급, 빌드 테스트, 결제 및 광고 SDK 통합을 지원합니다.",
       en: "We support ratings, build testing, payment, and ad SDK integration.",
     },
   },
   {
-    title: "Marketing & Launch",
+    title: { ko: "마케팅 & 출시", en: "Marketing & Launch" },
     body: {
       ko: "보도자료, 사전예약, CPI 캠페인, 라운지 운영을 실행합니다.",
       en: "We execute PR, pre-registration, CPI campaigns, and community launch operations.",
     },
   },
   {
-    title: "Live Operations",
+    title: { ko: "라이브 운영", en: "Live Operations" },
     body: {
       ko: "출시 이후 업데이트, 번역 추가, 이벤트, CS와 추가 마케팅을 운영합니다.",
       en: "We manage updates, added localization, events, CS, and post-launch marketing.",

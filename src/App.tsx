@@ -298,9 +298,9 @@ function Publishing({ locale }: { locale: Locale }) {
         </div>
         <div className="caps">
           {capabilities.map((c, i) => (
-            <div className="cap reveal" key={c.title} style={{ transitionDelay: `${(i % 3) * 70}ms` }}>
+            <div className="cap reveal" key={c.title.en} style={{ transitionDelay: `${(i % 3) * 70}ms` }}>
               <div className="cap__num">{String(i + 1).padStart(2, "0")}</div>
-              <h3 className="cap__title">{c.title}</h3>
+              <h3 className="cap__title">{c.title[locale]}</h3>
               <p className="cap__body">{c.body[locale]}</p>
             </div>
           ))}
