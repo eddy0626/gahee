@@ -50,7 +50,7 @@ export const copy = {
     aboutBody:
       "GAHEE는 한국에 기반을 둔 모바일, PC, 콘솔 게임 퍼블리셔입니다. 디자인, 로컬라이제이션, 마케팅, 출시까지 전 과정을 직접 운영하며 검증된 글로벌 개발사와 함께 한국과 아시아 시장에 게임을 선보입니다.",
     legacyAbout:
-      "We aim to become a global game publisher, delivering games that everyone can enjoy.",
+      "모두가 즐길 수 있는 게임을 전하는 글로벌 게임 퍼블리셔가 되고자 합니다.",
     partnershipTitle: "오래 함께 걸을 파트너를 찾습니다.",
     partnershipBody:
       "한두 개의 게임이 아니라, 오래 함께 걸어갈 파트너를 찾습니다.",
@@ -154,10 +154,19 @@ export const copy = {
   },
 };
 
-export const legacyCompanyIntro = [
-  "Gahee is embarking on its journey as a mobile game publisher, rapidly expanding into Southeast Asia, one of the world's fastest-growing gaming markets. By 2025, we aim to establish ourselves as a leading global publisher for mobile games.",
-  "At Gahee, we excel in mobile game publishing with a proven track record of delivering outstanding results. Our team boasts extensive expertise in design, localization, translation, and comprehensive publishing. We are fully equipped to handle every aspect of the publishing process, ensuring a seamless and successful launch in new regions.",
-  "We have partnered with numerous developers and publishers worldwide, helping them introduce their titles to Korea and other Asian markets effectively.",
+export const legacyCompanyIntro: LocalizedText[] = [
+  {
+    ko: "GAHEE는 세계에서 가장 빠르게 성장하는 게임 시장 중 하나인 동남아시아로 확장하며 모바일 게임 퍼블리셔로서의 여정을 시작했습니다. 모바일 게임 분야의 선도적인 글로벌 퍼블리셔로 자리매김하는 것을 목표로 합니다.",
+    en: "Gahee is embarking on its journey as a mobile game publisher, rapidly expanding into Southeast Asia, one of the world's fastest-growing gaming markets. We aim to establish ourselves as a leading global publisher for mobile games.",
+  },
+  {
+    ko: "GAHEE는 검증된 성과를 바탕으로 모바일 게임 퍼블리싱에 강점을 가지고 있습니다. 디자인, 현지화, 번역, 종합 퍼블리싱 전반에 걸친 폭넓은 전문성을 보유하고 있으며, 퍼블리싱 전 과정을 직접 수행해 새로운 지역에서의 매끄럽고 성공적인 출시를 보장합니다.",
+    en: "At Gahee, we excel in mobile game publishing with a proven track record of delivering outstanding results. Our team boasts extensive expertise in design, localization, translation, and comprehensive publishing. We are fully equipped to handle every aspect of the publishing process, ensuring a seamless and successful launch in new regions.",
+  },
+  {
+    ko: "전 세계 다수의 개발사·퍼블리셔와 협력하여 그들의 타이틀을 한국과 아시아 시장에 효과적으로 선보여 왔습니다.",
+    en: "We have partnered with numerous developers and publishers worldwide, helping them introduce their titles to Korea and other Asian markets effectively.",
+  },
 ];
 
 export const stats = [
@@ -176,42 +185,42 @@ export const heroHighlights: LocalizedText[] = [
 
 export const capabilities = [
   {
-    title: "Sourcing & Evaluation",
+    title: { ko: "소싱 & 평가", en: "Sourcing & Evaluation" },
     body: {
       ko: "글로벌 개발사로부터 게임을 수급하고 시장성과 완성도를 검증합니다.",
       en: "We source titles from global studios and evaluate market fit and readiness.",
     },
   },
   {
-    title: "Contract & Legal",
+    title: { ko: "계약 & 법무", en: "Contract & Legal" },
     body: {
       ko: "퍼블리싱 계약, NDA, 라이선스 협상까지 직접 진행합니다.",
       en: "We handle publishing contracts, NDAs, and licensing negotiations.",
     },
   },
   {
-    title: "Localization",
+    title: { ko: "현지화", en: "Localization" },
     body: {
       ko: "한국어, 일본어, 동남아 다국어 번역과 문화권별 검수를 수행합니다.",
       en: "We localize into Korean, Japanese, and Southeast Asian languages with cultural review.",
     },
   },
   {
-    title: "Build & QA",
+    title: { ko: "빌드 & QA", en: "Build & QA" },
     body: {
       ko: "심의 등급, 빌드 테스트, 결제 및 광고 SDK 통합을 지원합니다.",
       en: "We support ratings, build testing, payment, and ad SDK integration.",
     },
   },
   {
-    title: "Marketing & Launch",
+    title: { ko: "마케팅 & 출시", en: "Marketing & Launch" },
     body: {
       ko: "보도자료, 사전예약, CPI 캠페인, 라운지 운영을 실행합니다.",
       en: "We execute PR, pre-registration, CPI campaigns, and community launch operations.",
     },
   },
   {
-    title: "Live Operations",
+    title: { ko: "라이브 운영", en: "Live Operations" },
     body: {
       ko: "출시 이후 업데이트, 번역 추가, 이벤트, CS와 추가 마케팅을 운영합니다.",
       en: "We manage updates, added localization, events, CS, and post-launch marketing.",
