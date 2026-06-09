@@ -21,9 +21,9 @@
   --on-light: #17151a;
   --on-light-dim: rgba(23, 21, 26, 0.58);
 
-  --font-display: "Clash Display", "Pretendard Variable", Pretendard, sans-serif;
-  --font-body: "Pretendard Variable", Pretendard, ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --font-display: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", sans-serif;
+  --font-body: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", sans-serif;
+  --font-mono: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", sans-serif;
 
   --maxw: 1280px;
   --gutter: clamp(20px, 5vw, 64px);
