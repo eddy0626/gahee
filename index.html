@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="우리가 발견한 게임, 세계가 즐기는 게임으로. 한국 기반 모바일·PC·콘솔 글로벌 게임 퍼블리셔."
+      content="우리가 발견한 게임, 세계가 즐기는 게임으로. 한국 기반 모바일·PC·콘솔 글로벌 게임 퍼블리셔 GAHEE."
     />
-    <meta name="theme-color" content="#cb2957" />
+    <meta name="theme-color" content="#0b0b0d" />
 
     <!-- Open Graph / Twitter -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="GAHEE" />
-    <meta property="og:title" content="GAHEE - Global Game Publishing" />
+    <meta property="og:title" content="GAHEE — Global Game Publishing" />
     <meta
       property="og:description"
       content="우리가 발견한 게임, 세계가 즐기는 게임으로. 한국 기반 모바일·PC·콘솔 글로벌 게임 퍼블리셔."
@@ -23,7 +23,7 @@
     <meta property="og:image:alt" content="GAHEE" />
     <meta property="og:url" content="https://www.gahee.net/" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="GAHEE - Global Game Publishing" />
+    <meta name="twitter:title" content="GAHEE — Global Game Publishing" />
     <meta
       name="twitter:description"
       content="우리가 발견한 게임, 세계가 즐기는 게임으로. 한국 기반 모바일·PC·콘솔 글로벌 게임 퍼블리셔."
@@ -32,21 +32,19 @@
 
     <link rel="icon" type="image/png" href="/assets/games/gahee-logo.png" />
     <link rel="canonical" href="https://www.gahee.net/" />
-    <link rel="preload" as="image" href="/assets/games/mage-secret.webp" fetchpriority="high" />
-    <title>GAHEE - Global Game Publishing</title>
+    <title>GAHEE — Global Game Publishing</title>
 
-    <!-- 저장된 테마를 페인트 전에 적용해 깜빡임(FOUC) 방지 -->
-    <script>
-      (function () {
-        try {
-          var stored = localStorage.getItem("gahee-theme");
-          var theme = stored || "dark";
-          document.documentElement.dataset.theme = theme;
-        } catch (e) {
-          document.documentElement.dataset.theme = "dark";
-        }
-      })();
-    </script>
+    <!-- Fonts: Clash Display (display) · Pretendard (KR/body) · JetBrains Mono (labels) -->
+    <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700&display=swap" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap"
+    />
   </head>
   <body>
     <div id="root"></div>
