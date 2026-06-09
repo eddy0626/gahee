@@ -53,7 +53,7 @@ export const copy = {
       "We aim to become a global game publisher, delivering games that everyone can enjoy.",
     partnershipTitle: "오래 함께 걸을 파트너를 찾습니다.",
     partnershipBody:
-      "We are not looking for one or two games, We are looking for a partner to walk with us for a long time.",
+      "한두 개의 게임이 아니라, 오래 함께 걸어갈 파트너를 찾습니다.",
     publishingTitle: "퍼블리싱의 모든 과정, 한 팀이 책임집니다.",
     publishingText:
       "상담과 게임 검토부터 계약·현지화·런칭, 출시 후 라이브 운영까지 — 퍼블리싱 6단계 전 과정을 한 팀이 직접 수행합니다.",
@@ -79,6 +79,21 @@ export const copy = {
     prevLabel: "이전 이미지",
     nextLabel: "다음 이미지",
     topLabel: "맨 위로",
+    keyFactsLabel: "주요 지표",
+    comingSoon: "준비 중",
+    imageLabel: "이미지",
+    fieldLabels: {
+      name: "이름",
+      company: "회사명",
+      email: "이메일",
+      game: "게임명",
+      genre: "장르",
+      platform: "플랫폼",
+      status: "출시 상태",
+      video: "게임 영상 링크",
+      store: "스토어 링크",
+      message: "소개 내용",
+    },
   },
   en: {
     heroKicker: "Korea-based global game publisher",
@@ -121,6 +136,21 @@ export const copy = {
     prevLabel: "Previous image",
     nextLabel: "Next image",
     topLabel: "Back to top",
+    keyFactsLabel: "Key facts",
+    comingSoon: "Coming Soon",
+    imageLabel: "Image",
+    fieldLabels: {
+      name: "Name",
+      company: "Company",
+      email: "Email",
+      game: "Game Title",
+      genre: "Genre",
+      platform: "Platform",
+      status: "Release Status",
+      video: "Gameplay Video Link",
+      store: "Store Link",
+      message: "Introduction",
+    },
   },
 };
 
@@ -131,9 +161,9 @@ export const legacyCompanyIntro = [
 ];
 
 export const stats = [
-  { value: "4", label: { ko: "서비스 타이틀", en: "Titles Live" } },
-  { value: "6", label: { ko: "장르 경험", en: "Genres" } },
-  { value: "12+", label: { ko: "아시아 출시 시장", en: "Asia Markets" } },
+  { value: "5", label: { ko: "서비스 타이틀", en: "Titles Live" } },
+  { value: "5", label: { ko: "장르 경험", en: "Genres" } },
+  { value: "13", label: { ko: "아시아 출시 시장", en: "Asia Markets" } },
   { value: "8+", label: { ko: "글로벌 파트너", en: "Global Studios" } },
 ];
 
