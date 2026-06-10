@@ -1,6 +1,8 @@
 /* ============================================================
    GAHEE — Cinematic Editorial rebuild
-   Display: Clash Display · KR/body: Pretendard · labels: JetBrains Mono
+   폰트: 전 영역 맑은 고딕(시스템 폰트) — 외부 웹폰트를 쓰지 않는다.
+   다크 시네마틱 ↔ 라이트 에디토리얼 섹션 교차, 브랜드 레드 #cb2957.
+   색·레이아웃 수정은 이 파일에서 (시맨틱 토큰 우선, 색 하드코딩 금지).
    ============================================================ */
 
 :root {
@@ -206,16 +208,6 @@ p {
   --fg: #fff;
 }
 
-.btn--light {
-  --fg: var(--on-light);
-  --bd: var(--line-light);
-}
-
-.btn--light:hover {
-  --bd: var(--red);
-  --fg: var(--red);
-}
-
 .btn .arrow {
   transition: transform 0.25s ease;
 }
@@ -351,11 +343,15 @@ p {
   z-index: 80;
   visibility: hidden;
   pointer-events: none;
+  /* 닫을 때: 패널 슬라이드아웃(0.4s)이 끝난 뒤에 숨긴다 — 닫힘 애니메이션 보존 */
+  transition: visibility 0s linear 0.4s;
 }
 
 .drawer.open {
   visibility: visible;
   pointer-events: auto;
+  /* 열 때는 지연 없이 즉시 표시해야 내부 전환이 화면에서 재생된다 */
+  transition: visibility 0s;
 }
 
 .drawer__scrim {
@@ -590,11 +586,6 @@ p {
   line-height: 1;
   color: #fff;
   letter-spacing: -0.02em;
-}
-
-.stat__num em {
-  color: var(--red);
-  font-style: normal;
 }
 
 .stat__cap {
@@ -1015,6 +1006,13 @@ p {
   color: var(--on-dark-dim);
 }
 
+/* 필수 입력 별표 — required 속성이 보조기기에 전달되므로 별표 자체는 aria-hidden */
+.field__req {
+  margin-left: 4px;
+  font-style: normal;
+  color: var(--red-bright);
+}
+
 .field input,
 .field textarea {
   width: 100%;
@@ -1278,7 +1276,8 @@ p {
   margin-top: 24px;
 }
 
-.platforms a {
+/* 플랫폼 배지 — 스토어 링크가 있으면 <a>, 없으면 표시용 <span> (GameModal 에서 분기) */
+.platform {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -1290,7 +1289,7 @@ p {
   transition: border-color 0.2s ease;
 }
 
-.platforms a:hover {
+a.platform:hover {
   border-color: var(--red);
 }
 
@@ -1441,8 +1440,11 @@ p {
   *::before,
   *::after {
     animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
+    /* 드로어 닫힘의 visibility 지연 등 모든 딜레이 제거 — 즉시 상태 전환 */
+    transition-delay: 0ms !important;
   }
   .reveal {
     opacity: 1;

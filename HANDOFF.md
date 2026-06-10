@@ -7,7 +7,7 @@
 - **스택**: React 19 + TypeScript(strict) + Vite 7 · CSS 토큰(프레임워크 없음) · 상태 라이브러리 없음
 - **저장소**: `eddy0626/gahee` (GitHub), 작업 브랜치 `main`
 
-## 현재 상태 (2026-06-09 기준)
+## 현재 상태 (2026-06-11 기준)
 - **시네마틱 에디토리얼 리디자인 완료**, `main`에 머지됨 (squash, 커밋 `5a6394d` 외).
   - JoyCity 기업사이트를 참고하되 **GAHEE 레드(#CB2957)** 유지.
   - 다크 시네마틱 ↔ 라이트 에디토리얼 **섹션 교차** 리듬.
@@ -17,6 +17,7 @@
   - 한글 줄바꿈 `word-break: keep-all`, 회사소개·역량카드 등 **한/영(ko/en) 분리** 완료.
   - KO/EN 토글, 모달/모바일 메뉴 포커스 트랩, aria-live 폼, 스크롤 리빌, `prefers-reduced-motion` 유지.
 - 이전 이력: `#2` 다크+레드 톤, `#3` 코드리뷰 수정(a11y/정확성/성능/SEO), `#4` 이번 리디자인.
+- **2026-06-11 정비**: og:image 절대 URL · 모달 플랫폼 배지를 **플랫폼별 링크**(`Game.links`)로 분리(URL 없는 스토어는 표시만) · reduced-motion 글로브 리사이즈 재렌더 · hero Scroll 힌트 키보드 포커스 제외 · 로드맵 라벨 `2022–/2025/NOW/BEYOND` · 드로어 닫힘 애니메이션 보존 · 필수 입력 `*` 표시 · 미사용 카피/CSS 정리 · 전 컴포넌트 한글 주석.
 
 ## 실행 방법
 ```bash
@@ -42,7 +43,8 @@ npm run build    # dist/ 생성 (minify=esbuild). 정적 배포용.
 1. **배포 영구화** — 위 택1 (Netlify claim 또는 GitHub 연결).
 2. **문의 폼 실제 전송** — `src/config.ts`의 `FORM_ENDPOINT`에 Formspree 엔드포인트 입력 (비어 있으면 mailto 폴백).
 3. **게임 스크린샷 갤러리** — `public/assets/games/<slug>/`에 이미지 넣고 `content.ts`의 게임 `screenshots` 배열에 경로 등록.
-4. (선택) 히어로 영문 슬로건 한국어화 검토 · `content.ts` 미사용 export 정리(`heroHighlights`/`markets`/`heroKicker`).
+4. **게임별 스토어 URL** — App Store(슈프림)·Steam(불칸)·One Store(Abyss) 페이지 URL 확보 후 `content.ts` 각 게임 `links`에 추가 (현재는 링크 없는 배지로 표시).
+5. (선택) 히어로 영문 슬로건 한국어화 검토.
 
 ## ⚠️ 회사 PC에서 주의
 - 이 PC(집)에만 있고 **회사 PC엔 없는 것**(gitignore라 repo에 없음): `.claude/`(로컬 설정), `CLAUDE.md`, `gaheeweb/`(옵시디언 볼트·스킬문서·작업기록), `data/`(agentmemory 로컬 DB).

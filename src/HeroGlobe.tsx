@@ -37,6 +37,8 @@ export function HeroGlobe() {
     let radius = 0;
     let cx = 0;
     let cy = 0;
+    // reduced-motion 은 회전 없이 보기 좋은 각도(0.7rad)의 정지 화면 1장만 보여준다
+    let angle = reduce ? 0.7 : 0;
 
     function resize() {
       const rect = cv.parentElement?.getBoundingClientRect();
@@ -51,11 +53,12 @@ export function HeroGlobe() {
       radius = Math.min(w, h) * 0.46;
       cx = w * 0.52;
       cy = h * 0.5;
+      // 캔버스 크기 변경은 비트맵을 비우므로 즉시 한 프레임 다시 그린다
+      // (reduced-motion 모드에선 루프가 없어 이 호출이 유일한 재렌더 경로)
+      draw();
     }
     resize();
     window.addEventListener("resize", resize);
-
-    let angle = reduce ? 0.7 : 0;
 
     function draw() {
       const sin = Math.sin(angle);
@@ -115,6 +118,7 @@ export function HeroGlobe() {
       raf = requestAnimationFrame(loop);
     }
 
+    // 히어로가 화면 밖으로 나가면 그리기를 멈춰 CPU 를 아낀다
     const io = new IntersectionObserver(
       (entries) => {
         visible = entries[0]?.isIntersecting ?? true;
@@ -123,9 +127,8 @@ export function HeroGlobe() {
     );
     io.observe(cv);
 
-    if (reduce) {
-      draw();
-    } else {
+    // 첫 프레임은 resize() 가 이미 그렸다 — reduced-motion 이 아니면 회전 루프 시작
+    if (!reduce) {
       raf = requestAnimationFrame(loop);
     }
 
