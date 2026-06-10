@@ -19,7 +19,7 @@ import { submitInquiry } from "./config";
 import { useReveal } from "./useReveal";
 import { HeroGlobe } from "./HeroGlobe";
 
-/* ---------- icons ---------- */
+/* ---------- 아이콘: 장식용 인라인 SVG (currentColor 상속, 보조기기엔 숨김) ---------- */
 const IconMenu = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
     <path d="M3 6h18M3 12h18M3 18h18" strokeLinecap="round" />
@@ -46,6 +46,7 @@ const IconUp = () => (
   </svg>
 );
 
+/** 브랜드 워드마크 — 클릭 시 최상단(#top)으로 이동 */
 const Brand = ({ className = "brand" }: { className?: string }) => (
   <a className={className} href="#top" aria-label="GAHEE home">
     GAHEE<b>.</b>
@@ -60,7 +61,9 @@ type NavProps = {
   onOpenMenu: () => void;
 };
 
+/** 상단 고정 내비게이션 — 스크롤하면 배경을 블러 처리하고, 모바일(≤720px)에선 드로어 버튼만 노출 */
 function Nav({ locale, setLocale, scrolled, onOpenMenu }: NavProps) {
+  const t = copy[locale];
   return (
     <header className={`nav ${scrolled ? "scrolled" : ""}`}>
       <div className="shell nav__inner">
@@ -83,9 +86,9 @@ function Nav({ locale, setLocale, scrolled, onOpenMenu }: NavProps) {
             </button>
           </div>
           <a className="nav__cta" href="#contact">
-            {locale === "ko" ? "문의하기" : "Contact"}
+            {t.navCta}
           </a>
-          <button className="nav__menuBtn" onClick={onOpenMenu} aria-label={copy[locale].menuToggle}>
+          <button className="nav__menuBtn" onClick={onOpenMenu} aria-label={t.menuToggle}>
             <IconMenu />
           </button>
         </div>
@@ -95,6 +98,12 @@ function Nav({ locale, setLocale, scrolled, onOpenMenu }: NavProps) {
 }
 
 /* ============================================================ DRAWER */
+/**
+ * 모바일 전체화면 메뉴 드로어.
+ * - 열리면: 연 시점의 포커스 위치를 기억하고 닫기 버튼으로 포커스를 옮긴다.
+ * - 열린 동안: Tab/Shift+Tab 을 패널 안에서 순환시키고(포커스 트랩), Esc 로 닫는다.
+ * - 닫히면: 기억해 둔 트리거(햄버거 버튼)로 포커스를 복원한다.
+ */
 function Drawer({ open, onClose, locale, setLocale }: { open: boolean; onClose: () => void; locale: Locale; setLocale: (l: Locale) => void }) {
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -103,14 +112,17 @@ function Drawer({ open, onClose, locale, setLocale }: { open: boolean; onClose: 
 
   useEffect(() => {
     if (!open) {
+      // 닫힘: 드로어를 열었던 요소로 포커스 복원
       triggerRef.current?.focus();
       return;
     }
+    // 열림: 현재 포커스를 기억해 두고 닫기 버튼부터 시작
     triggerRef.current = document.activeElement as HTMLElement;
     closeRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
       if (e.key !== "Tab") return;
+      // 포커스 트랩: 패널 안 포커스 가능한 요소의 처음↔끝을 순환
       const panel = panelRef.current;
       if (!panel) return;
       const f = panel.querySelectorAll<HTMLElement>('a[href], button:not([disabled])');
@@ -150,7 +162,7 @@ function Drawer({ open, onClose, locale, setLocale }: { open: boolean; onClose: 
           </button>
         </div>
         <a className="btn btn--primary" href="#contact" onClick={onClose} style={{ marginTop: 18, justifyContent: "center" }}>
-          {locale === "ko" ? "파트너십 문의" : "Partnership Inquiry"}
+          {t.drawerCta}
         </a>
       </div>
     </div>
@@ -158,6 +170,7 @@ function Drawer({ open, onClose, locale, setLocale }: { open: boolean; onClose: 
 }
 
 /* ============================================================ HERO */
+/** 히어로 — 글로브 캔버스 배경 + 영문 디스플레이 슬로건(아트디렉션상 영어 고정) */
 function Hero({ locale }: { locale: Locale }) {
   const t = copy[locale];
   return (
@@ -182,7 +195,8 @@ function Hero({ locale }: { locale: Locale }) {
           </a>
         </div>
       </div>
-      <a className="hero__scroll" href="#games" aria-hidden="true">
+      {/* 장식용 스크롤 힌트 — 보조기기에서 숨기므로 키보드 포커스에서도 함께 제외한다 */}
+      <a className="hero__scroll" href="#games" aria-hidden="true" tabIndex={-1}>
         Scroll <i />
       </a>
     </section>
@@ -190,6 +204,7 @@ function Hero({ locale }: { locale: Locale }) {
 }
 
 /* ============================================================ STATS */
+/** 핵심 수치 스트립 — 데이터는 content.ts 의 stats */
 function Stats({ locale }: { locale: Locale }) {
   return (
     <section className="stats grain">
@@ -206,11 +221,14 @@ function Stats({ locale }: { locale: Locale }) {
 }
 
 /* ============================================================ GAMES */
+/** 게임 쇼케이스 — featured 1종은 큰 카드(feature), 나머지는 wide/default 카드.
+ *  placeholder 게임은 "준비 중" 카드로만 표시하고 클릭(모달 열기)을 막는다. */
 function Games({ locale, onSelect }: { locale: Locale; onSelect: (g: Game) => void }) {
   const t = copy[locale];
   const featured = games.find((g) => g.featured) ?? games[0];
   const rest = games.filter((g) => g !== featured);
 
+  // 카드 한 장 — 클릭 가능 카드는 role="button" + Enter/Space 키 지원
   const card = (game: Game, variant: "feature" | "wide" | "default") => {
     const clickable = !game.placeholder;
     const title = locale === "ko" ? game.titleKo : game.title;
@@ -278,6 +296,7 @@ function Games({ locale, onSelect }: { locale: Locale; onSelect: (g: Game) => vo
 }
 
 /* ============================================================ PUBLISHING */
+/** 퍼블리싱 — 6단계 프로세스 스트립 + 역량 카드 그리드 */
 function Publishing({ locale }: { locale: Locale }) {
   const t = copy[locale];
   return (
@@ -311,6 +330,7 @@ function Publishing({ locale }: { locale: Locale }) {
 }
 
 /* ============================================================ COMPANY */
+/** 회사 소개 — 소개문·프로필 표 + 파트너/로드맵 + 기존 소개문 전문 */
 function Company({ locale }: { locale: Locale }) {
   const t = copy[locale];
   return (
@@ -348,7 +368,7 @@ function Company({ locale }: { locale: Locale }) {
             </div>
           </div>
           <div className="reveal">
-            <h3 className="subhead">{locale === "ko" ? "다음에 갈 곳" : "Where we go next"}</h3>
+            <h3 className="subhead">{t.roadmapTitle}</h3>
             {roadmap.map((r) => (
               <div className="road" key={r.label}>
                 <div className="road__label">{r.label}</div>
@@ -372,11 +392,14 @@ function Company({ locale }: { locale: Locale }) {
 }
 
 /* ============================================================ CONTACT */
+/** 문의 — 왼쪽 연락처 + 오른쪽 문의 폼.
+ *  전송 결과는 aria-live 영역으로 보조기기에 알린다 (문구는 content.ts). */
 function Contact({ locale }: { locale: Locale }) {
   const t = copy[locale];
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "mailto" | "error">("idle");
   const fl = t.fieldLabels;
 
+  // FormData → 평면 객체로 변환해 전송. Formspree 미설정이면 mailto 폴백(config.ts)
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
@@ -387,16 +410,17 @@ function Contact({ locale }: { locale: Locale }) {
     if (result === "success") form.reset();
   }
 
+  // 폼 필드 정의 — required 는 브라우저 기본 검증과 라벨의 * 표시에 함께 쓰인다
   const fields = [
-    { name: "name", label: fl.name, type: "text" },
-    { name: "company", label: fl.company, type: "text" },
-    { name: "email", label: fl.email, type: "email" },
-    { name: "game", label: fl.game, type: "text" },
-    { name: "genre", label: fl.genre, type: "text" },
-    { name: "platform", label: fl.platform, type: "text" },
-    { name: "status", label: fl.status, type: "text" },
-    { name: "video", label: fl.video, type: "url" },
-    { name: "store", label: fl.store, type: "url" },
+    { name: "name", label: fl.name, type: "text", required: true },
+    { name: "company", label: fl.company, type: "text", required: false },
+    { name: "email", label: fl.email, type: "email", required: true },
+    { name: "game", label: fl.game, type: "text", required: true },
+    { name: "genre", label: fl.genre, type: "text", required: false },
+    { name: "platform", label: fl.platform, type: "text", required: false },
+    { name: "status", label: fl.status, type: "text", required: false },
+    { name: "video", label: fl.video, type: "url", required: false },
+    { name: "store", label: fl.store, type: "url", required: false },
   ];
 
   const msg =
@@ -420,12 +444,25 @@ function Contact({ locale }: { locale: Locale }) {
           <div className="form__grid">
             {fields.map((f) => (
               <label className="field" key={f.name}>
-                <span>{f.label}</span>
-                <input name={f.name} type={f.type} required={["name", "email", "game"].includes(f.name)} />
+                <span>
+                  {f.label}
+                  {/* 필수 표시 별표 — 스크린리더엔 input 의 required 속성이 전달되므로 숨긴다 */}
+                  {f.required && (
+                    <em className="field__req" aria-hidden="true">
+                      *
+                    </em>
+                  )}
+                </span>
+                <input name={f.name} type={f.type} required={f.required} />
               </label>
             ))}
             <label className="field field--full">
-              <span>{fl.message}</span>
+              <span>
+                {fl.message}
+                <em className="field__req" aria-hidden="true">
+                  *
+                </em>
+              </span>
               <textarea name="message" rows={5} required />
             </label>
           </div>
@@ -446,7 +483,9 @@ function Contact({ locale }: { locale: Locale }) {
 }
 
 /* ============================================================ FOOTER */
+/** 푸터 — 법적 고지와 외부 링크. 저작권 연도는 렌더 시점 기준으로 자동 갱신된다. */
 function Footer({ locale }: { locale: Locale }) {
+  const t = copy[locale];
   return (
     <footer className="foot">
       <div className="shell">
@@ -463,14 +502,14 @@ function Footer({ locale }: { locale: Locale }) {
               Facebook
             </a>
             <a href={contact.play} target="_blank" rel="noreferrer noopener">
-              {locale === "ko" ? "게임 스토어" : "Game Store"}
+              {t.storeLabel}
             </a>
           </div>
         </div>
         <div className="foot__bottom">
           <div className="foot__legal">
             GAHEE., LTD &nbsp;·&nbsp; CRN 508-86-02578 &nbsp;·&nbsp; {contact.address}
-            <br />© {2022} GAHEE Corp. All rights reserved.
+            <br />© {new Date().getFullYear()} GAHEE Corp. All rights reserved.
           </div>
           <a className="foot__legal" href={`mailto:${contact.business}`} style={{ color: "var(--red-bright)" }}>
             {contact.business}
@@ -482,8 +521,15 @@ function Footer({ locale }: { locale: Locale }) {
 }
 
 /* ============================================================ GAME MODAL */
+/**
+ * 게임 상세 모달.
+ * - 갤러리: screenshots 가 없으면 대표 이미지 1장으로 폴백.
+ * - 키보드: Esc 닫기, ←/→ 갤러리 이동, Tab 은 카드 안에서 순환(포커스 트랩).
+ * - 플랫폼 배지: links 에 URL 이 있는 플랫폼만 링크가 된다.
+ */
 function GameModal({ game, locale, onClose }: { game: Game; locale: Locale; onClose: () => void }) {
   const t = copy[locale];
+  // 갤러리 폴백: 스크린샷 없음 → 대표 이미지 1장
   const shots = game.screenshots && game.screenshots.length > 0 ? game.screenshots : game.image ? [game.image] : [];
   const [index, setIndex] = useState(0);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -494,6 +540,7 @@ function GameModal({ game, locale, onClose }: { game: Game; locale: Locale; onCl
   useEffect(() => {
     closeRef.current?.focus();
     const total = shots.length;
+    // 키보드: Esc 닫기 / ←·→ 갤러리 이동 / Tab 포커스 트랩
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
       else if (e.key === "ArrowLeft" && total > 1) setIndex((i) => (i - 1 + total) % total);
@@ -559,12 +606,25 @@ function GameModal({ game, locale, onClose }: { game: Game; locale: Locale; onCl
           <span className="modal__genre">{game.genre}</span>
           <p>{body}</p>
           <div className="platforms">
-            {game.platforms.map((platform) => (
-              <a key={platform} href={game.link ?? contact.play} target="_blank" rel="noreferrer noopener" aria-label={`${game.title} ${platform}`}>
-                {platformIcons[platform] && <img src={platformIcons[platform]} alt="" />}
-                <span>{platform}</span>
-              </a>
-            ))}
+            {/* 스토어 URL 이 있는 플랫폼만 링크 — 다른 스토어로 잘못 보내지 않는다 */}
+            {game.platforms.map((platform) => {
+              const href = game.links?.[platform];
+              const badge = (
+                <>
+                  {platformIcons[platform] && <img src={platformIcons[platform]} alt="" />}
+                  <span>{platform}</span>
+                </>
+              );
+              return href ? (
+                <a key={platform} className="platform" href={href} target="_blank" rel="noreferrer noopener" aria-label={`${game.title} ${platform}`}>
+                  {badge}
+                </a>
+              ) : (
+                <span key={platform} className="platform">
+                  {badge}
+                </span>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -573,6 +633,7 @@ function GameModal({ game, locale, onClose }: { game: Game; locale: Locale; onCl
 }
 
 /* ============================================================ BACK TO TOP */
+/** 맨 위로 버튼 — 700px 이상 스크롤하면 표시, reduced-motion 사용자는 즉시 점프 */
 function BackToTop({ label }: { label: string }) {
   const [show, setShow] = useState(false);
   useEffect(() => {
@@ -595,6 +656,10 @@ function BackToTop({ label }: { label: string }) {
 }
 
 /* ============================================================ APP */
+/**
+ * 루트 컴포넌트 — 전역 상태(언어/드로어/선택 게임/스크롤 여부)를 들고 섹션을 조립한다.
+ * 드로어·모달이 열리면 배경 스크롤을 잠그고, 닫히면 열었던 요소로 포커스를 복원한다.
+ */
 export default function App() {
   const [locale, setLocale] = useState<Locale>("ko");
   const [menuOpen, setMenuOpen] = useState(false);
@@ -602,16 +667,20 @@ export default function App() {
   const [scrolled, setScrolled] = useState(false);
   const lastFocus = useRef<HTMLElement | null>(null);
 
+  // locale 변경으로 새로 렌더된 .reveal 요소도 다시 관찰
   useReveal([locale]);
 
+  // <html lang> 을 현재 언어와 동기화 (스크린리더 발음·검색엔진 언어 판별)
   useEffect(() => {
     document.documentElement.lang = locale;
   }, [locale]);
 
+  // 드로어/모달이 열린 동안 배경 스크롤 잠금
   useEffect(() => {
     document.body.classList.toggle("is-locked", menuOpen || selected !== null);
   }, [menuOpen, selected]);
 
+  // 헤더 배경(블러) 전환용 스크롤 감지
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -619,6 +688,7 @@ export default function App() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // 모달: 연 요소를 기억해 두고 닫힐 때 그 자리로 포커스 복원
   const openGame = (game: Game) => {
     lastFocus.current = document.activeElement as HTMLElement;
     setSelected(game);
@@ -628,10 +698,14 @@ export default function App() {
     lastFocus.current?.focus();
   }, []);
 
+  // Drawer 가 effect 의존성으로 쓰므로 참조를 고정한다 — 리렌더(예: 드로어 안 언어 전환)마다
+  // 포커스 트랩이 재설치되어 포커스 복원 대상이 드로어 내부 요소로 덮이는 문제 방지
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
+
   return (
     <>
       <Nav locale={locale} setLocale={setLocale} scrolled={scrolled} onOpenMenu={() => setMenuOpen(true)} />
-      <Drawer open={menuOpen} onClose={() => setMenuOpen(false)} locale={locale} setLocale={setLocale} />
+      <Drawer open={menuOpen} onClose={closeMenu} locale={locale} setLocale={setLocale} />
       <main>
         <Hero locale={locale} />
         <Stats locale={locale} />
