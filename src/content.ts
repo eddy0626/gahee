@@ -63,11 +63,7 @@ export const copy = {
     aboutTitle: "우리는 게임을 발견하고, 시장에 닿게 합니다.",
     aboutBody:
       "GAHEE는 한국에 기반을 둔 모바일·PC·콘솔 게임 퍼블리셔입니다. 2022년부터 검증된 글로벌 개발사의 게임을 한국과 아시아 시장에 선보여 왔습니다.",
-    legacyAbout:
-      "모두가 즐길 수 있는 게임을 전하는 글로벌 게임 퍼블리셔가 되고자 합니다.",
     partnershipTitle: "오래 함께 걸을 파트너를 찾습니다.",
-    partnershipBody:
-      "한두 개의 게임이 아니라, 오래 함께 걸어갈 파트너를 찾습니다.",
     roadmapTitle: "다음에 갈 곳",
     publishingTitle: "퍼블리싱의 모든 과정, 한 팀이 책임집니다.",
     publishingText:
@@ -120,11 +116,7 @@ export const copy = {
     aboutTitle: "We discover games and bring them to market.",
     aboutBody:
       "GAHEE is a Korea-based mobile, PC, and console game publisher. Since 2022 we've brought titles from trusted global studios to Korea and the wider Asian market.",
-    legacyAbout:
-      "We aim to become a global game publisher, delivering games that everyone can enjoy.",
     partnershipTitle: "We look for long-term partners.",
-    partnershipBody:
-      "We're not looking for one or two games — we're looking for a partner to walk alongside for the long term.",
     roadmapTitle: "Where we go next",
     publishingTitle: "One team handles the full publishing journey.",
     publishingText:
@@ -170,51 +162,6 @@ export const stats = [
   { value: "5", label: { ko: "장르 경험", en: "Genres" } },
   { value: "13", label: { ko: "아시아 출시 시장", en: "Asia Markets" } },
   { value: "8+", label: { ko: "글로벌 파트너", en: "Global Studios" } },
-];
-
-export const capabilities = [
-  {
-    title: { ko: "소싱 & 평가", en: "Sourcing & Evaluation" },
-    body: {
-      ko: "글로벌 개발사로부터 게임을 수급하고 시장성과 완성도를 검증합니다.",
-      en: "We source titles from global studios and evaluate market fit and readiness.",
-    },
-  },
-  {
-    title: { ko: "계약 & 법무", en: "Contract & Legal" },
-    body: {
-      ko: "퍼블리싱 계약, NDA, 라이선스 협상까지 직접 진행합니다.",
-      en: "We handle publishing contracts, NDAs, and licensing negotiations.",
-    },
-  },
-  {
-    title: { ko: "현지화", en: "Localization" },
-    body: {
-      ko: "한국어, 일본어, 동남아 다국어 번역과 문화권별 검수를 수행합니다.",
-      en: "We localize into Korean, Japanese, and Southeast Asian languages with cultural review.",
-    },
-  },
-  {
-    title: { ko: "빌드 & QA", en: "Build & QA" },
-    body: {
-      ko: "심의 등급, 빌드 테스트, 결제 및 광고 SDK 통합을 지원합니다.",
-      en: "We support ratings, build testing, payment, and ad SDK integration.",
-    },
-  },
-  {
-    title: { ko: "마케팅 & 출시", en: "Marketing & Launch" },
-    body: {
-      ko: "보도자료, 사전예약, CPI 캠페인, 라운지 운영을 실행합니다.",
-      en: "We execute PR, pre-registration, CPI campaigns, and community launch operations.",
-    },
-  },
-  {
-    title: { ko: "라이브 운영", en: "Live Operations" },
-    body: {
-      ko: "출시 이후 업데이트, 번역 추가, 이벤트, CS와 추가 마케팅을 운영합니다.",
-      en: "We manage updates, added localization, events, CS, and post-launch marketing.",
-    },
-  },
 ];
 
 export const process = [

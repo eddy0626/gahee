@@ -1,6 +1,5 @@
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import {
-  capabilities,
   companyProfile,
   contact,
   copy,
@@ -225,7 +224,8 @@ function Stats({ locale }: { locale: Locale }) {
 function Games({ locale, onSelect }: { locale: Locale; onSelect: (g: Game) => void }) {
   const t = copy[locale];
   const featured = games.find((g) => g.featured) ?? games[0];
-  const rest = games.filter((g) => g !== featured);
+  // placeholder("준비 중") 카드는 렌더링에서 제외(숨김). 데이터는 content.ts에 보존.
+  const rest = games.filter((g) => g !== featured && !g.placeholder);
 
   // 카드 한 장 — 클릭 가능 카드는 role="button" + Enter/Space 키 지원
   const card = (game: Game, variant: "feature" | "wide" | "default") => {
@@ -287,7 +287,7 @@ function Games({ locale, onSelect }: { locale: Locale; onSelect: (g: Game) => vo
         </div>
         <div className="games__grid">
           {card(featured, "feature")}
-          {rest.map((g, i) => card(g, i < 2 && !g.placeholder ? "wide" : "default"))}
+          {rest.map((g) => card(g, "wide"))}
         </div>
       </div>
     </section>
@@ -309,7 +309,6 @@ function Company({ locale }: { locale: Locale }) {
             <span className="eyebrow">{t.eyebrow.company}</span>
             <h2 className="section-title">{t.aboutTitle}</h2>
             <p>{t.aboutBody}</p>
-            <p className="legacy">{t.legacyAbout}</p>
           </div>
           <dl className="profile reveal">
             {companyProfile.map((item) => (
@@ -321,7 +320,7 @@ function Company({ locale }: { locale: Locale }) {
           </dl>
         </div>
 
-        {/* 중단: 퍼블리싱 — 6단계 프로세스 + 역량 카드 (정체성을 '증명'하는 블록) */}
+        {/* 중단: 퍼블리싱 — 6단계 프로세스 (한 팀이 처음부터 끝까지) */}
         <div className="publish__head reveal" id="publishing" style={{ marginTop: "clamp(60px, 8vw, 116px)" }}>
           <span className="eyebrow">{t.eyebrow.publishing}</span>
           <h3 className="subhead" style={{ marginTop: 18, marginBottom: 0 }}>{t.publishingTitle}</h3>
@@ -335,23 +334,10 @@ function Company({ locale }: { locale: Locale }) {
             </div>
           ))}
         </div>
-        <div className="caps">
-          {capabilities.map((c, i) => (
-            <div className="cap reveal" key={c.title.en} style={{ transitionDelay: `${(i % 3) * 70}ms` }}>
-              <div className="cap__num">{String(i + 1).padStart(2, "0")}</div>
-              <h3 className="cap__title">{c.title[locale]}</h3>
-              <p className="cap__body">{c.body[locale]}</p>
-            </div>
-          ))}
-        </div>
-
         {/* 하단: 파트너 + 로드맵 */}
         <div className="company__bottom">
           <div className="reveal">
             <h3 className="subhead">{t.partnershipTitle}</h3>
-            <p className="section-lead" style={{ marginTop: 0, marginBottom: 22 }}>
-              {t.partnershipBody}
-            </p>
             <div className="partners">
               {partners.map((p) => (
                 <span className="partner" key={p}>
