@@ -6,7 +6,6 @@ import {
   copy,
   Game,
   games,
-  legacyCompanyIntro,
   Locale,
   nav,
   partners,
@@ -279,7 +278,7 @@ function Games({ locale, onSelect }: { locale: Locale; onSelect: (g: Game) => vo
       <div className="shell">
         <div className="games__head reveal">
           <div>
-            <span className="eyebrow">Games — 게임 라인업</span>
+            <span className="eyebrow">{t.eyebrow.games}</span>
             <h2 className="section-title">{t.gamesTitle}</h2>
           </div>
           <p className="section-lead" style={{ marginTop: 0 }}>
@@ -295,16 +294,37 @@ function Games({ locale, onSelect }: { locale: Locale; onSelect: (g: Game) => vo
   );
 }
 
-/* ============================================================ PUBLISHING */
-/** 퍼블리싱 — 6단계 프로세스 스트립 + 역량 카드 그리드 */
-function Publishing({ locale }: { locale: Locale }) {
+/* ============================================================ COMPANY + PUBLISHING (병합) */
+/** 회사 소개 + 퍼블리싱 — 정체성·프로필 → 일하는 방식(프로세스·역량) → 파트너·로드맵.
+ *  '전 과정 직접' 서사를 도입부 한 번으로 줄이고, 아래 프로세스·역량 카드가 그것을 증명한다.
+ *  nav '퍼블리싱'(#publishing) 앵커는 가운데 퍼블리싱 블록으로 유지. */
+function Company({ locale }: { locale: Locale }) {
   const t = copy[locale];
   return (
-    <section className="section section--light" id="publishing">
+    <section className="section section--light" id="company">
       <div className="shell">
-        <div className="publish__head reveal">
-          <span className="eyebrow">Publishing — 퍼블리싱</span>
-          <h2 className="section-title">{t.publishingTitle}</h2>
+        {/* 상단: 정체성 + 회사 프로필 */}
+        <div className="company__top">
+          <div className="company__lead reveal">
+            <span className="eyebrow">{t.eyebrow.company}</span>
+            <h2 className="section-title">{t.aboutTitle}</h2>
+            <p>{t.aboutBody}</p>
+            <p className="legacy">{t.legacyAbout}</p>
+          </div>
+          <dl className="profile reveal">
+            {companyProfile.map((item) => (
+              <div className="profile__row" key={item.value}>
+                <dt>{item.label[locale]}</dt>
+                <dd>{item.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+
+        {/* 중단: 퍼블리싱 — 6단계 프로세스 + 역량 카드 (정체성을 '증명'하는 블록) */}
+        <div className="publish__head reveal" id="publishing" style={{ marginTop: "clamp(60px, 8vw, 116px)" }}>
+          <span className="eyebrow">{t.eyebrow.publishing}</span>
+          <h3 className="subhead" style={{ marginTop: 18, marginBottom: 0 }}>{t.publishingTitle}</h3>
           <p className="section-lead">{t.publishingText}</p>
         </div>
         <div className="process reveal">
@@ -324,35 +344,8 @@ function Publishing({ locale }: { locale: Locale }) {
             </div>
           ))}
         </div>
-      </div>
-    </section>
-  );
-}
 
-/* ============================================================ COMPANY */
-/** 회사 소개 — 소개문·프로필 표 + 파트너/로드맵 + 기존 소개문 전문 */
-function Company({ locale }: { locale: Locale }) {
-  const t = copy[locale];
-  return (
-    <section className="section section--light" id="company" style={{ background: "var(--paper-2)" }}>
-      <div className="shell">
-        <div className="company__top">
-          <div className="company__lead reveal">
-            <span className="eyebrow">Company — 회사 소개</span>
-            <h2 className="section-title">{t.aboutTitle}</h2>
-            <p>{t.aboutBody}</p>
-            <p className="legacy">{t.legacyAbout}</p>
-          </div>
-          <dl className="profile reveal">
-            {companyProfile.map((item) => (
-              <div className="profile__row" key={item.value}>
-                <dt>{item.label[locale]}</dt>
-                <dd>{item.value}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-
+        {/* 하단: 파트너 + 로드맵 */}
         <div className="company__bottom">
           <div className="reveal">
             <h3 className="subhead">{t.partnershipTitle}</h3>
@@ -376,15 +369,6 @@ function Company({ locale }: { locale: Locale }) {
               </div>
             ))}
           </div>
-        </div>
-
-        <div className="reveal" style={{ marginTop: "clamp(40px, 5vw, 72px)" }}>
-          <h3 className="subhead">{t.legacyIntroTitle}</h3>
-          {legacyCompanyIntro.map((para) => (
-            <p key={para.en} className="section-lead" style={{ maxWidth: "70ch", marginTop: 0, marginBottom: 14 }}>
-              {para[locale]}
-            </p>
-          ))}
         </div>
       </div>
     </section>
@@ -430,7 +414,7 @@ function Contact({ locale }: { locale: Locale }) {
     <section className="section section--dark grain" id="contact">
       <div className="shell contact__grid">
         <div className="reveal">
-          <span className="eyebrow">Contact — 문의</span>
+          <span className="eyebrow">{t.eyebrow.contact}</span>
           <h2 className="section-title">{t.contactTitle}</h2>
           <p className="section-lead">{t.contactText}</p>
           <div className="contact__lines">
@@ -710,7 +694,6 @@ export default function App() {
         <Hero locale={locale} />
         <Stats locale={locale} />
         <Games locale={locale} onSelect={openGame} />
-        <Publishing locale={locale} />
         <Company locale={locale} />
         <Contact locale={locale} />
       </main>

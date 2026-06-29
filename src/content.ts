@@ -50,13 +50,19 @@ export const copy = {
   ko: {
     heroText:
       "2022년부터 모바일·PC·콘솔 6개 플랫폼에서 게임을 서비스하며, 8곳 이상의 글로벌 스튜디오와 출시부터 라이브 운영까지 함께합니다.",
+    eyebrow: {
+      games: "Games — 게임 라인업",
+      company: "Company — 회사 소개",
+      publishing: "Publishing — 퍼블리싱",
+      contact: "Contact — 문의",
+    },
     primaryCta: "파트너십 문의",
     secondaryCta: "게임 라인업 보기",
     navCta: "문의하기",
     drawerCta: "파트너십 문의",
     aboutTitle: "우리는 게임을 발견하고, 시장에 닿게 합니다.",
     aboutBody:
-      "GAHEE는 한국에 기반을 둔 모바일, PC, 콘솔 게임 퍼블리셔입니다. 디자인, 로컬라이제이션, 마케팅, 출시까지 전 과정을 직접 운영하며 검증된 글로벌 개발사와 함께 한국과 아시아 시장에 게임을 선보입니다.",
+      "GAHEE는 한국에 기반을 둔 모바일·PC·콘솔 게임 퍼블리셔입니다. 2022년부터 검증된 글로벌 개발사의 게임을 한국과 아시아 시장에 선보여 왔습니다.",
     legacyAbout:
       "모두가 즐길 수 있는 게임을 전하는 글로벌 게임 퍼블리셔가 되고자 합니다.",
     partnershipTitle: "오래 함께 걸을 파트너를 찾습니다.",
@@ -68,7 +74,6 @@ export const copy = {
       "상담과 게임 검토부터 계약·현지화·런칭, 출시 후 라이브 운영까지 — 퍼블리싱 6단계 전 과정을 한 팀이 직접 수행합니다.",
     gamesTitle: "서비스 중인 타이틀",
     gamesText: "모바일·PC·콘솔 6개 플랫폼에서 서비스하는 타이틀과 준비 중인 라인업을 한눈에 확인하세요.",
-    legacyIntroTitle: "기존 회사 소개",
     contactTitle: "좋은 게임을 가지고 계시다면, 우리에게 먼저 알려주세요.",
     contactText:
       "퍼블리싱, 사업 제휴, 채용 문의를 남겨주시면 담당자가 검토 후 연락드립니다.",
@@ -102,25 +107,30 @@ export const copy = {
   en: {
     heroText:
       "Since 2022 we've shipped mobile, PC, and console titles across 6 platforms, working with 8+ global studios from launch through live operations.",
+    eyebrow: {
+      games: "Games",
+      company: "Company",
+      publishing: "Publishing",
+      contact: "Contact",
+    },
     primaryCta: "Partnership Inquiry",
     secondaryCta: "View Games",
     navCta: "Contact",
     drawerCta: "Partnership Inquiry",
     aboutTitle: "We discover games and bring them to market.",
     aboutBody:
-      "GAHEE is a Korean game publisher operating the full publishing cycle, from design and localization to marketing, launch, and live operations with trusted global studios.",
+      "GAHEE is a Korea-based mobile, PC, and console game publisher. Since 2022 we've brought titles from trusted global studios to Korea and the wider Asian market.",
     legacyAbout:
       "We aim to become a global game publisher, delivering games that everyone can enjoy.",
     partnershipTitle: "We look for long-term partners.",
     partnershipBody:
-      "We are not looking for one or two games, We are looking for a partner to walk with us for a long time.",
+      "We're not looking for one or two games — we're looking for a partner to walk alongside for the long term.",
     roadmapTitle: "Where we go next",
     publishingTitle: "One team handles the full publishing journey.",
     publishingText:
       "From consultation and game review to contracts, localization, launch, and post-launch live ops — one team runs all six publishing stages.",
     gamesTitle: "Live titles",
     gamesText: "Explore our live titles across 6 platforms on mobile, PC, and console, plus the reserved lineup.",
-    legacyIntroTitle: "Original Introduction",
     contactTitle: "If you have a good game, tell us first.",
     contactText:
       "Send a publishing, business, or recruiting inquiry and our team will review it.",
@@ -152,22 +162,6 @@ export const copy = {
     },
   },
 };
-
-/** 기존(리뉴얼 전) 회사 소개 전문 — Company 섹션 하단에 그대로 노출 */
-export const legacyCompanyIntro: LocalizedText[] = [
-  {
-    ko: "GAHEE는 세계에서 가장 빠르게 성장하는 게임 시장 중 하나인 동남아시아로 확장하며 모바일 게임 퍼블리셔로서의 여정을 시작했습니다. 모바일 게임 분야의 선도적인 글로벌 퍼블리셔로 자리매김하는 것을 목표로 합니다.",
-    en: "Gahee is embarking on its journey as a mobile game publisher, rapidly expanding into Southeast Asia, one of the world's fastest-growing gaming markets. We aim to establish ourselves as a leading global publisher for mobile games.",
-  },
-  {
-    ko: "GAHEE는 검증된 성과를 바탕으로 모바일 게임 퍼블리싱에 강점을 가지고 있습니다. 디자인, 현지화, 번역, 종합 퍼블리싱 전반에 걸친 폭넓은 전문성을 보유하고 있으며, 퍼블리싱 전 과정을 직접 수행해 새로운 지역에서의 매끄럽고 성공적인 출시를 보장합니다.",
-    en: "At Gahee, we excel in mobile game publishing with a proven track record of delivering outstanding results. Our team boasts extensive expertise in design, localization, translation, and comprehensive publishing. We are fully equipped to handle every aspect of the publishing process, ensuring a seamless and successful launch in new regions.",
-  },
-  {
-    ko: "전 세계 다수의 개발사·퍼블리셔와 협력하여 그들의 타이틀을 한국과 아시아 시장에 효과적으로 선보여 왔습니다.",
-    en: "We have partnered with numerous developers and publishers worldwide, helping them introduce their titles to Korea and other Asian markets effectively.",
-  },
-];
 
 /** 핵심 수치 (Stats 섹션) — 실제 수치만 쓴다.
  *  13개 시장 근거: 한국·일본·대만·홍콩·마카오·싱가포르·필리핀·말레이시아·인도네시아·태국·베트남·라오스·캄보디아 */
