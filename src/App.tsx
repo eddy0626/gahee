@@ -4,10 +4,13 @@ import {
   contact,
   copy,
   Game,
+  GameCategory,
+  gameFilters,
   games,
   Locale,
   nav,
   partners,
+  platformCategory,
   platformIcons,
   process,
   roadmap,
@@ -223,9 +226,21 @@ function Stats({ locale }: { locale: Locale }) {
  *  placeholder 게임은 "준비 중" 카드로만 표시하고 클릭(모달 열기)을 막는다. */
 function Games({ locale, onSelect }: { locale: Locale; onSelect: (g: Game) => void }) {
   const t = copy[locale];
-  const featured = games.find((g) => g.featured) ?? games[0];
   // placeholder("준비 중") 카드는 렌더링에서 제외(숨김). 데이터는 content.ts에 보존.
-  const rest = games.filter((g) => g !== featured && !g.placeholder);
+  const visible = games.filter((g) => !g.placeholder);
+  const featured = visible.find((g) => g.featured) ?? visible[0];
+  const rest = visible.filter((g) => g !== featured);
+
+  // 플랫폼 필터 — 실제 게임이 있는 카테고리만 칩으로 노출(빈 Console 등은 자동 생략).
+  const [active, setActive] = useState<"all" | GameCategory>("all");
+  const cats = (["Mobile", "PC", "Console"] as GameCategory[]).filter((c) =>
+    visible.some((g) => g.platforms.some((p) => platformCategory[p] === c)),
+  );
+  const tabs: ("all" | GameCategory)[] = ["all", ...cats];
+  const matches = (g: Game) =>
+    active === "all" || g.platforms.some((p) => platformCategory[p] === active);
+  // 필터 변경 시에도 새로 나타나는 카드가 등장 애니메이션을 타도록 active 를 deps 에 포함.
+  useReveal([locale, active]);
 
   // 카드 한 장 — 클릭 가능 카드는 role="button" + Enter/Space 키 지원
   const card = (game: Game, variant: "feature" | "wide" | "default") => {
@@ -259,6 +274,14 @@ function Games({ locale, onSelect }: { locale: Locale; onSelect: (g: Game) => vo
               <img src={game.image} alt={`${title}`} loading="lazy" decoding="async" />
             </div>
             <div className="gcard__veil" />
+            {/* 플랫폼 아이콘 핀 — 장식용(모달에 라벨 배지 있음)이라 보조기기엔 숨김 */}
+            <div className="gcard__plats" aria-hidden="true">
+              {game.platforms.map((p) =>
+                platformIcons[p] ? (
+                  <img key={p} src={platformIcons[p]} alt="" title={p} loading="lazy" decoding="async" />
+                ) : null,
+              )}
+            </div>
             <div className="gcard__meta">
               <div className="gcard__genre">{game.genre}</div>
               <h3 className="gcard__title">{title}</h3>
@@ -285,9 +308,24 @@ function Games({ locale, onSelect }: { locale: Locale; onSelect: (g: Game) => vo
             {t.gamesText}
           </p>
         </div>
+        {tabs.length > 1 && (
+          <div className="games__filter reveal" role="group" aria-label={t.gamesTitle}>
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                className={`chip ${active === tab ? "is-active" : ""}`}
+                aria-pressed={active === tab}
+                onClick={() => setActive(tab)}
+              >
+                {gameFilters[locale][tab]}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="games__grid">
-          {card(featured, "feature")}
-          {rest.map((g) => card(g, "wide"))}
+          {matches(featured) && card(featured, "feature")}
+          {rest.filter(matches).map((g) => card(g, "wide"))}
         </div>
       </div>
     </section>

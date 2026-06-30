@@ -17,6 +17,9 @@ export type Game = {
   icon?: string;
   featured?: boolean;
   placeholder?: boolean;
+  /** 출시 상태 — 데이터 모델용. 현재 화면 배지는 미표시(전부 released)이며,
+   *  향후 실제 Coming Soon 타이틀이 생기면 배지 렌더를 켠다. 미지정=released 취급. */
+  status?: "released" | "coming-soon";
   platforms: string[];
   /** 플랫폼별 스토어 링크 — 키는 platforms 의 항목명과 동일해야 한다.
    *  URL 이 없는 플랫폼은 모달에서 링크 없는 배지로만 표시된다. */
@@ -183,6 +186,23 @@ export const platformIcons: Record<string, string> = {
   PlayStation: "/assets/games/playstation.webp",
 };
 
+/** 플랫폼 → 상위 카테고리 (Games 필터 칩의 분류축). 새 플랫폼 추가 시 여기에 매핑한다. */
+export type GameCategory = "Mobile" | "PC" | "Console";
+export const platformCategory: Record<string, GameCategory> = {
+  "Google Play": "Mobile",
+  "App Store": "Mobile",
+  "One Store": "Mobile",
+  Steam: "PC",
+  Nintendo: "Console",
+  PlayStation: "Console",
+};
+
+/** Games 필터 칩 라벨 (ko/en). 칩 자체는 실제 게임이 있는 카테고리만 동적으로 노출된다. */
+export const gameFilters: Record<Locale, Record<"all" | GameCategory, string>> = {
+  ko: { all: "전체", Mobile: "모바일", PC: "PC", Console: "콘솔" },
+  en: { all: "All", Mobile: "Mobile", PC: "PC", Console: "Console" },
+};
+
 /** GAHEE 공식 Google Play 개발자 페이지 —
  *  게임별 스토어 페이지 URL 을 확보하기 전까지 Google Play 배지의 대체 링크로 쓴다. */
 const GAHEE_PLAY_DEV_PAGE = "https://play.google.com/store/apps/dev?id=5871699805522095691";
@@ -197,6 +217,7 @@ export const games: Game[] = [
     image: "/assets/games/mage-secret.webp",
     icon: "/assets/games/mage-icon.webp",
     featured: true,
+    status: "released",
     platforms: ["Google Play"],
     links: { "Google Play": "https://play.google.com/store/apps/details?id=com.gahee.magesecret" },
     description: {
@@ -211,6 +232,7 @@ export const games: Game[] = [
     genre: "Simulation",
     image: "/assets/games/tap-tap-builder.webp",
     icon: "/assets/games/tap-icon.webp",
+    status: "released",
     platforms: ["Google Play"],
     links: { "Google Play": "https://play.google.com/store/apps/details?id=com.gahee.taptap" },
     description: {
@@ -225,6 +247,7 @@ export const games: Game[] = [
     genre: "MMORPG",
     image: "/assets/games/abyss.webp",
     icon: "/assets/games/abyss-icon.webp",
+    status: "released",
     platforms: ["Google Play", "One Store"],
     // One Store 개별 페이지 URL 미확보 — 해당 배지는 링크 없이 표시된다
     links: { "Google Play": GAHEE_PLAY_DEV_PAGE },
@@ -240,6 +263,7 @@ export const games: Game[] = [
     genre: "Racing",
     image: "/assets/games/supreme-car-racing.webp",
     icon: "/assets/games/racing-icon.webp",
+    status: "released",
     platforms: ["Google Play", "App Store"],
     // App Store 개별 페이지 URL 미확보 — 해당 배지는 링크 없이 표시된다
     links: { "Google Play": GAHEE_PLAY_DEV_PAGE },
@@ -255,6 +279,7 @@ export const games: Game[] = [
     genre: "Idle RPG",
     image: "/assets/games/vulcan-wide.webp",
     icon: "/assets/games/vulcan-icon.webp",
+    status: "released",
     platforms: ["Google Play", "Steam"],
     // Steam 개별 페이지 URL 미확보 — 해당 배지는 링크 없이 표시된다
     links: { "Google Play": GAHEE_PLAY_DEV_PAGE },
@@ -269,6 +294,7 @@ export const games: Game[] = [
     titleKo: "Title",
     genre: "genre",
     placeholder: true,
+    status: "coming-soon",
     platforms: ["Nintendo", "PlayStation"],
     description: {
       ko: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
@@ -281,6 +307,7 @@ export const games: Game[] = [
     titleKo: "Title",
     genre: "genre",
     placeholder: true,
+    status: "coming-soon",
     platforms: ["Steam"],
     description: {
       ko: "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
