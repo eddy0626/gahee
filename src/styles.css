@@ -276,6 +276,21 @@ p {
 .nav__links a:hover {
   color: #fff;
 }
+/* 고객센터 — 모달을 여는 button 이지만 링크처럼 보이게 (회사·게임·문의와 동일) */
+.nav__links button {
+  padding: 10px 16px;
+  background: none;
+  border: 0;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--on-dark-dim);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.nav__links button:hover {
+  color: #fff;
+}
 
 .nav__actions {
   display: flex;
@@ -391,6 +406,21 @@ p {
   letter-spacing: -0.01em;
   border-bottom: 1px solid var(--line-dark);
   color: #fff;
+}
+/* 고객센터 — 드로어 링크와 동일 모양의 button */
+.drawer__cs {
+  width: 100%;
+  padding: 14px 0;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--line-dark);
+  font: inherit;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
 }
 
 .drawer__close {
@@ -581,11 +611,13 @@ p {
 
 .stat__num {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 800;
   font-size: clamp(40px, 6vw, 78px);
   line-height: 1;
-  color: #fff;
+  color: var(--red);
   letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums; /* 카운트업 시 자릿수 흔들림 방지 */
+  text-shadow: 0 0 30px rgba(203, 41, 87, 0.3); /* 은은한 네온 글로우 */
 }
 
 .stat__cap {
@@ -608,10 +640,62 @@ p {
   margin-bottom: clamp(36px, 5vw, 64px);
 }
 
+/* 플랫폼 필터 칩 — 실제 게임이 있는 카테고리만 동적으로 노출(App.tsx) */
+.games__filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: clamp(24px, 3vw, 38px);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 18px;
+  border: 1px solid var(--line-dark);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--on-dark-dim);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.chip:hover {
+  color: var(--on-dark);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.chip.is-active {
+  color: #fff;
+  background: var(--red);
+  border-color: var(--red);
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--red-bright);
+  outline-offset: 2px;
+}
+
 .games__grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 18px;
+}
+
+/* 필터 결과가 1장뿐일 때 — 빈 공간 없이 풀폭 배너로 (모바일은 기존 스택 유지) */
+@media (min-width: 721px) {
+  .games__grid > .gcard:only-child {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    aspect-ratio: 21 / 9;
+  }
 }
 
 .gcard {
@@ -658,6 +742,30 @@ p {
   position: absolute;
   inset: 0;
   background: linear-gradient(180deg, rgba(11, 11, 13, 0) 30%, rgba(11, 11, 13, 0.55) 64%, rgba(11, 11, 13, 0.95) 100%);
+}
+
+/* 카드 우상단 플랫폼 아이콘 핀 — 글래스 필 위에 스토어 아이콘만 (라벨은 모달에) */
+.gcard__plats {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(11, 11, 13, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.gcard__plats img {
+  display: block;
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
 }
 
 .gcard__meta {
@@ -1065,6 +1173,178 @@ p {
 
 .form__status.err {
   color: #ff6b6b;
+}
+
+/* ============================================================
+   CS 문의 모달 (불칸 고객 문의)
+   ============================================================ */
+.modal__cs {
+  margin-top: 22px;
+}
+
+.modal__card.cs {
+  width: min(620px, 100%);
+}
+
+.cs__body {
+  padding: clamp(28px, 4vw, 44px);
+}
+
+.cs__title {
+  margin-top: 14px;
+  font-weight: 800;
+  font-size: clamp(22px, 3vw, 30px);
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+
+.cs__intro {
+  margin-top: 12px;
+  color: var(--on-dark-dim);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.cs__form {
+  margin-top: 26px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* 헬프 텍스트 — field 라벨(mono·대문자)과 달리 일반 본문 톤 */
+.field__help {
+  font-family: var(--font-body);
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--on-dark-dim);
+}
+
+/* select 를 input/textarea 와 동일한 폼 스타일로 */
+.field select {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--ink-2);
+  border: 1px solid var(--line-dark);
+  border-radius: 12px;
+  color: #fff;
+  font: inherit;
+  font-size: 15px;
+  transition: border-color 0.2s ease;
+}
+.field select:focus {
+  outline: none;
+  border-color: var(--red);
+}
+
+/* 파일 업로드 드롭존 */
+.cs__drop {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 22px;
+  border: 1px dashed var(--line-dark);
+  border-radius: 12px;
+  background: var(--ink-2);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+.cs__drop:hover {
+  border-color: var(--red);
+}
+.cs__drop input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.cs__dropCta {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: #fff;
+}
+
+.cs__thumbs {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 12px 0 0;
+  padding: 0;
+}
+.cs__thumb {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--line-dark);
+}
+.cs__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cs__thumb button {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(5, 5, 7, 0.75);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.cs__thumb button svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* 필수 동의 체크 */
+.cs__check {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+.cs__check input {
+  margin-top: 2px;
+  width: 18px;
+  height: 18px;
+  flex: none;
+  accent-color: var(--red);
+}
+.cs__check span {
+  font-family: var(--font-body);
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--on-dark);
+  line-height: 1.5;
+}
+.cs__check a {
+  color: var(--red-bright);
+  text-decoration: underline;
+}
+
+.cs__submit {
+  margin-top: 8px;
+  justify-content: center;
+}
+
+@media (max-width: 720px) {
+  .cs__form {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ============================================================

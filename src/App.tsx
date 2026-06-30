@@ -1,21 +1,22 @@
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import {
-  capabilities,
   companyProfile,
   contact,
   copy,
+  csForm,
   Game,
+  GameCategory,
+  gameFilters,
   games,
-  legacyCompanyIntro,
   Locale,
   nav,
   partners,
+  platformCategory,
   platformIcons,
-  process,
   roadmap,
   stats,
 } from "./content";
-import { submitInquiry } from "./config";
+import { CsImage, submitCsInquiry, submitInquiry } from "./config";
 import { useReveal } from "./useReveal";
 import { HeroGlobe } from "./HeroGlobe";
 
@@ -59,10 +60,11 @@ type NavProps = {
   setLocale: (l: Locale) => void;
   scrolled: boolean;
   onOpenMenu: () => void;
+  onCsOpen: () => void;
 };
 
 /** 상단 고정 내비게이션 — 스크롤하면 배경을 블러 처리하고, 모바일(≤720px)에선 드로어 버튼만 노출 */
-function Nav({ locale, setLocale, scrolled, onOpenMenu }: NavProps) {
+function Nav({ locale, setLocale, scrolled, onOpenMenu, onCsOpen }: NavProps) {
   const t = copy[locale];
   return (
     <header className={`nav ${scrolled ? "scrolled" : ""}`}>
@@ -74,6 +76,10 @@ function Nav({ locale, setLocale, scrolled, onOpenMenu }: NavProps) {
               {item.label}
             </a>
           ))}
+          {/* 고객센터 — 앵커가 아니라 CS 폼 모달을 바로 연다 */}
+          <button type="button" onClick={onCsOpen}>
+            {csForm.nav[locale]}
+          </button>
         </nav>
         <div className="nav__actions">
           <div className="lang" aria-label="Language">
@@ -104,7 +110,7 @@ function Nav({ locale, setLocale, scrolled, onOpenMenu }: NavProps) {
  * - 열린 동안: Tab/Shift+Tab 을 패널 안에서 순환시키고(포커스 트랩), Esc 로 닫는다.
  * - 닫히면: 기억해 둔 트리거(햄버거 버튼)로 포커스를 복원한다.
  */
-function Drawer({ open, onClose, locale, setLocale }: { open: boolean; onClose: () => void; locale: Locale; setLocale: (l: Locale) => void }) {
+function Drawer({ open, onClose, locale, setLocale, onCsOpen }: { open: boolean; onClose: () => void; locale: Locale; setLocale: (l: Locale) => void; onCsOpen: () => void }) {
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
@@ -153,6 +159,17 @@ function Drawer({ open, onClose, locale, setLocale }: { open: boolean; onClose: 
             {item.label}
           </a>
         ))}
+        {/* 고객센터 — 드로어 닫고 CS 폼 모달 열기 */}
+        <button
+          type="button"
+          className="drawer__cs"
+          onClick={() => {
+            onClose();
+            onCsOpen();
+          }}
+        >
+          {csForm.nav[locale]}
+        </button>
         <div className="drawer__lang">
           <button aria-pressed={locale === "ko"} onClick={() => setLocale("ko")}>
             KO
@@ -178,7 +195,7 @@ function Hero({ locale }: { locale: Locale }) {
       <HeroGlobe />
       <div className="hero__veil" />
       <div className="shell hero__inner">
-        <span className="eyebrow hero__eyebrow">Global Game Publisher — Since 2022</span>
+        <span className="eyebrow hero__eyebrow">{t.heroEyebrow}</span>
         <h1 className="hero__title">
           <span className="line">WE FIND GAMES.</span>
           <span className="line">
@@ -204,14 +221,64 @@ function Hero({ locale }: { locale: Locale }) {
 }
 
 /* ============================================================ STATS */
-/** 핵심 수치 스트립 — 데이터는 content.ts 의 stats */
+/** 스크롤 진입 시 0→타깃으로 카운트업. "8+" 같은 접미사는 보존.
+ *  prefers-reduced-motion 또는 IO 미지원이면 즉시 최종값. (리서치 적용안 ③) */
+function CountUp({ value }: { value: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const match = value.match(/^(\d+)(.*)$/);
+  const target = match ? parseInt(match[1], 10) : 0;
+  const suffix = match ? match[2] : "";
+  const [display, setDisplay] = useState(match ? `0${suffix}` : value);
+
+  useEffect(() => {
+    const el = ref.current;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!el || !match || reduce || !("IntersectionObserver" in window)) {
+      setDisplay(value);
+      return;
+    }
+    let raf = 0;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          io.unobserve(e.target);
+          const dur = 1400;
+          const start = performance.now();
+          const tick = (now: number) => {
+            const t = Math.min(1, (now - start) / dur);
+            const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
+            setDisplay(`${Math.round(eased * target)}${suffix}`);
+            if (t < 1) raf = requestAnimationFrame(tick);
+          };
+          raf = requestAnimationFrame(tick);
+        });
+      },
+      { threshold: 0.4 },
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(raf);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  return (
+    <div className="stat__num" ref={ref}>
+      {display}
+    </div>
+  );
+}
+
+/** 핵심 수치 스트립 — 데이터는 content.ts 의 stats. 숫자는 스크롤 카운트업(CountUp). */
 function Stats({ locale }: { locale: Locale }) {
   return (
     <section className="stats grain">
       <div className="shell stats__grid reveal">
         {stats.map((s) => (
           <div key={s.label.en}>
-            <div className="stat__num">{s.value}</div>
+            <CountUp value={s.value} />
             <div className="stat__cap">{s.label[locale]}</div>
           </div>
         ))}
@@ -225,8 +292,21 @@ function Stats({ locale }: { locale: Locale }) {
  *  placeholder 게임은 "준비 중" 카드로만 표시하고 클릭(모달 열기)을 막는다. */
 function Games({ locale, onSelect }: { locale: Locale; onSelect: (g: Game) => void }) {
   const t = copy[locale];
-  const featured = games.find((g) => g.featured) ?? games[0];
-  const rest = games.filter((g) => g !== featured);
+  // placeholder("준비 중") 카드는 렌더링에서 제외(숨김). 데이터는 content.ts에 보존.
+  const visible = games.filter((g) => !g.placeholder);
+  const featured = visible.find((g) => g.featured) ?? visible[0];
+  const rest = visible.filter((g) => g !== featured);
+
+  // 플랫폼 필터 — 실제 게임이 있는 카테고리만 칩으로 노출(빈 Console 등은 자동 생략).
+  const [active, setActive] = useState<"all" | GameCategory>("all");
+  const cats = (["Mobile", "PC", "Console"] as GameCategory[]).filter((c) =>
+    visible.some((g) => g.platforms.some((p) => platformCategory[p] === c)),
+  );
+  const tabs: ("all" | GameCategory)[] = ["all", ...cats];
+  const matches = (g: Game) =>
+    active === "all" || g.platforms.some((p) => platformCategory[p] === active);
+  // 필터 변경 시에도 새로 나타나는 카드가 등장 애니메이션을 타도록 active 를 deps 에 포함.
+  useReveal([locale, active]);
 
   // 카드 한 장 — 클릭 가능 카드는 role="button" + Enter/Space 키 지원
   const card = (game: Game, variant: "feature" | "wide" | "default") => {
@@ -260,6 +340,14 @@ function Games({ locale, onSelect }: { locale: Locale; onSelect: (g: Game) => vo
               <img src={game.image} alt={`${title}`} loading="lazy" decoding="async" />
             </div>
             <div className="gcard__veil" />
+            {/* 플랫폼 아이콘 핀 — 장식용(모달에 라벨 배지 있음)이라 보조기기엔 숨김 */}
+            <div className="gcard__plats" aria-hidden="true">
+              {game.platforms.map((p) =>
+                platformIcons[p] ? (
+                  <img key={p} src={platformIcons[p]} alt="" title={p} loading="lazy" decoding="async" />
+                ) : null,
+              )}
+            </div>
             <div className="gcard__meta">
               <div className="gcard__genre">{game.genre}</div>
               <h3 className="gcard__title">{title}</h3>
@@ -279,69 +367,52 @@ function Games({ locale, onSelect }: { locale: Locale; onSelect: (g: Game) => vo
       <div className="shell">
         <div className="games__head reveal">
           <div>
-            <span className="eyebrow">Games — 게임 라인업</span>
+            <span className="eyebrow">{t.eyebrow.games}</span>
             <h2 className="section-title">{t.gamesTitle}</h2>
           </div>
           <p className="section-lead" style={{ marginTop: 0 }}>
             {t.gamesText}
           </p>
         </div>
+        {visible.length > 1 && tabs.length > 1 && (
+          <div className="games__filter reveal" role="group" aria-label={t.gamesTitle}>
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                className={`chip ${active === tab ? "is-active" : ""}`}
+                aria-pressed={active === tab}
+                onClick={() => setActive(tab)}
+              >
+                {gameFilters[locale][tab]}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="games__grid">
-          {card(featured, "feature")}
-          {rest.map((g, i) => card(g, i < 2 && !g.placeholder ? "wide" : "default"))}
+          {matches(featured) && card(featured, "feature")}
+          {rest.filter(matches).map((g) => card(g, "wide"))}
         </div>
       </div>
     </section>
   );
 }
 
-/* ============================================================ PUBLISHING */
-/** 퍼블리싱 — 6단계 프로세스 스트립 + 역량 카드 그리드 */
-function Publishing({ locale }: { locale: Locale }) {
-  const t = copy[locale];
-  return (
-    <section className="section section--light" id="publishing">
-      <div className="shell">
-        <div className="publish__head reveal">
-          <span className="eyebrow">Publishing — 퍼블리싱</span>
-          <h2 className="section-title">{t.publishingTitle}</h2>
-          <p className="section-lead">{t.publishingText}</p>
-        </div>
-        <div className="process reveal">
-          {process.map((step, i) => (
-            <div className="process__step" key={step.en}>
-              <div className="process__num">{String(i + 1).padStart(2, "0")}</div>
-              <div className="process__name">{step[locale]}</div>
-            </div>
-          ))}
-        </div>
-        <div className="caps">
-          {capabilities.map((c, i) => (
-            <div className="cap reveal" key={c.title.en} style={{ transitionDelay: `${(i % 3) * 70}ms` }}>
-              <div className="cap__num">{String(i + 1).padStart(2, "0")}</div>
-              <h3 className="cap__title">{c.title[locale]}</h3>
-              <p className="cap__body">{c.body[locale]}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ============================================================ COMPANY */
-/** 회사 소개 — 소개문·프로필 표 + 파트너/로드맵 + 기존 소개문 전문 */
+/* ============================================================ COMPANY + PUBLISHING (병합) */
+/** 회사 소개 + 퍼블리싱 — 정체성·프로필 → 일하는 방식(프로세스·역량) → 파트너·로드맵.
+ *  '전 과정 직접' 서사를 도입부 한 번으로 줄이고, 아래 프로세스·역량 카드가 그것을 증명한다.
+ *  nav '퍼블리싱'(#publishing) 앵커는 가운데 퍼블리싱 블록으로 유지. */
 function Company({ locale }: { locale: Locale }) {
   const t = copy[locale];
   return (
-    <section className="section section--light" id="company" style={{ background: "var(--paper-2)" }}>
+    <section className="section section--light" id="company">
       <div className="shell">
+        {/* 상단: 정체성 + 회사 프로필 */}
         <div className="company__top">
           <div className="company__lead reveal">
-            <span className="eyebrow">Company — 회사 소개</span>
+            <span className="eyebrow">{t.eyebrow.company}</span>
             <h2 className="section-title">{t.aboutTitle}</h2>
             <p>{t.aboutBody}</p>
-            <p className="legacy">{t.legacyAbout}</p>
           </div>
           <dl className="profile reveal">
             {companyProfile.map((item) => (
@@ -353,12 +424,10 @@ function Company({ locale }: { locale: Locale }) {
           </dl>
         </div>
 
+        {/* 하단: 파트너 + 로드맵 */}
         <div className="company__bottom">
           <div className="reveal">
             <h3 className="subhead">{t.partnershipTitle}</h3>
-            <p className="section-lead" style={{ marginTop: 0, marginBottom: 22 }}>
-              {t.partnershipBody}
-            </p>
             <div className="partners">
               {partners.map((p) => (
                 <span className="partner" key={p}>
@@ -376,15 +445,6 @@ function Company({ locale }: { locale: Locale }) {
               </div>
             ))}
           </div>
-        </div>
-
-        <div className="reveal" style={{ marginTop: "clamp(40px, 5vw, 72px)" }}>
-          <h3 className="subhead">{t.legacyIntroTitle}</h3>
-          {legacyCompanyIntro.map((para) => (
-            <p key={para.en} className="section-lead" style={{ maxWidth: "70ch", marginTop: 0, marginBottom: 14 }}>
-              {para[locale]}
-            </p>
-          ))}
         </div>
       </div>
     </section>
@@ -430,7 +490,7 @@ function Contact({ locale }: { locale: Locale }) {
     <section className="section section--dark grain" id="contact">
       <div className="shell contact__grid">
         <div className="reveal">
-          <span className="eyebrow">Contact — 문의</span>
+          <span className="eyebrow">{t.eyebrow.contact}</span>
           <h2 className="section-title">{t.contactTitle}</h2>
           <p className="section-lead">{t.contactText}</p>
           <div className="contact__lines">
@@ -527,7 +587,7 @@ function Footer({ locale }: { locale: Locale }) {
  * - 키보드: Esc 닫기, ←/→ 갤러리 이동, Tab 은 카드 안에서 순환(포커스 트랩).
  * - 플랫폼 배지: links 에 URL 이 있는 플랫폼만 링크가 된다.
  */
-function GameModal({ game, locale, onClose }: { game: Game; locale: Locale; onClose: () => void }) {
+function GameModal({ game, locale, onClose, onCsOpen }: { game: Game; locale: Locale; onClose: () => void; onCsOpen: () => void }) {
   const t = copy[locale];
   // 갤러리 폴백: 스크린샷 없음 → 대표 이미지 1장
   const shots = game.screenshots && game.screenshots.length > 0 ? game.screenshots : game.image ? [game.image] : [];
@@ -626,6 +686,231 @@ function GameModal({ game, locale, onClose }: { game: Game; locale: Locale; onCl
               );
             })}
           </div>
+          {/* 불칸: 고객센터(CS) 문의 진입 — 클릭 시 CS 폼 모달로 전환 */}
+          {game.slug === "vulcan" && (
+            <button className="btn btn--ghost modal__cs" type="button" onClick={onCsOpen}>
+              {csForm.button[locale]} <IconArrow />
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================ CS MODAL (불칸 고객 문의) */
+const CS_MAX_FILES = 5;
+const CS_MAX_BYTES = 10 * 1024 * 1024; // 장당 10MB
+
+/**
+ * 불칸 CS 문의 폼 모달 — 사진 다중 업로드(미리보기) + 영상 링크.
+ * 제출 시 이미지를 base64 로 바꿔 Apps Script(config.ts)로 전송 → 구글 시트 + 드라이브.
+ * 키보드: Esc 닫기, Tab 포커스 트랩. 카테고리는 ko 라벨로 전송(시트 관리 일관성).
+ */
+function CSModal({ locale, onClose }: { locale: Locale; onClose: () => void }) {
+  const c = csForm;
+  const L = (o: { ko: string; en: string }) => o[locale];
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error" | "notready">("idle");
+  const [err, setErr] = useState("");
+  const [images, setImages] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    closeRef.current?.focus();
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+      else if (e.key === "Tab") {
+        const card = cardRef.current;
+        if (!card) return;
+        const f = card.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])',
+        );
+        if (!f.length) return;
+        const first = f[0];
+        const last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  // 미리보기 objectURL 누수 방지 — previews 변경/언마운트 시 이전 URL 해제
+  useEffect(() => () => previews.forEach((u) => URL.revokeObjectURL(u)), [previews]);
+
+  function setFiles(next: File[]) {
+    const overCount = next.length > CS_MAX_FILES;
+    const overSize = next.some((f) => f.size > CS_MAX_BYTES);
+    const capped = next.filter((f) => f.size <= CS_MAX_BYTES).slice(0, CS_MAX_FILES);
+    setErr(overCount || overSize ? L(c.errFiles) : "");
+    setImages(capped);
+    setPreviews(capped.map((f) => URL.createObjectURL(f)));
+  }
+  const addFiles = (list: FileList | null) =>
+    list && setFiles([...images, ...Array.from(list).filter((f) => f.type.startsWith("image/"))]);
+  const removeFile = (i: number) => setFiles(images.filter((_, idx) => idx !== i));
+
+  function toBase64(file: File): Promise<CsImage> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const r = String(reader.result);
+        resolve({ name: file.name, mimeType: file.type, dataBase64: r.slice(r.indexOf(",") + 1) });
+      };
+      reader.onerror = () => reject(new Error("read failed"));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+    if (!fd.get("consentPrivacy") || !fd.get("consentNotice")) {
+      setErr(L(c.errConsent));
+      return;
+    }
+    setErr("");
+    setStatus("sending");
+    try {
+      const imgs = await Promise.all(images.map(toBase64));
+      const result = await submitCsInquiry({
+        game: "Vulcan",
+        category: String(fd.get("category") || ""),
+        email: String(fd.get("email") || ""),
+        gameId: String(fd.get("gameId") || ""),
+        contact: String(fd.get("contact") || ""),
+        detail: String(fd.get("detail") || ""),
+        videoUrl: String(fd.get("videoUrl") || ""),
+        consentPrivacy: true,
+        consentNotice: true,
+        locale,
+        images: imgs,
+      });
+      setStatus(result);
+      if (result === "success") {
+        form.reset();
+        setImages([]);
+        setPreviews([]);
+      }
+    } catch {
+      setStatus("error");
+    }
+  }
+
+  const msg =
+    status === "success" ? L(c.success) : status === "error" ? L(c.error) : status === "notready" ? L(c.notReady) : "";
+  const isErr = status === "error" || status === "notready" || !!err;
+
+  return (
+    <div className="modal" role="dialog" aria-modal="true" aria-label={L(c.title)}>
+      <div className="modal__scrim" onClick={onClose} />
+      <div className="modal__card cs" ref={cardRef}>
+        <button ref={closeRef} className="modal__close" onClick={onClose} aria-label={copy[locale].closeLabel}>
+          <IconClose />
+        </button>
+        <div className="cs__body">
+          <span className="eyebrow">{L(c.button)}</span>
+          <h3 className="cs__title">{L(c.title)}</h3>
+          <p className="cs__intro">{L(c.intro)}</p>
+          <form className="cs__form" onSubmit={onSubmit}>
+            <label className="field">
+              <span>
+                {L(c.labels.email)} <em className="field__req" aria-hidden="true">*</em>
+              </span>
+              <input name="email" type="email" required />
+            </label>
+            <label className="field">
+              <span>
+                {L(c.labels.gameId)} <em className="field__req" aria-hidden="true">*</em>
+              </span>
+              <input name="gameId" type="text" required />
+              <small className="field__help">{L(c.labels.gameIdHelp)}</small>
+            </label>
+            <label className="field">
+              <span>{L(c.labels.contact)}</span>
+              <input name="contact" type="text" inputMode="tel" />
+            </label>
+            <label className="field">
+              <span>
+                {L(c.labels.category)} <em className="field__req" aria-hidden="true">*</em>
+              </span>
+              <select name="category" required defaultValue="">
+                <option value="" disabled>
+                  {L(c.labels.categoryPlaceholder)}
+                </option>
+                {c.categories.map((cat) => (
+                  <option key={cat.en} value={cat.ko}>
+                    {L(cat)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field field--full">
+              <span>
+                {L(c.labels.detail)} <em className="field__req" aria-hidden="true">*</em>
+              </span>
+              <textarea name="detail" rows={5} required placeholder={L(c.labels.detailPlaceholder)} />
+            </label>
+
+            <div className="field field--full">
+              <span>{L(c.labels.files)}</span>
+              <label className="cs__drop">
+                <input type="file" accept="image/*" multiple onChange={(e) => addFiles(e.target.files)} />
+                <span className="cs__dropCta">+ {L(c.labels.files)}</span>
+                <small className="field__help">{L(c.labels.filesHelp)}</small>
+              </label>
+              {previews.length > 0 && (
+                <ul className="cs__thumbs">
+                  {previews.map((src, i) => (
+                    <li className="cs__thumb" key={src}>
+                      <img src={src} alt="" />
+                      <button type="button" onClick={() => removeFile(i)} aria-label={copy[locale].closeLabel}>
+                        <IconClose />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <label className="field field--full">
+              <span>{L(c.labels.videoUrl)}</span>
+              <input name="videoUrl" type="url" placeholder="https://youtu.be/…" />
+              <small className="field__help">{L(c.labels.videoUrlHelp)}</small>
+            </label>
+
+            <label className="cs__check field--full">
+              <input type="checkbox" name="consentPrivacy" />
+              <span>
+                {L(c.consents.privacy)}{" "}
+                <a href={c.privacyUrl} target="_blank" rel="noreferrer noopener">
+                  {locale === "ko" ? "개인정보처리방침" : "Privacy Policy"}
+                </a>
+              </span>
+            </label>
+            <label className="cs__check field--full">
+              <input type="checkbox" name="consentNotice" />
+              <span>{L(c.consents.notice)}</span>
+            </label>
+
+            <button className="btn btn--primary cs__submit field--full" type="submit" disabled={status === "sending"}>
+              {status === "sending" ? L(c.sending) : L(c.submit)} <IconArrow />
+            </button>
+            {(err || msg) && (
+              <p className={`form__status field--full ${isErr ? "err" : "ok"}`} role={isErr ? "alert" : "status"} aria-live="polite">
+                {err || msg}
+              </p>
+            )}
+          </form>
         </div>
       </div>
     </div>
@@ -664,6 +949,7 @@ export default function App() {
   const [locale, setLocale] = useState<Locale>("ko");
   const [menuOpen, setMenuOpen] = useState(false);
   const [selected, setSelected] = useState<Game | null>(null);
+  const [csOpen, setCsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const lastFocus = useRef<HTMLElement | null>(null);
 
@@ -677,8 +963,8 @@ export default function App() {
 
   // 드로어/모달이 열린 동안 배경 스크롤 잠금
   useEffect(() => {
-    document.body.classList.toggle("is-locked", menuOpen || selected !== null);
-  }, [menuOpen, selected]);
+    document.body.classList.toggle("is-locked", menuOpen || selected !== null || csOpen);
+  }, [menuOpen, selected, csOpen]);
 
   // 헤더 배경(블러) 전환용 스크롤 감지
   useEffect(() => {
@@ -698,25 +984,37 @@ export default function App() {
     lastFocus.current?.focus();
   }, []);
 
+  // CS 문의 모달: nav '고객센터' 또는 게임 모달의 "고객센터 문의" 에서 열림.
+  // 연 요소를 기억(닫을 때 포커스 복원), 게임 모달이 열려 있으면 닫고 CS 로 전환.
+  const openCs = useCallback(() => {
+    lastFocus.current = document.activeElement as HTMLElement;
+    setSelected(null);
+    setCsOpen(true);
+  }, []);
+  const closeCs = useCallback(() => {
+    setCsOpen(false);
+    lastFocus.current?.focus();
+  }, []);
+
   // Drawer 가 effect 의존성으로 쓰므로 참조를 고정한다 — 리렌더(예: 드로어 안 언어 전환)마다
   // 포커스 트랩이 재설치되어 포커스 복원 대상이 드로어 내부 요소로 덮이는 문제 방지
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   return (
     <>
-      <Nav locale={locale} setLocale={setLocale} scrolled={scrolled} onOpenMenu={() => setMenuOpen(true)} />
-      <Drawer open={menuOpen} onClose={closeMenu} locale={locale} setLocale={setLocale} />
+      <Nav locale={locale} setLocale={setLocale} scrolled={scrolled} onOpenMenu={() => setMenuOpen(true)} onCsOpen={openCs} />
+      <Drawer open={menuOpen} onClose={closeMenu} locale={locale} setLocale={setLocale} onCsOpen={openCs} />
       <main>
         <Hero locale={locale} />
         <Stats locale={locale} />
         <Games locale={locale} onSelect={openGame} />
-        <Publishing locale={locale} />
         <Company locale={locale} />
         <Contact locale={locale} />
       </main>
       <Footer locale={locale} />
       <BackToTop label={copy[locale].topLabel} />
-      {selected && <GameModal game={selected} locale={locale} onClose={closeGame} />}
+      {selected && <GameModal game={selected} locale={locale} onClose={closeGame} onCsOpen={openCs} />}
+      {csOpen && <CSModal locale={locale} onClose={closeCs} />}
     </>
   );
 }

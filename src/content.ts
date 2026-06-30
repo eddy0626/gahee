@@ -17,6 +17,9 @@ export type Game = {
   icon?: string;
   featured?: boolean;
   placeholder?: boolean;
+  /** 출시 상태 — 데이터 모델용. 현재 화면 배지는 미표시(전부 released)이며,
+   *  향후 실제 Coming Soon 타이틀이 생기면 배지 렌더를 켠다. 미지정=released 취급. */
+  status?: "released" | "coming-soon";
   platforms: string[];
   /** 플랫폼별 스토어 링크 — 키는 platforms 의 항목명과 동일해야 한다.
    *  URL 이 없는 플랫폼은 모달에서 링크 없는 배지로만 표시된다. */
@@ -33,13 +36,11 @@ export type Game = {
 export const nav = {
   ko: [
     { label: "회사", href: "#company" },
-    { label: "퍼블리싱", href: "#publishing" },
     { label: "게임", href: "#games" },
     { label: "문의", href: "#contact" },
   ],
   en: [
     { label: "Company", href: "#company" },
-    { label: "Publishing", href: "#publishing" },
     { label: "Games", href: "#games" },
     { label: "Contact", href: "#contact" },
   ],
@@ -49,26 +50,28 @@ export const nav = {
 export const copy = {
   ko: {
     heroText:
-      "2022년부터 모바일·PC·콘솔 6개 플랫폼에서 게임을 서비스하며, 8곳 이상의 글로벌 스튜디오와 출시부터 라이브 운영까지 함께합니다.",
+      "모바일·PC·콘솔, 8개+ 글로벌 스튜디오와 함께. 좋은 게임을 한국과 아시아 13개 시장으로 잇습니다.",
+    heroEyebrow: "한국·아시아 퍼블리싱 게이트웨이 · Since 2022",
+    eyebrow: {
+      games: "Games — 게임 라인업",
+      company: "Company — 회사 소개",
+      publishing: "Publishing — 퍼블리싱",
+      contact: "Contact — 문의",
+    },
     primaryCta: "파트너십 문의",
     secondaryCta: "게임 라인업 보기",
     navCta: "문의하기",
     drawerCta: "파트너십 문의",
     aboutTitle: "우리는 게임을 발견하고, 시장에 닿게 합니다.",
     aboutBody:
-      "GAHEE는 한국에 기반을 둔 모바일, PC, 콘솔 게임 퍼블리셔입니다. 디자인, 로컬라이제이션, 마케팅, 출시까지 전 과정을 직접 운영하며 검증된 글로벌 개발사와 함께 한국과 아시아 시장에 게임을 선보입니다.",
-    legacyAbout:
-      "모두가 즐길 수 있는 게임을 전하는 글로벌 게임 퍼블리셔가 되고자 합니다.",
+      "GAHEE는 한국에 기반을 둔 모바일·PC·콘솔 게임 퍼블리셔입니다. 2022년부터 검증된 글로벌 개발사의 게임을 한국과 아시아 시장에 선보여 왔습니다.",
     partnershipTitle: "오래 함께 걸을 파트너를 찾습니다.",
-    partnershipBody:
-      "한두 개의 게임이 아니라, 오래 함께 걸어갈 파트너를 찾습니다.",
     roadmapTitle: "다음에 갈 곳",
     publishingTitle: "퍼블리싱의 모든 과정, 한 팀이 책임집니다.",
     publishingText:
       "상담과 게임 검토부터 계약·현지화·런칭, 출시 후 라이브 운영까지 — 퍼블리싱 6단계 전 과정을 한 팀이 직접 수행합니다.",
     gamesTitle: "서비스 중인 타이틀",
     gamesText: "모바일·PC·콘솔 6개 플랫폼에서 서비스하는 타이틀과 준비 중인 라인업을 한눈에 확인하세요.",
-    legacyIntroTitle: "기존 회사 소개",
     contactTitle: "좋은 게임을 가지고 계시다면, 우리에게 먼저 알려주세요.",
     contactText:
       "퍼블리싱, 사업 제휴, 채용 문의를 남겨주시면 담당자가 검토 후 연락드립니다.",
@@ -101,26 +104,28 @@ export const copy = {
   },
   en: {
     heroText:
-      "Since 2022 we've shipped mobile, PC, and console titles across 6 platforms, working with 8+ global studios from launch through live operations.",
+      "Mobile, PC, and console — partnered with 8+ global studios. We bring great games to Korea and 13 Asian markets.",
+    heroEyebrow: "Your Gateway to Korea & Asia · Since 2022",
+    eyebrow: {
+      games: "Games",
+      company: "Company",
+      publishing: "Publishing",
+      contact: "Contact",
+    },
     primaryCta: "Partnership Inquiry",
     secondaryCta: "View Games",
     navCta: "Contact",
     drawerCta: "Partnership Inquiry",
     aboutTitle: "We discover games and bring them to market.",
     aboutBody:
-      "GAHEE is a Korean game publisher operating the full publishing cycle, from design and localization to marketing, launch, and live operations with trusted global studios.",
-    legacyAbout:
-      "We aim to become a global game publisher, delivering games that everyone can enjoy.",
+      "GAHEE is a Korea-based mobile, PC, and console game publisher. Since 2022 we've brought titles from trusted global studios to Korea and the wider Asian market.",
     partnershipTitle: "We look for long-term partners.",
-    partnershipBody:
-      "We are not looking for one or two games, We are looking for a partner to walk with us for a long time.",
     roadmapTitle: "Where we go next",
     publishingTitle: "One team handles the full publishing journey.",
     publishingText:
       "From consultation and game review to contracts, localization, launch, and post-launch live ops — one team runs all six publishing stages.",
     gamesTitle: "Live titles",
     gamesText: "Explore our live titles across 6 platforms on mobile, PC, and console, plus the reserved lineup.",
-    legacyIntroTitle: "Original Introduction",
     contactTitle: "If you have a good game, tell us first.",
     contactText:
       "Send a publishing, business, or recruiting inquiry and our team will review it.",
@@ -153,74 +158,14 @@ export const copy = {
   },
 };
 
-/** 기존(리뉴얼 전) 회사 소개 전문 — Company 섹션 하단에 그대로 노출 */
-export const legacyCompanyIntro: LocalizedText[] = [
-  {
-    ko: "GAHEE는 세계에서 가장 빠르게 성장하는 게임 시장 중 하나인 동남아시아로 확장하며 모바일 게임 퍼블리셔로서의 여정을 시작했습니다. 모바일 게임 분야의 선도적인 글로벌 퍼블리셔로 자리매김하는 것을 목표로 합니다.",
-    en: "Gahee is embarking on its journey as a mobile game publisher, rapidly expanding into Southeast Asia, one of the world's fastest-growing gaming markets. We aim to establish ourselves as a leading global publisher for mobile games.",
-  },
-  {
-    ko: "GAHEE는 검증된 성과를 바탕으로 모바일 게임 퍼블리싱에 강점을 가지고 있습니다. 디자인, 현지화, 번역, 종합 퍼블리싱 전반에 걸친 폭넓은 전문성을 보유하고 있으며, 퍼블리싱 전 과정을 직접 수행해 새로운 지역에서의 매끄럽고 성공적인 출시를 보장합니다.",
-    en: "At Gahee, we excel in mobile game publishing with a proven track record of delivering outstanding results. Our team boasts extensive expertise in design, localization, translation, and comprehensive publishing. We are fully equipped to handle every aspect of the publishing process, ensuring a seamless and successful launch in new regions.",
-  },
-  {
-    ko: "전 세계 다수의 개발사·퍼블리셔와 협력하여 그들의 타이틀을 한국과 아시아 시장에 효과적으로 선보여 왔습니다.",
-    en: "We have partnered with numerous developers and publishers worldwide, helping them introduce their titles to Korea and other Asian markets effectively.",
-  },
-];
-
-/** 핵심 수치 (Stats 섹션) — 실제 수치만 쓴다.
+/** 핵심 수치 (Stats 섹션) — 실제 수치만 쓴다. 파트너 향 신뢰 숫자(리서치 적용안 ③).
+ *  6 플랫폼 근거: Google Play·App Store·One Store·Steam·Nintendo·PlayStation (platformIcons 6종).
  *  13개 시장 근거: 한국·일본·대만·홍콩·마카오·싱가포르·필리핀·말레이시아·인도네시아·태국·베트남·라오스·캄보디아 */
 export const stats = [
   { value: "5", label: { ko: "서비스 타이틀", en: "Titles Live" } },
-  { value: "5", label: { ko: "장르 경험", en: "Genres" } },
+  { value: "6", label: { ko: "서비스 플랫폼", en: "Platforms" } },
   { value: "13", label: { ko: "아시아 출시 시장", en: "Asia Markets" } },
   { value: "8+", label: { ko: "글로벌 파트너", en: "Global Studios" } },
-];
-
-export const capabilities = [
-  {
-    title: { ko: "소싱 & 평가", en: "Sourcing & Evaluation" },
-    body: {
-      ko: "글로벌 개발사로부터 게임을 수급하고 시장성과 완성도를 검증합니다.",
-      en: "We source titles from global studios and evaluate market fit and readiness.",
-    },
-  },
-  {
-    title: { ko: "계약 & 법무", en: "Contract & Legal" },
-    body: {
-      ko: "퍼블리싱 계약, NDA, 라이선스 협상까지 직접 진행합니다.",
-      en: "We handle publishing contracts, NDAs, and licensing negotiations.",
-    },
-  },
-  {
-    title: { ko: "현지화", en: "Localization" },
-    body: {
-      ko: "한국어, 일본어, 동남아 다국어 번역과 문화권별 검수를 수행합니다.",
-      en: "We localize into Korean, Japanese, and Southeast Asian languages with cultural review.",
-    },
-  },
-  {
-    title: { ko: "빌드 & QA", en: "Build & QA" },
-    body: {
-      ko: "심의 등급, 빌드 테스트, 결제 및 광고 SDK 통합을 지원합니다.",
-      en: "We support ratings, build testing, payment, and ad SDK integration.",
-    },
-  },
-  {
-    title: { ko: "마케팅 & 출시", en: "Marketing & Launch" },
-    body: {
-      ko: "보도자료, 사전예약, CPI 캠페인, 라운지 운영을 실행합니다.",
-      en: "We execute PR, pre-registration, CPI campaigns, and community launch operations.",
-    },
-  },
-  {
-    title: { ko: "라이브 운영", en: "Live Operations" },
-    body: {
-      ko: "출시 이후 업데이트, 번역 추가, 이벤트, CS와 추가 마케팅을 운영합니다.",
-      en: "We manage updates, added localization, events, CS, and post-launch marketing.",
-    },
-  },
 ];
 
 export const process = [
@@ -242,6 +187,23 @@ export const platformIcons: Record<string, string> = {
   PlayStation: "/assets/games/playstation.webp",
 };
 
+/** 플랫폼 → 상위 카테고리 (Games 필터 칩의 분류축). 새 플랫폼 추가 시 여기에 매핑한다. */
+export type GameCategory = "Mobile" | "PC" | "Console";
+export const platformCategory: Record<string, GameCategory> = {
+  "Google Play": "Mobile",
+  "App Store": "Mobile",
+  "One Store": "Mobile",
+  Steam: "PC",
+  Nintendo: "Console",
+  PlayStation: "Console",
+};
+
+/** Games 필터 칩 라벨 (ko/en). 칩 자체는 실제 게임이 있는 카테고리만 동적으로 노출된다. */
+export const gameFilters: Record<Locale, Record<"all" | GameCategory, string>> = {
+  ko: { all: "전체", Mobile: "모바일", PC: "PC", Console: "콘솔" },
+  en: { all: "All", Mobile: "Mobile", PC: "PC", Console: "Console" },
+};
+
 /** GAHEE 공식 Google Play 개발자 페이지 —
  *  게임별 스토어 페이지 URL 을 확보하기 전까지 Google Play 배지의 대체 링크로 쓴다. */
 const GAHEE_PLAY_DEV_PAGE = "https://play.google.com/store/apps/dev?id=5871699805522095691";
@@ -249,71 +211,13 @@ const GAHEE_PLAY_DEV_PAGE = "https://play.google.com/store/apps/dev?id=587169980
 /** 게임 라인업 — featured 1종이 쇼케이스 큰 카드, placeholder 는 "준비 중" 카드 */
 export const games: Game[] = [
   {
-    slug: "mages-secret",
-    title: "Mage's Secret",
-    titleKo: "메이지스 시크릿",
-    genre: "Casual Merge Puzzle",
-    image: "/assets/games/mage-secret.webp",
-    icon: "/assets/games/mage-icon.webp",
-    featured: true,
-    platforms: ["Google Play"],
-    links: { "Google Play": "https://play.google.com/store/apps/details?id=com.gahee.magesecret" },
-    description: {
-      ko: "오랜 시간 즐길 수 있는 모험 속에서 몬스터와 맞서고, 신비한 마법사의 100개 이상 과제를 해결하며 그의 비밀에 다가갑니다.",
-      en: "In your adventure, which will keep you busy for many months of playing, you will have to face monsters, complete more than 100 tasks of the mysterious magician, and try to know his main secret.",
-    },
-  },
-  {
-    slug: "tap-tap-builder",
-    title: "Tap Tap Builder",
-    titleKo: "포켓시티빌더",
-    genre: "Simulation",
-    image: "/assets/games/tap-tap-builder.webp",
-    icon: "/assets/games/tap-icon.webp",
-    platforms: ["Google Play"],
-    links: { "Google Play": "https://play.google.com/store/apps/details?id=com.gahee.taptap" },
-    description: {
-      ko: "꿈꾸던 도시를 만들고 시장이 되어 보세요. 건설, 수익, 위기 대응까지 탭 한 번으로 도시를 성장시킵니다.",
-      en: "Tap Tap Builder invites you to build the city of your dreams and become its mayor. Build, earn, and save your people with a tap.",
-    },
-  },
-  {
-    slug: "abyss",
-    title: "Abyss",
-    titleKo: "Abyss",
-    genre: "MMORPG",
-    image: "/assets/games/abyss.webp",
-    icon: "/assets/games/abyss-icon.webp",
-    platforms: ["Google Play", "One Store"],
-    // One Store 개별 페이지 URL 미확보 — 해당 배지는 링크 없이 표시된다
-    links: { "Google Play": GAHEE_PLAY_DEV_PAGE },
-    description: {
-      ko: "빠른 성장, 치열한 경쟁, 던전 보스 공략을 위한 수동 조작의 재미를 담은 신개념 MMORPG입니다.",
-      en: "A new-concept MMORPG that captures rapid growth, intense competition, and manual control for conquering dungeon bosses.",
-    },
-  },
-  {
-    slug: "supreme-car-racing",
-    title: "Supreme Car Racing",
-    titleKo: "슈프림 카레이싱",
-    genre: "Racing",
-    image: "/assets/games/supreme-car-racing.webp",
-    icon: "/assets/games/racing-icon.webp",
-    platforms: ["Google Play", "App Store"],
-    // App Store 개별 페이지 URL 미확보 — 해당 배지는 링크 없이 표시된다
-    links: { "Google Play": GAHEE_PLAY_DEV_PAGE },
-    description: {
-      ko: "현실적인 고품질 3D 그래픽과 경계 없는 드라이빙 경험을 제공하는 슈퍼카 레이싱 어드벤처입니다.",
-      en: "The real supercar racing adventure begins with realistic driving, high-end 3D graphics, and open-world missions.",
-    },
-  },
-  {
     slug: "vulcan",
     title: "Vulcan - Blacksmith RPG",
     titleKo: "불칸",
     genre: "Idle RPG",
     image: "/assets/games/vulcan-wide.webp",
     icon: "/assets/games/vulcan-icon.webp",
+    status: "released",
     platforms: ["Google Play", "Steam"],
     // Steam 개별 페이지 URL 미확보 — 해당 배지는 링크 없이 표시된다
     links: { "Google Play": GAHEE_PLAY_DEV_PAGE },
@@ -328,6 +232,7 @@ export const games: Game[] = [
     titleKo: "Title",
     genre: "genre",
     placeholder: true,
+    status: "coming-soon",
     platforms: ["Nintendo", "PlayStation"],
     description: {
       ko: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
@@ -340,6 +245,7 @@ export const games: Game[] = [
     titleKo: "Title",
     genre: "genre",
     placeholder: true,
+    status: "coming-soon",
     platforms: ["Steam"],
     description: {
       ko: "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
@@ -347,6 +253,58 @@ export const games: Game[] = [
     },
   },
 ];
+
+/** 불칸 CS 고객 문의 폼 — 불칸 모달의 "고객센터 문의" 버튼에서 열린다.
+ *  제출은 Apps Script(config.ts CS_ENDPOINT)로 → 구글 시트 + 드라이브(사진).
+ *  원폼 "[불칸CS] 고객 문의사항 접수"의 핵심 항목(1~8)만. 사진 업로드 + 영상은 링크. */
+export const csForm = {
+  button: { ko: "고객센터 문의", en: "Customer Support" },
+  nav: { ko: "고객센터", en: "Support" },
+  title: { ko: "불칸 고객 문의 접수", en: "Vulcan — Support Request" },
+  intro: {
+    ko: "불칸 플레이 중 불편하신 점을 접수해 주세요. 입력하신 이메일로 답변드립니다.",
+    en: "Tell us about any issue with Vulcan. We'll reply to the email you provide.",
+  },
+  privacyUrl: "https://gahee.net/privacypolicy",
+  consents: {
+    privacy: {
+      ko: "문의 접수·처리를 위한 개인정보 제3자 제공에 동의합니다. (필수)",
+      en: "I agree to share my personal data with third parties to handle this inquiry. (required)",
+    },
+    notice: {
+      ko: "처리 완료 전 계정 탈퇴·로그인 계정/번호 변경 등이 발생하면 처리·보상이 불가할 수 있음을 확인했습니다. (필수)",
+      en: "I understand account deletion or login/phone changes before resolution may prevent handling or compensation. (required)",
+    },
+  },
+  categories: [
+    { ko: "게임플레이 / 버그 문의", en: "Gameplay / Bug" },
+    { ko: "루비·상점아이템 문의 (미지급·수령오류)", en: "Ruby & Shop Items (missing / error)" },
+    { ko: "환불 및 게임탈퇴", en: "Refund & Account Deletion" },
+    { ko: "게임유저 신고", en: "Report a Player" },
+    { ko: "기타 게임제안", en: "Other / Suggestion" },
+  ],
+  labels: {
+    email: { ko: "이메일", en: "Email" },
+    gameId: { ko: "게임 내 아이디", en: "In-game ID" },
+    gameIdHelp: { ko: "예: 불칸최고 — 접수·처리·보상에 사용됩니다.", en: "e.g., VulcanHero — used for handling and rewards." },
+    contact: { ko: "연락처", en: "Contact (phone)" },
+    category: { ko: "문의 항목", en: "Category" },
+    categoryPlaceholder: { ko: "선택해 주세요", en: "Select…" },
+    detail: { ko: "문의 세부 내용", en: "Details" },
+    detailPlaceholder: { ko: "어떤 문제인지 자세히 적어 주세요.", en: "Describe the issue in detail." },
+    files: { ko: "스크린샷 / 이미지 첨부", en: "Screenshots / Images" },
+    filesHelp: { ko: "최대 5장 · 장당 10MB · jpg·png·webp·gif", en: "Up to 5 files · 10MB each · jpg·png·webp·gif" },
+    videoUrl: { ko: "영상 링크 (선택)", en: "Video link (optional)" },
+    videoUrlHelp: { ko: "게임플레이 영상은 유튜브·드라이브 등 링크로 첨부", en: "Paste a YouTube/Drive link for gameplay video" },
+  },
+  submit: { ko: "문의 접수", en: "Submit" },
+  sending: { ko: "접수 중…", en: "Submitting…" },
+  success: { ko: "문의가 접수되었습니다. 입력하신 이메일로 답변드리겠습니다.", en: "Your inquiry has been received. We'll reply to your email." },
+  error: { ko: "접수에 실패했습니다. 잠시 후 다시 시도하거나 cs@gahee.net 로 보내주세요.", en: "Submission failed. Please try again or email cs@gahee.net." },
+  notReady: { ko: "문의 접수 준비 중입니다. 우선 cs@gahee.net 로 보내주세요.", en: "Support intake is being set up. Please email cs@gahee.net for now." },
+  errFiles: { ko: "이미지는 최대 5장, 장당 10MB까지 가능합니다.", en: "Up to 5 images, 10MB each." },
+  errConsent: { ko: "필수 동의 항목에 체크해 주세요.", en: "Please check the required consents." },
+};
 
 /** 회사 프로필 표 (Company 섹션 우측) */
 export const companyProfile = [
