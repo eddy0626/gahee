@@ -259,6 +259,7 @@ export const games: Game[] = [
  *  원폼 "[불칸CS] 고객 문의사항 접수"의 핵심 항목(1~8)만. 사진 업로드 + 영상은 링크. */
 export const csForm = {
   button: { ko: "고객센터 문의", en: "Customer Support" },
+  nav: { ko: "고객센터", en: "Support" },
   title: { ko: "불칸 고객 문의 접수", en: "Vulcan — Support Request" },
   intro: {
     ko: "불칸 플레이 중 불편하신 점을 접수해 주세요. 입력하신 이메일로 답변드립니다.",

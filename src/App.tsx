@@ -60,10 +60,11 @@ type NavProps = {
   setLocale: (l: Locale) => void;
   scrolled: boolean;
   onOpenMenu: () => void;
+  onCsOpen: () => void;
 };
 
 /** 상단 고정 내비게이션 — 스크롤하면 배경을 블러 처리하고, 모바일(≤720px)에선 드로어 버튼만 노출 */
-function Nav({ locale, setLocale, scrolled, onOpenMenu }: NavProps) {
+function Nav({ locale, setLocale, scrolled, onOpenMenu, onCsOpen }: NavProps) {
   const t = copy[locale];
   return (
     <header className={`nav ${scrolled ? "scrolled" : ""}`}>
@@ -75,6 +76,10 @@ function Nav({ locale, setLocale, scrolled, onOpenMenu }: NavProps) {
               {item.label}
             </a>
           ))}
+          {/* 고객센터 — 앵커가 아니라 CS 폼 모달을 바로 연다 */}
+          <button type="button" onClick={onCsOpen}>
+            {csForm.nav[locale]}
+          </button>
         </nav>
         <div className="nav__actions">
           <div className="lang" aria-label="Language">
@@ -105,7 +110,7 @@ function Nav({ locale, setLocale, scrolled, onOpenMenu }: NavProps) {
  * - 열린 동안: Tab/Shift+Tab 을 패널 안에서 순환시키고(포커스 트랩), Esc 로 닫는다.
  * - 닫히면: 기억해 둔 트리거(햄버거 버튼)로 포커스를 복원한다.
  */
-function Drawer({ open, onClose, locale, setLocale }: { open: boolean; onClose: () => void; locale: Locale; setLocale: (l: Locale) => void }) {
+function Drawer({ open, onClose, locale, setLocale, onCsOpen }: { open: boolean; onClose: () => void; locale: Locale; setLocale: (l: Locale) => void; onCsOpen: () => void }) {
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
@@ -154,6 +159,17 @@ function Drawer({ open, onClose, locale, setLocale }: { open: boolean; onClose: 
             {item.label}
           </a>
         ))}
+        {/* 고객센터 — 드로어 닫고 CS 폼 모달 열기 */}
+        <button
+          type="button"
+          className="drawer__cs"
+          onClick={() => {
+            onClose();
+            onCsOpen();
+          }}
+        >
+          {csForm.nav[locale]}
+        </button>
         <div className="drawer__lang">
           <button aria-pressed={locale === "ko"} onClick={() => setLocale("ko")}>
             KO
@@ -968,8 +984,10 @@ export default function App() {
     lastFocus.current?.focus();
   }, []);
 
-  // CS 문의 모달: 게임 모달의 "고객센터 문의" 에서 열림 → 게임 모달은 닫고 CS 로 전환
+  // CS 문의 모달: nav '고객센터' 또는 게임 모달의 "고객센터 문의" 에서 열림.
+  // 연 요소를 기억(닫을 때 포커스 복원), 게임 모달이 열려 있으면 닫고 CS 로 전환.
   const openCs = useCallback(() => {
+    lastFocus.current = document.activeElement as HTMLElement;
     setSelected(null);
     setCsOpen(true);
   }, []);
@@ -984,8 +1002,8 @@ export default function App() {
 
   return (
     <>
-      <Nav locale={locale} setLocale={setLocale} scrolled={scrolled} onOpenMenu={() => setMenuOpen(true)} />
-      <Drawer open={menuOpen} onClose={closeMenu} locale={locale} setLocale={setLocale} />
+      <Nav locale={locale} setLocale={setLocale} scrolled={scrolled} onOpenMenu={() => setMenuOpen(true)} onCsOpen={openCs} />
+      <Drawer open={menuOpen} onClose={closeMenu} locale={locale} setLocale={setLocale} onCsOpen={openCs} />
       <main>
         <Hero locale={locale} />
         <Stats locale={locale} />
