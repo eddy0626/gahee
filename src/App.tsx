@@ -12,7 +12,7 @@ import {
   partners,
   platformCategory,
   platformIcons,
-  process,
+  publishingFunnel,
   roadmap,
   stats,
 } from "./content";
@@ -358,20 +358,6 @@ function Company({ locale }: { locale: Locale }) {
           </dl>
         </div>
 
-        {/* 중단: 퍼블리싱 — 6단계 프로세스 (한 팀이 처음부터 끝까지) */}
-        <div className="publish__head reveal" id="publishing" style={{ marginTop: "clamp(60px, 8vw, 116px)" }}>
-          <span className="eyebrow">{t.eyebrow.publishing}</span>
-          <h3 className="subhead" style={{ marginTop: 18, marginBottom: 0 }}>{t.publishingTitle}</h3>
-          <p className="section-lead">{t.publishingText}</p>
-        </div>
-        <div className="process reveal">
-          {process.map((step, i) => (
-            <div className="process__step" key={step.en}>
-              <div className="process__num">{String(i + 1).padStart(2, "0")}</div>
-              <div className="process__name">{step[locale]}</div>
-            </div>
-          ))}
-        </div>
         {/* 하단: 파트너 + 로드맵 */}
         <div className="company__bottom">
           <div className="reveal">
@@ -393,6 +379,52 @@ function Company({ locale }: { locale: Locale }) {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============================================================ PUBLISHING FUNNEL */
+/** 개발사향 파트너 funnel (리서치 ①) — 세로 스파인 4단. 다크 시네마틱(새 룩 파일럿).
+ *  CTA 는 Contact 폼(#contact)으로 — 모든 제안은 biz@gahee.net 로 수렴해 케이스별 판단. */
+function Publishing({ locale }: { locale: Locale }) {
+  const f = publishingFunnel;
+  return (
+    <section className="section funnel" id="publishing">
+      <div className="shell">
+        <header className="funnel__head reveal">
+          <span className="eyebrow">{f.eyebrow[locale]}</span>
+          <h2 className="funnel__title">{f.title[locale]}</h2>
+          <p className="funnel__lead">{f.lead[locale]}</p>
+        </header>
+        <ol className="funnel__spine">
+          {f.stages.map((s) => (
+            <li className="funnel__stage reveal" key={s.no}>
+              <div className="funnel__num" aria-hidden="true">
+                {s.no}
+              </div>
+              <div className="funnel__content">
+                <h3 className="funnel__stageTitle">{s.title[locale]}</h3>
+                <p className="funnel__stageBody">{s.body[locale]}</p>
+                {s.tags && (
+                  <ul className="funnel__tags">
+                    {s.tags.map((tag) => (
+                      <li className="funnel__tag" key={tag.en}>
+                        {tag[locale]}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </li>
+          ))}
+        </ol>
+        <div className="funnel__foot reveal">
+          <p className="funnel__trust">{f.trust[locale]}</p>
+          <a className="btn btn--primary" href="#contact">
+            {f.cta[locale]} <IconArrow />
+          </a>
         </div>
       </div>
     </section>
@@ -719,6 +751,7 @@ export default function App() {
         <Stats locale={locale} />
         <Games locale={locale} onSelect={openGame} />
         <Company locale={locale} />
+        <Publishing locale={locale} />
         <Contact locale={locale} />
       </main>
       <Footer locale={locale} />
