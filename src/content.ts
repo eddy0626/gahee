@@ -36,13 +36,11 @@ export type Game = {
 export const nav = {
   ko: [
     { label: "회사", href: "#company" },
-    { label: "퍼블리싱", href: "#publishing" },
     { label: "게임", href: "#games" },
     { label: "문의", href: "#contact" },
   ],
   en: [
     { label: "Company", href: "#company" },
-    { label: "Publishing", href: "#publishing" },
     { label: "Games", href: "#games" },
     { label: "Contact", href: "#contact" },
   ],
@@ -318,78 +316,6 @@ export const games: Game[] = [
     },
   },
 ];
-
-/** 개발사향 퍼블리싱 funnel (리서치 개선안 ①) — "찾는 게임 → 제공 → 제안 방법 → 그 다음" 4단 척추.
- *  ⛔ 대표 방침: 수익배분·IP·MG 등 계약 조건과 응답 SLA(예: 3일) 숫자는 사이트에 노출하지 않는다.
- *     모든 제안은 biz@gahee.net(Contact 폼)로 수렴해 케이스별로 판단한다. */
-export type FunnelStage = {
-  no: string;
-  title: LocalizedText;
-  body: LocalizedText;
-  /** 칩(플랫폼·서비스 등). 없으면 칩 미표시 */
-  tags?: LocalizedText[];
-};
-
-export const publishingFunnel = {
-  eyebrow: { ko: "Publishing — 게임 제안", en: "Publishing" },
-  title: { ko: "당신의 게임,\n한국과 아시아로.", en: "Your game,\nready for Korea and Asia." },
-  lead: {
-    ko: "개발사를 위한 퍼블리싱 — 무엇을 찾고, 무엇을 제공하고, 어떻게 제안하면 되는지.",
-    en: "Publishing for developers — what we look for, what we offer, and how to pitch.",
-  },
-  stages: [
-    {
-      no: "01",
-      title: { ko: "찾는 게임", en: "What we look for" },
-      body: {
-        ko: "게임이라면 무엇이든. 플랫폼·장르·완성도와 무관하게 보고, 초기 프로토타입도 환영합니다.",
-        en: "Any game. Whatever the platform, genre, or polish — even early prototypes are welcome.",
-      },
-      tags: [
-        { ko: "모바일", en: "Mobile" },
-        { ko: "PC", en: "PC" },
-        { ko: "콘솔", en: "Console" },
-      ],
-    },
-    {
-      no: "02",
-      title: { ko: "제공하는 것", en: "What we offer" },
-      body: {
-        ko: "한국과 13개 아시아 시장으로 가는 게이트웨이. 소싱부터 라이브 운영까지 한 팀이 전 과정을 직접 수행합니다.",
-        en: "A gateway to Korea and 13 Asian markets. One team runs the full journey — from sourcing to live operations.",
-      },
-      tags: [
-        { ko: "시장성 평가", en: "Evaluation" },
-        { ko: "계약·법무", en: "Contracts & Legal" },
-        { ko: "현지화 KO·JP·동남아", en: "Localization" },
-        { ko: "심의·빌드·QA", en: "Rating · Build · QA" },
-        { ko: "마케팅·UA·런칭", en: "Marketing · UA · Launch" },
-        { ko: "라이브 운영", en: "Live Ops" },
-      ],
-    },
-    {
-      no: "03",
-      title: { ko: "제안 방법", en: "How to pitch" },
-      body: {
-        ko: "자료 우선순위는 플레이 가능한 데모 > 게임플레이 영상 > 컨셉아트 > 텍스트 설명. 한 줄 피치와 함께 플랫폼·장르·개발 단계, 영상이나 빌드 링크를 적어 주세요.",
-        en: "Material priority: playable demo > gameplay video > concept art > written notes. Send a one-line pitch with your platform, genre, dev stage, and a video or build link.",
-      },
-    },
-    {
-      no: "04",
-      title: { ko: "그 다음", en: "What happens next" },
-      body: {
-        ko: "보내주신 제안은 모두 검토하고 회신드립니다. 수익 배분·IP 등 조건은 게임에 맞춰 직접 논의합니다.",
-        en: "We review every submission and get back to you. Terms — revenue share, IP, and more — are tailored to your game and discussed directly.",
-      },
-    },
-  ] as FunnelStage[],
-  trust: {
-    ko: "실제 파트너 — Herocraft 외 8개 글로벌 스튜디오와 협업 중.",
-    en: "Real partners — working with Herocraft and 8+ global studios.",
-  },
-  cta: { ko: "게임 보내기", en: "Submit Your Game" },
-};
 
 /** 회사 프로필 표 (Company 섹션 우측) */
 export const companyProfile = [

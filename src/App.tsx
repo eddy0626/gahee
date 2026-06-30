@@ -12,7 +12,6 @@ import {
   partners,
   platformCategory,
   platformIcons,
-  publishingFunnel,
   roadmap,
   stats,
 } from "./content";
@@ -435,52 +434,6 @@ function Company({ locale }: { locale: Locale }) {
   );
 }
 
-/* ============================================================ PUBLISHING FUNNEL */
-/** 개발사향 파트너 funnel (리서치 ①) — 세로 스파인 4단. 다크 시네마틱(새 룩 파일럿).
- *  CTA 는 Contact 폼(#contact)으로 — 모든 제안은 biz@gahee.net 로 수렴해 케이스별 판단. */
-function Publishing({ locale }: { locale: Locale }) {
-  const f = publishingFunnel;
-  return (
-    <section className="section funnel" id="publishing">
-      <div className="shell">
-        <header className="funnel__head reveal">
-          <span className="eyebrow">{f.eyebrow[locale]}</span>
-          <h2 className="funnel__title">{f.title[locale]}</h2>
-          <p className="funnel__lead">{f.lead[locale]}</p>
-        </header>
-        <ol className="funnel__spine">
-          {f.stages.map((s) => (
-            <li className="funnel__stage reveal" key={s.no}>
-              <div className="funnel__num" aria-hidden="true">
-                {s.no}
-              </div>
-              <div className="funnel__content">
-                <h3 className="funnel__stageTitle">{s.title[locale]}</h3>
-                <p className="funnel__stageBody">{s.body[locale]}</p>
-                {s.tags && (
-                  <ul className="funnel__tags">
-                    {s.tags.map((tag) => (
-                      <li className="funnel__tag" key={tag.en}>
-                        {tag[locale]}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </li>
-          ))}
-        </ol>
-        <div className="funnel__foot reveal">
-          <p className="funnel__trust">{f.trust[locale]}</p>
-          <a className="btn btn--primary" href="#contact">
-            {f.cta[locale]} <IconArrow />
-          </a>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 /* ============================================================ CONTACT */
 /** 문의 — 왼쪽 연락처 + 오른쪽 문의 폼.
  *  전송 결과는 aria-live 영역으로 보조기기에 알린다 (문구는 content.ts). */
@@ -801,7 +754,6 @@ export default function App() {
         <Stats locale={locale} />
         <Games locale={locale} onSelect={openGame} />
         <Company locale={locale} />
-        <Publishing locale={locale} />
         <Contact locale={locale} />
       </main>
       <Footer locale={locale} />
