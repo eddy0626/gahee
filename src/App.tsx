@@ -205,14 +205,64 @@ function Hero({ locale }: { locale: Locale }) {
 }
 
 /* ============================================================ STATS */
-/** 핵심 수치 스트립 — 데이터는 content.ts 의 stats */
+/** 스크롤 진입 시 0→타깃으로 카운트업. "8+" 같은 접미사는 보존.
+ *  prefers-reduced-motion 또는 IO 미지원이면 즉시 최종값. (리서치 적용안 ③) */
+function CountUp({ value }: { value: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const match = value.match(/^(\d+)(.*)$/);
+  const target = match ? parseInt(match[1], 10) : 0;
+  const suffix = match ? match[2] : "";
+  const [display, setDisplay] = useState(match ? `0${suffix}` : value);
+
+  useEffect(() => {
+    const el = ref.current;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!el || !match || reduce || !("IntersectionObserver" in window)) {
+      setDisplay(value);
+      return;
+    }
+    let raf = 0;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          io.unobserve(e.target);
+          const dur = 1400;
+          const start = performance.now();
+          const tick = (now: number) => {
+            const t = Math.min(1, (now - start) / dur);
+            const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
+            setDisplay(`${Math.round(eased * target)}${suffix}`);
+            if (t < 1) raf = requestAnimationFrame(tick);
+          };
+          raf = requestAnimationFrame(tick);
+        });
+      },
+      { threshold: 0.4 },
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(raf);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  return (
+    <div className="stat__num" ref={ref}>
+      {display}
+    </div>
+  );
+}
+
+/** 핵심 수치 스트립 — 데이터는 content.ts 의 stats. 숫자는 스크롤 카운트업(CountUp). */
 function Stats({ locale }: { locale: Locale }) {
   return (
     <section className="stats grain">
       <div className="shell stats__grid reveal">
         {stats.map((s) => (
           <div key={s.label.en}>
-            <div className="stat__num">{s.value}</div>
+            <CountUp value={s.value} />
             <div className="stat__cap">{s.label[locale]}</div>
           </div>
         ))}

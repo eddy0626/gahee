@@ -581,11 +581,13 @@ p {
 
 .stat__num {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 800;
   font-size: clamp(40px, 6vw, 78px);
   line-height: 1;
-  color: #fff;
+  color: var(--red);
   letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums; /* 카운트업 시 자릿수 흔들림 방지 */
+  text-shadow: 0 0 30px rgba(203, 41, 87, 0.3); /* 은은한 네온 글로우 */
 }
 
 .stat__cap {

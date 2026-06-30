@@ -160,11 +160,12 @@ export const copy = {
   },
 };
 
-/** 핵심 수치 (Stats 섹션) — 실제 수치만 쓴다.
+/** 핵심 수치 (Stats 섹션) — 실제 수치만 쓴다. 파트너 향 신뢰 숫자(리서치 적용안 ③).
+ *  6 플랫폼 근거: Google Play·App Store·One Store·Steam·Nintendo·PlayStation (platformIcons 6종).
  *  13개 시장 근거: 한국·일본·대만·홍콩·마카오·싱가포르·필리핀·말레이시아·인도네시아·태국·베트남·라오스·캄보디아 */
 export const stats = [
   { value: "5", label: { ko: "서비스 타이틀", en: "Titles Live" } },
-  { value: "5", label: { ko: "장르 경험", en: "Genres" } },
+  { value: "6", label: { ko: "서비스 플랫폼", en: "Platforms" } },
   { value: "13", label: { ko: "아시아 출시 시장", en: "Asia Markets" } },
   { value: "8+", label: { ko: "글로벌 파트너", en: "Global Studios" } },
 ];
