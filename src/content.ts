@@ -211,69 +211,6 @@ const GAHEE_PLAY_DEV_PAGE = "https://play.google.com/store/apps/dev?id=587169980
 /** 게임 라인업 — featured 1종이 쇼케이스 큰 카드, placeholder 는 "준비 중" 카드 */
 export const games: Game[] = [
   {
-    slug: "mages-secret",
-    title: "Mage's Secret",
-    titleKo: "메이지스 시크릿",
-    genre: "Casual Merge Puzzle",
-    image: "/assets/games/mage-secret.webp",
-    icon: "/assets/games/mage-icon.webp",
-    featured: true,
-    status: "released",
-    platforms: ["Google Play"],
-    links: { "Google Play": "https://play.google.com/store/apps/details?id=com.gahee.magesecret" },
-    description: {
-      ko: "오랜 시간 즐길 수 있는 모험 속에서 몬스터와 맞서고, 신비한 마법사의 100개 이상 과제를 해결하며 그의 비밀에 다가갑니다.",
-      en: "In your adventure, which will keep you busy for many months of playing, you will have to face monsters, complete more than 100 tasks of the mysterious magician, and try to know his main secret.",
-    },
-  },
-  {
-    slug: "tap-tap-builder",
-    title: "Tap Tap Builder",
-    titleKo: "포켓시티빌더",
-    genre: "Simulation",
-    image: "/assets/games/tap-tap-builder.webp",
-    icon: "/assets/games/tap-icon.webp",
-    status: "released",
-    platforms: ["Google Play"],
-    links: { "Google Play": "https://play.google.com/store/apps/details?id=com.gahee.taptap" },
-    description: {
-      ko: "꿈꾸던 도시를 만들고 시장이 되어 보세요. 건설, 수익, 위기 대응까지 탭 한 번으로 도시를 성장시킵니다.",
-      en: "Tap Tap Builder invites you to build the city of your dreams and become its mayor. Build, earn, and save your people with a tap.",
-    },
-  },
-  {
-    slug: "abyss",
-    title: "Abyss",
-    titleKo: "Abyss",
-    genre: "MMORPG",
-    image: "/assets/games/abyss.webp",
-    icon: "/assets/games/abyss-icon.webp",
-    status: "released",
-    platforms: ["Google Play", "One Store"],
-    // One Store 개별 페이지 URL 미확보 — 해당 배지는 링크 없이 표시된다
-    links: { "Google Play": GAHEE_PLAY_DEV_PAGE },
-    description: {
-      ko: "빠른 성장, 치열한 경쟁, 던전 보스 공략을 위한 수동 조작의 재미를 담은 신개념 MMORPG입니다.",
-      en: "A new-concept MMORPG that captures rapid growth, intense competition, and manual control for conquering dungeon bosses.",
-    },
-  },
-  {
-    slug: "supreme-car-racing",
-    title: "Supreme Car Racing",
-    titleKo: "슈프림 카레이싱",
-    genre: "Racing",
-    image: "/assets/games/supreme-car-racing.webp",
-    icon: "/assets/games/racing-icon.webp",
-    status: "released",
-    platforms: ["Google Play", "App Store"],
-    // App Store 개별 페이지 URL 미확보 — 해당 배지는 링크 없이 표시된다
-    links: { "Google Play": GAHEE_PLAY_DEV_PAGE },
-    description: {
-      ko: "현실적인 고품질 3D 그래픽과 경계 없는 드라이빙 경험을 제공하는 슈퍼카 레이싱 어드벤처입니다.",
-      en: "The real supercar racing adventure begins with realistic driving, high-end 3D graphics, and open-world missions.",
-    },
-  },
-  {
     slug: "vulcan",
     title: "Vulcan - Blacksmith RPG",
     titleKo: "불칸",

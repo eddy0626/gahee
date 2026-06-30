@@ -357,7 +357,7 @@ function Games({ locale, onSelect }: { locale: Locale; onSelect: (g: Game) => vo
             {t.gamesText}
           </p>
         </div>
-        {tabs.length > 1 && (
+        {visible.length > 1 && tabs.length > 1 && (
           <div className="games__filter reveal" role="group" aria-label={t.gamesTitle}>
             {tabs.map((tab) => (
               <button
