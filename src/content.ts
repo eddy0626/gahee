@@ -254,6 +254,57 @@ export const games: Game[] = [
   },
 ];
 
+/** 불칸 CS 고객 문의 폼 — 불칸 모달의 "고객센터 문의" 버튼에서 열린다.
+ *  제출은 Apps Script(config.ts CS_ENDPOINT)로 → 구글 시트 + 드라이브(사진).
+ *  원폼 "[불칸CS] 고객 문의사항 접수"의 핵심 항목(1~8)만. 사진 업로드 + 영상은 링크. */
+export const csForm = {
+  button: { ko: "고객센터 문의", en: "Customer Support" },
+  title: { ko: "불칸 고객 문의 접수", en: "Vulcan — Support Request" },
+  intro: {
+    ko: "불칸 플레이 중 불편하신 점을 접수해 주세요. 입력하신 이메일로 답변드립니다.",
+    en: "Tell us about any issue with Vulcan. We'll reply to the email you provide.",
+  },
+  privacyUrl: "https://gahee.net/privacypolicy",
+  consents: {
+    privacy: {
+      ko: "문의 접수·처리를 위한 개인정보 제3자 제공에 동의합니다. (필수)",
+      en: "I agree to share my personal data with third parties to handle this inquiry. (required)",
+    },
+    notice: {
+      ko: "처리 완료 전 계정 탈퇴·로그인 계정/번호 변경 등이 발생하면 처리·보상이 불가할 수 있음을 확인했습니다. (필수)",
+      en: "I understand account deletion or login/phone changes before resolution may prevent handling or compensation. (required)",
+    },
+  },
+  categories: [
+    { ko: "게임플레이 / 버그 문의", en: "Gameplay / Bug" },
+    { ko: "루비·상점아이템 문의 (미지급·수령오류)", en: "Ruby & Shop Items (missing / error)" },
+    { ko: "환불 및 게임탈퇴", en: "Refund & Account Deletion" },
+    { ko: "게임유저 신고", en: "Report a Player" },
+    { ko: "기타 게임제안", en: "Other / Suggestion" },
+  ],
+  labels: {
+    email: { ko: "이메일", en: "Email" },
+    gameId: { ko: "게임 내 아이디", en: "In-game ID" },
+    gameIdHelp: { ko: "예: 불칸최고 — 접수·처리·보상에 사용됩니다.", en: "e.g., VulcanHero — used for handling and rewards." },
+    contact: { ko: "연락처", en: "Contact (phone)" },
+    category: { ko: "문의 항목", en: "Category" },
+    categoryPlaceholder: { ko: "선택해 주세요", en: "Select…" },
+    detail: { ko: "문의 세부 내용", en: "Details" },
+    detailPlaceholder: { ko: "어떤 문제인지 자세히 적어 주세요.", en: "Describe the issue in detail." },
+    files: { ko: "스크린샷 / 이미지 첨부", en: "Screenshots / Images" },
+    filesHelp: { ko: "최대 5장 · 장당 10MB · jpg·png·webp·gif", en: "Up to 5 files · 10MB each · jpg·png·webp·gif" },
+    videoUrl: { ko: "영상 링크 (선택)", en: "Video link (optional)" },
+    videoUrlHelp: { ko: "게임플레이 영상은 유튜브·드라이브 등 링크로 첨부", en: "Paste a YouTube/Drive link for gameplay video" },
+  },
+  submit: { ko: "문의 접수", en: "Submit" },
+  sending: { ko: "접수 중…", en: "Submitting…" },
+  success: { ko: "문의가 접수되었습니다. 입력하신 이메일로 답변드리겠습니다.", en: "Your inquiry has been received. We'll reply to your email." },
+  error: { ko: "접수에 실패했습니다. 잠시 후 다시 시도하거나 cs@gahee.net 로 보내주세요.", en: "Submission failed. Please try again or email cs@gahee.net." },
+  notReady: { ko: "문의 접수 준비 중입니다. 우선 cs@gahee.net 로 보내주세요.", en: "Support intake is being set up. Please email cs@gahee.net for now." },
+  errFiles: { ko: "이미지는 최대 5장, 장당 10MB까지 가능합니다.", en: "Up to 5 images, 10MB each." },
+  errConsent: { ko: "필수 동의 항목에 체크해 주세요.", en: "Please check the required consents." },
+};
+
 /** 회사 프로필 표 (Company 섹션 우측) */
 export const companyProfile = [
   { label: { ko: "회사명", en: "Company" }, value: "GAHEE., LTD" },

@@ -3,6 +3,7 @@ import {
   companyProfile,
   contact,
   copy,
+  csForm,
   Game,
   GameCategory,
   gameFilters,
@@ -15,7 +16,7 @@ import {
   roadmap,
   stats,
 } from "./content";
-import { submitInquiry } from "./config";
+import { CsImage, submitCsInquiry, submitInquiry } from "./config";
 import { useReveal } from "./useReveal";
 import { HeroGlobe } from "./HeroGlobe";
 
@@ -570,7 +571,7 @@ function Footer({ locale }: { locale: Locale }) {
  * - 키보드: Esc 닫기, ←/→ 갤러리 이동, Tab 은 카드 안에서 순환(포커스 트랩).
  * - 플랫폼 배지: links 에 URL 이 있는 플랫폼만 링크가 된다.
  */
-function GameModal({ game, locale, onClose }: { game: Game; locale: Locale; onClose: () => void }) {
+function GameModal({ game, locale, onClose, onCsOpen }: { game: Game; locale: Locale; onClose: () => void; onCsOpen: () => void }) {
   const t = copy[locale];
   // 갤러리 폴백: 스크린샷 없음 → 대표 이미지 1장
   const shots = game.screenshots && game.screenshots.length > 0 ? game.screenshots : game.image ? [game.image] : [];
@@ -669,6 +670,231 @@ function GameModal({ game, locale, onClose }: { game: Game; locale: Locale; onCl
               );
             })}
           </div>
+          {/* 불칸: 고객센터(CS) 문의 진입 — 클릭 시 CS 폼 모달로 전환 */}
+          {game.slug === "vulcan" && (
+            <button className="btn btn--ghost modal__cs" type="button" onClick={onCsOpen}>
+              {csForm.button[locale]} <IconArrow />
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================ CS MODAL (불칸 고객 문의) */
+const CS_MAX_FILES = 5;
+const CS_MAX_BYTES = 10 * 1024 * 1024; // 장당 10MB
+
+/**
+ * 불칸 CS 문의 폼 모달 — 사진 다중 업로드(미리보기) + 영상 링크.
+ * 제출 시 이미지를 base64 로 바꿔 Apps Script(config.ts)로 전송 → 구글 시트 + 드라이브.
+ * 키보드: Esc 닫기, Tab 포커스 트랩. 카테고리는 ko 라벨로 전송(시트 관리 일관성).
+ */
+function CSModal({ locale, onClose }: { locale: Locale; onClose: () => void }) {
+  const c = csForm;
+  const L = (o: { ko: string; en: string }) => o[locale];
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error" | "notready">("idle");
+  const [err, setErr] = useState("");
+  const [images, setImages] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    closeRef.current?.focus();
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+      else if (e.key === "Tab") {
+        const card = cardRef.current;
+        if (!card) return;
+        const f = card.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])',
+        );
+        if (!f.length) return;
+        const first = f[0];
+        const last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  // 미리보기 objectURL 누수 방지 — previews 변경/언마운트 시 이전 URL 해제
+  useEffect(() => () => previews.forEach((u) => URL.revokeObjectURL(u)), [previews]);
+
+  function setFiles(next: File[]) {
+    const overCount = next.length > CS_MAX_FILES;
+    const overSize = next.some((f) => f.size > CS_MAX_BYTES);
+    const capped = next.filter((f) => f.size <= CS_MAX_BYTES).slice(0, CS_MAX_FILES);
+    setErr(overCount || overSize ? L(c.errFiles) : "");
+    setImages(capped);
+    setPreviews(capped.map((f) => URL.createObjectURL(f)));
+  }
+  const addFiles = (list: FileList | null) =>
+    list && setFiles([...images, ...Array.from(list).filter((f) => f.type.startsWith("image/"))]);
+  const removeFile = (i: number) => setFiles(images.filter((_, idx) => idx !== i));
+
+  function toBase64(file: File): Promise<CsImage> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const r = String(reader.result);
+        resolve({ name: file.name, mimeType: file.type, dataBase64: r.slice(r.indexOf(",") + 1) });
+      };
+      reader.onerror = () => reject(new Error("read failed"));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+    if (!fd.get("consentPrivacy") || !fd.get("consentNotice")) {
+      setErr(L(c.errConsent));
+      return;
+    }
+    setErr("");
+    setStatus("sending");
+    try {
+      const imgs = await Promise.all(images.map(toBase64));
+      const result = await submitCsInquiry({
+        game: "Vulcan",
+        category: String(fd.get("category") || ""),
+        email: String(fd.get("email") || ""),
+        gameId: String(fd.get("gameId") || ""),
+        contact: String(fd.get("contact") || ""),
+        detail: String(fd.get("detail") || ""),
+        videoUrl: String(fd.get("videoUrl") || ""),
+        consentPrivacy: true,
+        consentNotice: true,
+        locale,
+        images: imgs,
+      });
+      setStatus(result);
+      if (result === "success") {
+        form.reset();
+        setImages([]);
+        setPreviews([]);
+      }
+    } catch {
+      setStatus("error");
+    }
+  }
+
+  const msg =
+    status === "success" ? L(c.success) : status === "error" ? L(c.error) : status === "notready" ? L(c.notReady) : "";
+  const isErr = status === "error" || status === "notready" || !!err;
+
+  return (
+    <div className="modal" role="dialog" aria-modal="true" aria-label={L(c.title)}>
+      <div className="modal__scrim" onClick={onClose} />
+      <div className="modal__card cs" ref={cardRef}>
+        <button ref={closeRef} className="modal__close" onClick={onClose} aria-label={copy[locale].closeLabel}>
+          <IconClose />
+        </button>
+        <div className="cs__body">
+          <span className="eyebrow">{L(c.button)}</span>
+          <h3 className="cs__title">{L(c.title)}</h3>
+          <p className="cs__intro">{L(c.intro)}</p>
+          <form className="cs__form" onSubmit={onSubmit}>
+            <label className="field">
+              <span>
+                {L(c.labels.email)} <em className="field__req" aria-hidden="true">*</em>
+              </span>
+              <input name="email" type="email" required />
+            </label>
+            <label className="field">
+              <span>
+                {L(c.labels.gameId)} <em className="field__req" aria-hidden="true">*</em>
+              </span>
+              <input name="gameId" type="text" required />
+              <small className="field__help">{L(c.labels.gameIdHelp)}</small>
+            </label>
+            <label className="field">
+              <span>{L(c.labels.contact)}</span>
+              <input name="contact" type="text" inputMode="tel" />
+            </label>
+            <label className="field">
+              <span>
+                {L(c.labels.category)} <em className="field__req" aria-hidden="true">*</em>
+              </span>
+              <select name="category" required defaultValue="">
+                <option value="" disabled>
+                  {L(c.labels.categoryPlaceholder)}
+                </option>
+                {c.categories.map((cat) => (
+                  <option key={cat.en} value={cat.ko}>
+                    {L(cat)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field field--full">
+              <span>
+                {L(c.labels.detail)} <em className="field__req" aria-hidden="true">*</em>
+              </span>
+              <textarea name="detail" rows={5} required placeholder={L(c.labels.detailPlaceholder)} />
+            </label>
+
+            <div className="field field--full">
+              <span>{L(c.labels.files)}</span>
+              <label className="cs__drop">
+                <input type="file" accept="image/*" multiple onChange={(e) => addFiles(e.target.files)} />
+                <span className="cs__dropCta">+ {L(c.labels.files)}</span>
+                <small className="field__help">{L(c.labels.filesHelp)}</small>
+              </label>
+              {previews.length > 0 && (
+                <ul className="cs__thumbs">
+                  {previews.map((src, i) => (
+                    <li className="cs__thumb" key={src}>
+                      <img src={src} alt="" />
+                      <button type="button" onClick={() => removeFile(i)} aria-label={copy[locale].closeLabel}>
+                        <IconClose />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <label className="field field--full">
+              <span>{L(c.labels.videoUrl)}</span>
+              <input name="videoUrl" type="url" placeholder="https://youtu.be/…" />
+              <small className="field__help">{L(c.labels.videoUrlHelp)}</small>
+            </label>
+
+            <label className="cs__check field--full">
+              <input type="checkbox" name="consentPrivacy" />
+              <span>
+                {L(c.consents.privacy)}{" "}
+                <a href={c.privacyUrl} target="_blank" rel="noreferrer noopener">
+                  {locale === "ko" ? "개인정보처리방침" : "Privacy Policy"}
+                </a>
+              </span>
+            </label>
+            <label className="cs__check field--full">
+              <input type="checkbox" name="consentNotice" />
+              <span>{L(c.consents.notice)}</span>
+            </label>
+
+            <button className="btn btn--primary cs__submit field--full" type="submit" disabled={status === "sending"}>
+              {status === "sending" ? L(c.sending) : L(c.submit)} <IconArrow />
+            </button>
+            {(err || msg) && (
+              <p className={`form__status field--full ${isErr ? "err" : "ok"}`} role={isErr ? "alert" : "status"} aria-live="polite">
+                {err || msg}
+              </p>
+            )}
+          </form>
         </div>
       </div>
     </div>
@@ -707,6 +933,7 @@ export default function App() {
   const [locale, setLocale] = useState<Locale>("ko");
   const [menuOpen, setMenuOpen] = useState(false);
   const [selected, setSelected] = useState<Game | null>(null);
+  const [csOpen, setCsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const lastFocus = useRef<HTMLElement | null>(null);
 
@@ -720,8 +947,8 @@ export default function App() {
 
   // 드로어/모달이 열린 동안 배경 스크롤 잠금
   useEffect(() => {
-    document.body.classList.toggle("is-locked", menuOpen || selected !== null);
-  }, [menuOpen, selected]);
+    document.body.classList.toggle("is-locked", menuOpen || selected !== null || csOpen);
+  }, [menuOpen, selected, csOpen]);
 
   // 헤더 배경(블러) 전환용 스크롤 감지
   useEffect(() => {
@@ -738,6 +965,16 @@ export default function App() {
   };
   const closeGame = useCallback(() => {
     setSelected(null);
+    lastFocus.current?.focus();
+  }, []);
+
+  // CS 문의 모달: 게임 모달의 "고객센터 문의" 에서 열림 → 게임 모달은 닫고 CS 로 전환
+  const openCs = useCallback(() => {
+    setSelected(null);
+    setCsOpen(true);
+  }, []);
+  const closeCs = useCallback(() => {
+    setCsOpen(false);
     lastFocus.current?.focus();
   }, []);
 
@@ -758,7 +995,8 @@ export default function App() {
       </main>
       <Footer locale={locale} />
       <BackToTop label={copy[locale].topLabel} />
-      {selected && <GameModal game={selected} locale={locale} onClose={closeGame} />}
+      {selected && <GameModal game={selected} locale={locale} onClose={closeGame} onCsOpen={openCs} />}
+      {csOpen && <CSModal locale={locale} onClose={closeCs} />}
     </>
   );
 }
