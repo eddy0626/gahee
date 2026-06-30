@@ -179,7 +179,7 @@ function Hero({ locale }: { locale: Locale }) {
       <HeroGlobe />
       <div className="hero__veil" />
       <div className="shell hero__inner">
-        <span className="eyebrow hero__eyebrow">Global Game Publisher — Since 2022</span>
+        <span className="eyebrow hero__eyebrow">{t.heroEyebrow}</span>
         <h1 className="hero__title">
           <span className="line">WE FIND GAMES.</span>
           <span className="line">

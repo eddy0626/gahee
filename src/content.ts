@@ -52,7 +52,8 @@ export const nav = {
 export const copy = {
   ko: {
     heroText:
-      "2022년부터 모바일·PC·콘솔 6개 플랫폼에서 게임을 서비스하며, 8곳 이상의 글로벌 스튜디오와 출시부터 라이브 운영까지 함께합니다.",
+      "모바일·PC·콘솔, 8개+ 글로벌 스튜디오와 함께. 좋은 게임을 한국과 아시아 13개 시장으로 잇습니다.",
+    heroEyebrow: "한국·아시아 퍼블리싱 게이트웨이 · Since 2022",
     eyebrow: {
       games: "Games — 게임 라인업",
       company: "Company — 회사 소개",
@@ -105,7 +106,8 @@ export const copy = {
   },
   en: {
     heroText:
-      "Since 2022 we've shipped mobile, PC, and console titles across 6 platforms, working with 8+ global studios from launch through live operations.",
+      "Mobile, PC, and console — partnered with 8+ global studios. We bring great games to Korea and 13 Asian markets.",
+    heroEyebrow: "Your Gateway to Korea & Asia · Since 2022",
     eyebrow: {
       games: "Games",
       company: "Company",
