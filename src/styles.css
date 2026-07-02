@@ -33,6 +33,15 @@
   color-scheme: dark;
 }
 
+/* 번체 중국어(대만) 로케일 — 각 OS 기본 TC 폰트로 렌더 (외부 웹폰트 미사용).
+   App.tsx 가 번체 선택 시 <html lang="zh-Hant"> 로 매핑 → 전 영역에 적용.
+   한/영/러는 :root 의 맑은 고딕 스택 유지. Latin(GAHEE·숫자)도 이 폰트들이 커버. */
+html[lang="zh-Hant"] {
+  --font-display: "PingFang TC", "Microsoft JhengHei", "Noto Sans CJK TC", "Noto Sans TC", "Heiti TC", sans-serif;
+  --font-body: "PingFang TC", "Microsoft JhengHei", "Noto Sans CJK TC", "Noto Sans TC", "Heiti TC", sans-serif;
+  --font-mono: "PingFang TC", "Microsoft JhengHei", "Noto Sans CJK TC", "Noto Sans TC", "Heiti TC", sans-serif;
+}
+
 * {
   box-sizing: border-box;
 }
