@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import {
   companyProfile,
   contact,
@@ -10,15 +10,19 @@ import {
   games,
   Locale,
   nav,
-  partners,
   platformCategory,
   platformIcons,
-  roadmap,
   stats,
 } from "./content";
 import { CsImage, submitCsInquiry, submitInquiry } from "./config";
 import { useReveal } from "./useReveal";
 import { HeroGlobe } from "./HeroGlobe";
+
+/** 지원 언어와 토글 버튼 라벨 — 한국어·영어·번체 중국어(대만)·러시아어 */
+const LOCALES: Locale[] = ["ko", "en", "zh", "ru"];
+const LOCALE_LABELS: Record<Locale, string> = { ko: "KO", en: "EN", zh: "繁中", ru: "RU" };
+/** `<html lang>` 용 BCP-47 태그 (번체는 zh-Hant 로 명시) */
+const HTML_LANG: Record<Locale, string> = { ko: "ko", en: "en", zh: "zh-Hant", ru: "ru" };
 
 /* ---------- 아이콘: 장식용 인라인 SVG (currentColor 상속, 보조기기엔 숨김) ---------- */
 const IconMenu = () => (
@@ -83,13 +87,14 @@ function Nav({ locale, setLocale, scrolled, onOpenMenu, onCsOpen }: NavProps) {
         </nav>
         <div className="nav__actions">
           <div className="lang" aria-label="Language">
-            <button aria-pressed={locale === "ko"} onClick={() => setLocale("ko")}>
-              KO
-            </button>
-            <span>/</span>
-            <button aria-pressed={locale === "en"} onClick={() => setLocale("en")}>
-              EN
-            </button>
+            {LOCALES.map((l, i) => (
+              <Fragment key={l}>
+                {i > 0 && <span>/</span>}
+                <button aria-pressed={locale === l} onClick={() => setLocale(l)}>
+                  {LOCALE_LABELS[l]}
+                </button>
+              </Fragment>
+            ))}
           </div>
           <a className="nav__cta" href="#contact">
             {t.navCta}
@@ -171,12 +176,11 @@ function Drawer({ open, onClose, locale, setLocale, onCsOpen }: { open: boolean;
           {csForm.nav[locale]}
         </button>
         <div className="drawer__lang">
-          <button aria-pressed={locale === "ko"} onClick={() => setLocale("ko")}>
-            KO
-          </button>
-          <button aria-pressed={locale === "en"} onClick={() => setLocale("en")}>
-            EN
-          </button>
+          {LOCALES.map((l) => (
+            <button key={l} aria-pressed={locale === l} onClick={() => setLocale(l)}>
+              {LOCALE_LABELS[l]}
+            </button>
+          ))}
         </div>
         <a className="btn btn--primary" href="#contact" onClick={onClose} style={{ marginTop: 18, justifyContent: "center" }}>
           {t.drawerCta}
@@ -686,7 +690,7 @@ const CS_MAX_BYTES = 10 * 1024 * 1024; // 장당 10MB
  */
 function CSModal({ locale, onClose }: { locale: Locale; onClose: () => void }) {
   const c = csForm;
-  const L = (o: { ko: string; en: string }) => o[locale];
+  const L = (o: Record<Locale, string>) => o[locale];
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error" | "notready">("idle");
   const [err, setErr] = useState("");
   const [images, setImages] = useState<File[]>([]);
@@ -870,7 +874,7 @@ function CSModal({ locale, onClose }: { locale: Locale; onClose: () => void }) {
               <span>
                 {L(c.consents.privacy)}{" "}
                 <a href={c.privacyUrl} target="_blank" rel="noreferrer noopener">
-                  {locale === "ko" ? "개인정보처리방침" : "Privacy Policy"}
+                  {L(c.privacyLabel)}
                 </a>
               </span>
             </label>
@@ -935,7 +939,7 @@ export default function App() {
 
   // <html lang> 을 현재 언어와 동기화 (스크린리더 발음·검색엔진 언어 판별)
   useEffect(() => {
-    document.documentElement.lang = locale;
+    document.documentElement.lang = HTML_LANG[locale];
   }, [locale]);
 
   // 드로어/모달이 열린 동안 배경 스크롤 잠금
