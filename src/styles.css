@@ -942,8 +942,34 @@ p {
 }
 
 /* ============================================================
-   COMPANY (light)
+   COMPANY (dark cinematic — 새 디자인 언어)
+   정체성+프로필 → 파트너+신뢰신호 → 로드맵 초대형 번호 스파인.
+   색·타이포·모션은 [[새 디자인 언어]] 토큰(딥블랙 + 레드 글로우 +
+   초대형 아웃라인 번호). funnel 파일럿에서 확정한 값 재사용.
    ============================================================ */
+.company {
+  overflow: hidden;
+}
+
+/* 상단 중앙 레드 라디얼 글로우 — 시네마틱 키라이트 */
+.company::before {
+  content: "";
+  position: absolute;
+  top: -240px;
+  left: 50%;
+  width: min(960px, 92%);
+  height: 620px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(203, 41, 87, 0.2), transparent 68%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.company .shell {
+  position: relative;
+  z-index: 1;
+}
+
 .company__top {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
@@ -951,23 +977,24 @@ p {
   align-items: start;
 }
 
+/* 강화된 타이틀 — 다크 언어(볼드·타이트). 형제 .section-title 은 손대지 않음 */
+.company__title {
+  font-size: clamp(32px, 5vw, 66px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
 .company__lead p {
   margin-top: 22px;
   font-size: clamp(15px, 1.6vw, 18px);
   line-height: 1.8;
-  color: var(--on-light-dim);
+  color: var(--on-dark-dim);
   max-width: 52ch;
 }
 
-.legacy {
-  margin-top: 28px;
-  font-weight: 700;
-  color: var(--red);
-  font-size: 15px;
-}
-
 .profile {
-  border-top: 1px solid var(--line-light);
+  border-top: 1px solid var(--line-dark);
 }
 
 .profile__row {
@@ -975,7 +1002,7 @@ p {
   justify-content: space-between;
   gap: 16px;
   padding: 18px 0;
-  border-bottom: 1px solid var(--line-light);
+  border-bottom: 1px solid var(--line-dark);
 }
 
 .profile__row dt {
@@ -983,82 +1010,16 @@ p {
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--on-light-dim);
+  color: var(--on-dark-dim);
   margin: 0;
 }
 
 .profile__row dd {
   margin: 0;
   font-weight: 700;
-  color: var(--on-light);
+  color: var(--on-dark);
   text-align: right;
 }
-
-.company__bottom {
-  margin-top: clamp(48px, 6vw, 88px);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(28px, 4vw, 56px);
-}
-
-.subhead {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: clamp(20px, 2vw, 28px);
-  letter-spacing: -0.01em;
-  color: var(--on-light);
-  margin-bottom: 22px;
-}
-
-.partners {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.partner {
-  padding: 9px 15px;
-  border: 1px solid var(--line-light);
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--on-light);
-  transition:
-    border-color 0.2s ease,
-    color 0.2s ease;
-}
-
-.partner:hover {
-  border-color: var(--red);
-  color: var(--red);
-}
-
-.road {
-  display: grid;
-  grid-template-columns: 88px 1fr;
-  gap: 16px;
-  padding: 16px 0;
-  border-top: 1px solid var(--line-light);
-}
-
-.road:first-child {
-  border-top: 0;
-}
-
-.road__label {
-  font-family: var(--font-mono);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--red);
-  letter-spacing: 0.06em;
-}
-
-.road__text {
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--on-light-dim);
-}
-
 /* ============================================================
    CONTACT (dark)
    ============================================================ */
@@ -1699,7 +1660,6 @@ a.platform:hover {
     grid-template-columns: 1fr 1fr;
   }
   .caps,
-  .company__bottom,
   .form__grid {
     grid-template-columns: 1fr;
   }

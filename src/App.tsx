@@ -405,13 +405,13 @@ function Games({ locale, onSelect }: { locale: Locale; onSelect: (g: Game) => vo
 function Company({ locale }: { locale: Locale }) {
   const t = copy[locale];
   return (
-    <section className="section section--light" id="company">
+    <section className="section section--dark grain company" id="company">
       <div className="shell">
         {/* 상단: 정체성 + 회사 프로필 */}
         <div className="company__top">
           <div className="company__lead reveal">
             <span className="eyebrow">{t.eyebrow.company}</span>
-            <h2 className="section-title">{t.aboutTitle}</h2>
+            <h2 className="section-title company__title">{t.aboutTitle}</h2>
             <p>{t.aboutBody}</p>
           </div>
           <dl className="profile reveal">
@@ -422,29 +422,6 @@ function Company({ locale }: { locale: Locale }) {
               </div>
             ))}
           </dl>
-        </div>
-
-        {/* 하단: 파트너 + 로드맵 */}
-        <div className="company__bottom">
-          <div className="reveal">
-            <h3 className="subhead">{t.partnershipTitle}</h3>
-            <div className="partners">
-              {partners.map((p) => (
-                <span className="partner" key={p}>
-                  {p}
-                </span>
-              ))}
-            </div>
-          </div>
-          <div className="reveal">
-            <h3 className="subhead">{t.roadmapTitle}</h3>
-            {roadmap.map((r) => (
-              <div className="road" key={r.label}>
-                <div className="road__label">{r.label}</div>
-                <div className="road__text">{r.text[locale]}</div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </section>
