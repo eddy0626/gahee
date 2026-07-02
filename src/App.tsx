@@ -1,4 +1,4 @@
-import { Fragment, FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, FormEvent, ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import {
   companyProfile,
   contact,
@@ -8,6 +8,7 @@ import {
   GameCategory,
   gameFilters,
   games,
+  legalDocs,
   Locale,
   nav,
   platformCategory,
@@ -23,6 +24,13 @@ const LOCALES: Locale[] = ["ko", "en", "zh", "ru"];
 const LOCALE_LABELS: Record<Locale, string> = { ko: "KO", en: "EN", zh: "繁中", ru: "RU" };
 /** `<html lang>` 용 BCP-47 태그 (번체는 zh-Hant 로 명시) */
 const HTML_LANG: Record<Locale, string> = { ko: "ko", en: "en", zh: "zh-Hant", ru: "ru" };
+/** 법률 페이지 번역 고지 — 비한국어 버전 상단. 한국어 원문이 우선함을 명시. */
+const LEGAL_DISCLAIMER: Record<Locale, string> = {
+  ko: "",
+  en: "This is a reference translation. In case of any discrepancy, the Korean original prevails.",
+  zh: "本翻譯僅供參考。如與韓文原文有任何出入，概以韓文原文為準。",
+  ru: "Это справочный перевод. При любых расхождениях приоритет имеет корейский оригинал.",
+};
 
 /* ---------- 아이콘: 장식용 인라인 SVG (currentColor 상속, 보조기기엔 숨김) ---------- */
 const IconMenu = () => (
@@ -523,6 +531,80 @@ function Contact({ locale }: { locale: Locale }) {
   );
 }
 
+/* ============================================================ LEGAL PAGE */
+/** 법률 문서 본문(문자열)을 줄 단위로 훑어 소제목(1. / 1))·목록(●)·문단으로 렌더. */
+function renderLegalBody(body: string) {
+  const nodes: ReactNode[] = [];
+  let bullets: string[] = [];
+  const flush = () => {
+    if (bullets.length) {
+      const items = bullets;
+      nodes.push(
+        <ul className="legal__ul" key={`ul-${nodes.length}`}>
+          {items.map((b, i) => (
+            <li key={i}>{b}</li>
+          ))}
+        </ul>,
+      );
+      bullets = [];
+    }
+  };
+  body.split("\n").forEach((line) => {
+    const text = line.trim();
+    if (!text) {
+      flush();
+      return;
+    }
+    if (text.startsWith("●")) {
+      bullets.push(text.replace(/^●\s*/, ""));
+      return;
+    }
+    flush();
+    if (/^(제\d+장|Chapter \d+|第\d+章|Глава \d+)/.test(text)) nodes.push(<h2 className="legal__chapter" key={`c-${nodes.length}`}>{text}</h2>);
+    else if (/^(제\d+조|Article \d+|第\d+條|Статья \d+|부칙|Addendum|附則|Дополнение)/.test(text)) nodes.push(<h2 className="legal__h" key={`a-${nodes.length}`}>{text}</h2>);
+    else if (/^\d+\.\s/.test(text)) nodes.push(<h2 className="legal__h" key={`h-${nodes.length}`}>{text}</h2>);
+    else if (/^\d+\)\s/.test(text)) nodes.push(<h3 className="legal__sub" key={`s-${nodes.length}`}>{text}</h3>);
+    else nodes.push(<p className="legal__p" key={`p-${nodes.length}`}>{text}</p>);
+  });
+  flush();
+  return nodes;
+}
+
+/** 개인정보처리방침·이용약관 전용 풀스크린 페이지. 푸터 링크(#privacy/#terms)로 열린다.
+ *  본문은 한국어 원문(법적 문구). 배경 스크롤 잠금 + Esc 로 닫기. */
+function LegalPage({ docKey, locale, onClose }: { docKey: "privacy" | "terms"; locale: Locale; onClose: () => void }) {
+  const doc = legalDocs[docKey];
+  const closeRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    closeRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+  if (!doc) return null;
+  return (
+    <div className="legal" role="dialog" aria-modal="true" aria-label={doc.title[locale]}>
+      <div className="legal__bar">
+        <div className="shell legal__barInner">
+          <Brand />
+          <button ref={closeRef} className="legal__close" onClick={onClose} aria-label={copy[locale].closeLabel}>
+            <IconClose />
+          </button>
+        </div>
+      </div>
+      <div className="legal__scroll">
+        <article className="shell legal__doc">
+          <h1 className="legal__title">{doc.title[locale]}</h1>
+          {locale !== "ko" && <p className="legal__disclaimer">{LEGAL_DISCLAIMER[locale]}</p>}
+          {renderLegalBody(doc.body[locale])}
+        </article>
+      </div>
+    </div>
+  );
+}
+
 /* ============================================================ FOOTER */
 /** 푸터 — 법적 고지와 외부 링크. 저작권 연도는 렌더 시점 기준으로 자동 갱신된다. */
 function Footer({ locale }: { locale: Locale }) {
@@ -533,12 +615,8 @@ function Footer({ locale }: { locale: Locale }) {
         <div className="foot__top">
           <Brand className="foot__brand" />
           <div className="foot__links">
-            <a href={contact.terms} target="_blank" rel="noreferrer noopener">
-              Terms
-            </a>
-            <a href={contact.privacy} target="_blank" rel="noreferrer noopener">
-              Privacy
-            </a>
+            <a href="#terms">Terms</a>
+            <a href="#privacy">Privacy</a>
             <a href={contact.facebook} target="_blank" rel="noreferrer noopener">
               Facebook
             </a>
@@ -932,6 +1010,7 @@ export default function App() {
   const [selected, setSelected] = useState<Game | null>(null);
   const [csOpen, setCsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [legalKey, setLegalKey] = useState<"privacy" | "terms" | null>(null);
   const lastFocus = useRef<HTMLElement | null>(null);
 
   // locale 변경으로 새로 렌더된 .reveal 요소도 다시 관찰
@@ -942,10 +1021,21 @@ export default function App() {
     document.documentElement.lang = HTML_LANG[locale];
   }, [locale]);
 
-  // 드로어/모달이 열린 동안 배경 스크롤 잠금
+  // 드로어/모달/법률페이지가 열린 동안 배경 스크롤 잠금
   useEffect(() => {
-    document.body.classList.toggle("is-locked", menuOpen || selected !== null || csOpen);
-  }, [menuOpen, selected, csOpen]);
+    document.body.classList.toggle("is-locked", menuOpen || selected !== null || csOpen || legalKey !== null);
+  }, [menuOpen, selected, csOpen, legalKey]);
+
+  // 법률 페이지(#privacy/#terms) — 해시로 열고 닫아 딥링크·뒤로가기 지원. 문서 없는 해시는 무시.
+  useEffect(() => {
+    const sync = () => {
+      const h = window.location.hash.replace("#", "");
+      setLegalKey((h === "privacy" || h === "terms") && legalDocs[h] ? h : null);
+    };
+    sync();
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, []);
 
   // 헤더 배경(블러) 전환용 스크롤 감지
   useEffect(() => {
@@ -996,6 +1086,7 @@ export default function App() {
       <BackToTop label={copy[locale].topLabel} />
       {selected && <GameModal game={selected} locale={locale} onClose={closeGame} onCsOpen={openCs} />}
       {csOpen && <CSModal locale={locale} onClose={closeCs} />}
+      {legalKey && <LegalPage docKey={legalKey} locale={locale} onClose={() => (window.location.hash = "")} />}
     </>
   );
 }
