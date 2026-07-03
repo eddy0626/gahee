@@ -28,10 +28,10 @@ function nowKST(): string {
   }).format(new Date());
 }
 
-/** 문의 메일 제목 — 받은 쪽에서 한눈에 보이게 "[GAHEE 문의] 이름/게임 · 접수일시" 형태로 만든다. */
+/** 문의 메일 제목 — 받은 쪽에서 한눈에 보이게 "[GAHEE 퍼블리싱 문의] 이름 / 게임 / 접수일시" 형태로 만든다. */
 function inquirySubject(data: Record<string, string>): string {
-  const who = [data.name, data.game].filter(Boolean).join(" / ") || "문의";
-  return `[GAHEE 문의] ${who} · ${nowKST()}`;
+  const parts = [data.name, data.game, nowKST()].filter(Boolean);
+  return `[GAHEE 퍼블리싱 문의] ${parts.join(" / ")}`;
 }
 
 /** 폼 데이터를 전송한다. 엔드포인트 미설정 시 메일 앱으로 폴백. */
