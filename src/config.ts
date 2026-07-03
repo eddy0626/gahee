@@ -9,7 +9,7 @@
  *   엔드포인트가 비어 있으면(기본값) 자동으로 메일 앱(mailto)을 여는
  *   방식으로 폴백하므로, 키 없이도 폼 동작을 확인할 수 있습니다.
  */
-export const FORM_ENDPOINT = "";
+export const FORM_ENDPOINT = "https://formspree.io/f/mpqgokgv";
 
 /** mailto 폴백 / 안내용 수신 주소 */
 export const INQUIRY_EMAIL = "biz@gahee.net";
