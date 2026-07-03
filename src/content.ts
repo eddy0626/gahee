@@ -308,8 +308,7 @@ export const games: Game[] = [
     image: "/assets/games/vulcan-wide.webp",
     icon: "/assets/games/vulcan-icon.webp",
     status: "released",
-    platforms: ["Google Play", "Steam"],
-    // Steam 개별 페이지 URL 미확보 — 해당 배지는 링크 없이 표시된다
+    platforms: ["Google Play"],
     links: { "Google Play": GAHEE_PLAY_DEV_PAGE },
     description: {
       ko: "평화로운 제국에 대장장이 신 불칸의 후손을 찾는 소식이 전해집니다. 후손이 되어 최고의 대장장이가 되어 보세요.",
