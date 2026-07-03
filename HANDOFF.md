@@ -7,7 +7,17 @@
 - **스택**: React 19 + TypeScript(strict) + Vite 7 · CSS 토큰(프레임워크 없음) · 상태 라이브러리 없음
 - **저장소**: `eddy0626/gahee` (GitHub), 작업 브랜치 `main`
 
-## 현재 상태 (2026-06-11 기준)
+## 현재 상태 (2026-07-03 기준)
+- **6/29~7/3 작업 전부 `main` 병합 완료** (최신 PR #7). 아래가 현재 사이트.
+- **다크 시네마틱 단일 톤** — 라이트 섹션 0개(Company까지 다크 전환). 섹션: Hero · Stats · Games(불칸) · Company · Contact + 고객센터(CS) 모달. nav: 회사·게임·문의·고객센터.
+- **4개 언어** KO / EN / 繁中(대만) / RU. 언어 토글 4버튼, `<html lang>` 매핑(번체=`zh-Hant`), 번체 전용 **시스템 TC 폰트**. 문구/데이터는 `content.ts`의 `[locale]` 구조(`Locale`·`LocalizedText`).
+- **법률 페이지** — 개인정보처리방침·이용약관(4개 언어), 사이트 내 풀스크린(`#privacy`/`#terms`, 푸터 링크). 전문은 **`src/legal.ts`로 분리 + 동적 import 지연로딩**(메인 JS 405→240KB). ⚠️ 약관 제11조~부칙은 표준약관 기반 **초안**, 번역은 참고용 → **배포 전 변호사·네이티브 검토 필수**.
+- **불칸 CS 문의 폼**(사진 업로드 → Apps Script `docs/cs-apps-script.gs`). 백엔드 `CS_ENDPOINT` 연결은 대기(현재 "준비 중" 안내).
+- **접근성**: 오버레이 열림 시 배경 `inert`(포커스 트랩+스크린리더 배경 숨김), 포커스 복원, aria-live 폼. **폰트=맑은 고딕**(번체만 시스템 TC), 외부 웹폰트 없음.
+- **타입 안전**: strict + `noUnusedLocals`/`noUnusedParameters`/`noFallthroughCasesInSwitch`, `Platform` 유니온.
+- **다음 작업은 `main` 기준 새 브랜치** 권장. (구 브랜치 `merge-company-publishing`는 병합됨 → 삭제 가능.)
+
+## 이력: 2026-06-11 시네마틱 리디자인 (당시 기준, 이후 상당수 변경됨)
 - **시네마틱 에디토리얼 리디자인 완료**, `main`에 머지됨 (squash, 커밋 `5a6394d` 외).
   - JoyCity 기업사이트를 참고하되 **GAHEE 레드(#CB2957)** 유지.
   - 다크 시네마틱 ↔ 라이트 에디토리얼 **섹션 교차** 리듬.
@@ -27,11 +37,12 @@ npm run build    # dist/ 생성 (minify=esbuild). 정적 배포용.
 ```
 
 ## 파일 구조 (어디를 고치나)
-- `src/content.ts` — 모든 텍스트·게임·회사 데이터 (ko/en). 문구/데이터 수정은 여기.
-- `src/App.tsx` — 섹션 컴포넌트(Nav, Hero, Stats, Games, Publishing, Company, Contact, Footer, GameModal) + 상태.
-- `src/styles.css` — 디자인 시스템(CSS 토큰, 라이트/다크 섹션, 타이포, 모션). 색·레이아웃 수정은 여기.
+- `src/content.ts` — 모든 텍스트·게임·회사 데이터 (**4개 언어 KO/EN/繁中/RU**). 문구/데이터 수정은 여기.
+- `src/legal.ts` — 개인정보처리방침·이용약관 전문(4개 언어). 무거워서 **동적 import 로 지연로딩**.
+- `src/App.tsx` — 섹션 컴포넌트(Nav, Drawer, Hero, Stats, Games, Company, Contact, Footer, GameModal, CSModal, LegalPage) + 상태.
+- `src/styles.css` — 디자인 시스템(CSS 토큰, **다크 톤 통일**, 타이포, 모션). 색·레이아웃 수정은 여기.
 - `src/HeroGlobe.tsx` — 히어로 캔버스 글로브.
-- `src/config.ts` — 문의 폼 전송(Formspree + mailto 폴백).
+- `src/config.ts` — 문의 폼 전송(Formspree + mailto 폴백) · CS 문의(Apps Script no-cors).
 - `src/useReveal.ts` — 스크롤 등장 훅.
 - `index.html` — 메타/OG/canonical. `public/` — 게임 이미지, robots.txt, sitemap.xml.
 
