@@ -16,6 +16,24 @@ export const INQUIRY_EMAIL = "biz@gahee.net";
 
 export type InquiryResult = "success" | "mailto" | "error";
 
+/** 접수 일시를 한국시간 "2026-07-03 14:30" 형식으로 만든다. (sv-SE 로케일이 ISO 형식으로 떨어져 그대로 사용) */
+function nowKST(): string {
+  return new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date());
+}
+
+/** 문의 메일 제목 — 받은 쪽에서 한눈에 보이게 "[GAHEE 문의] 이름/게임 · 접수일시" 형태로 만든다. */
+function inquirySubject(data: Record<string, string>): string {
+  const who = [data.name, data.game].filter(Boolean).join(" / ") || "문의";
+  return `[GAHEE 문의] ${who} · ${nowKST()}`;
+}
+
 /** 폼 데이터를 전송한다. 엔드포인트 미설정 시 메일 앱으로 폴백. */
 export async function submitInquiry(data: Record<string, string>): Promise<InquiryResult> {
   if (!FORM_ENDPOINT) {
@@ -24,10 +42,11 @@ export async function submitInquiry(data: Record<string, string>): Promise<Inqui
   }
 
   try {
+    // Formspree 는 payload 의 특수 필드 `_subject` 를 메일 제목으로 사용한다.
     const res = await fetch(FORM_ENDPOINT, {
       method: "POST",
       headers: { Accept: "application/json", "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      body: JSON.stringify({ ...data, _subject: inquirySubject(data) }),
     });
     return res.ok ? "success" : "error";
   } catch {
@@ -72,10 +91,10 @@ export async function submitCsInquiry(payload: Record<string, unknown>): Promise
   }
 }
 
-/** mailto 폴백 — 폼 데이터로 제목([GAHEE 문의] 게임/이름)과 본문(빈 값 제외, "key: value" 줄바꿈)을
+/** mailto 폴백 — 제목(inquirySubject: 이름/게임+접수일시)과 본문(빈 값 제외, "key: value" 줄바꿈)을
  *  만들어 OS 기본 메일 앱을 연다. FORM_ENDPOINT 미설정 시 submitInquiry 가 이 함수를 호출한다. */
 function openMailto(data: Record<string, string>) {
-  const subject = `[GAHEE 문의] ${data.game || data.name || ""}`.trim();
+  const subject = inquirySubject(data);
   const body = Object.entries(data)
     .filter(([, value]) => value)
     .map(([key, value]) => `${key}: ${value}`)
