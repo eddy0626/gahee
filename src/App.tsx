@@ -656,7 +656,7 @@ function Footer({ locale }: { locale: Locale }) {
  * - 키보드: Esc 닫기, ←/→ 갤러리 이동, Tab 은 카드 안에서 순환(포커스 트랩).
  * - 플랫폼 배지: links 에 URL 이 있는 플랫폼만 링크가 된다.
  */
-function GameModal({ game, locale, onClose, onCsOpen }: { game: Game; locale: Locale; onClose: () => void; onCsOpen: () => void }) {
+function GameModal({ game, locale, onClose, onCsOpen }: { game: Game; locale: Locale; onClose: () => void; onCsOpen: (game?: Game) => void }) {
   const t = copy[locale];
   // 갤러리 폴백: 스크린샷 없음 → 대표 이미지 1장
   const shots = game.screenshots && game.screenshots.length > 0 ? game.screenshots : game.image ? [game.image] : [];
@@ -757,7 +757,7 @@ function GameModal({ game, locale, onClose, onCsOpen }: { game: Game; locale: Lo
           </div>
           {/* 불칸: 고객센터(CS) 문의 진입 — 클릭 시 CS 폼 모달로 전환 */}
           {game.slug === "vulcan" && (
-            <button className="btn btn--ghost modal__cs" type="button" onClick={onCsOpen}>
+            <button className="btn btn--ghost modal__cs" type="button" onClick={() => onCsOpen(game)}>
               {csForm.button[locale]} <IconArrow />
             </button>
           )}
@@ -776,8 +776,13 @@ const CS_MAX_BYTES = 10 * 1024 * 1024; // 장당 10MB
  * 제출 시 이미지를 base64 로 바꿔 Apps Script(config.ts)로 전송 → 구글 시트 + 드라이브.
  * 키보드: Esc 닫기, Tab 포커스 트랩. 카테고리는 ko 라벨로 전송(시트 관리 일관성).
  */
-function CSModal({ locale, onClose }: { locale: Locale; onClose: () => void }) {
+function CSModal({ locale, defaultGame, onClose }: { locale: Locale; defaultGame: string | null; onClose: () => void }) {
   const c = csForm;
+  // 문의 게임 선택지 — content.ts 의 서비스 중(placeholder 아님) 게임에서 자동 생성.
+  // 게임을 content.ts 에 추가하면 여기에도 자동으로 나타난다. 값·표시는 한글명(없으면 영문명).
+  const liveGames = games.filter((g) => !g.placeholder);
+  const gameName = (g: Game) => g.titleKo || g.title;
+  const defaultGameValue = defaultGame ?? (liveGames.length === 1 ? gameName(liveGames[0]) : "");
   const L = (o: Record<Locale, string>) => o[locale];
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error" | "notready">("idle");
   const [err, setErr] = useState("");
@@ -852,7 +857,7 @@ function CSModal({ locale, onClose }: { locale: Locale; onClose: () => void }) {
     try {
       const imgs = await Promise.all(images.map(toBase64));
       const result = await submitCsInquiry({
-        game: "Vulcan",
+        game: String(fd.get("game") || ""),
         category: String(fd.get("category") || ""),
         email: String(fd.get("email") || ""),
         gameId: String(fd.get("gameId") || ""),
@@ -891,6 +896,23 @@ function CSModal({ locale, onClose }: { locale: Locale; onClose: () => void }) {
           <h3 className="cs__title">{L(c.title)}</h3>
           <p className="cs__intro">{L(c.intro)}</p>
           <form className="cs__form" onSubmit={onSubmit}>
+            <label className="field field--full">
+              <span>
+                {L(c.labels.game)} <em className="field__req" aria-hidden="true">*</em>
+              </span>
+              <select name="game" required defaultValue={defaultGameValue} aria-required="true">
+                {!defaultGameValue && (
+                  <option value="" disabled>
+                    {L(c.labels.gamePlaceholder)}
+                  </option>
+                )}
+                {liveGames.map((g) => (
+                  <option key={g.slug} value={gameName(g)}>
+                    {gameName(g)}
+                  </option>
+                ))}
+              </select>
+            </label>
             <label className="field">
               <span>
                 {L(c.labels.email)} <em className="field__req" aria-hidden="true">*</em>
@@ -1019,6 +1041,7 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [selected, setSelected] = useState<Game | null>(null);
   const [csOpen, setCsOpen] = useState(false);
+  const [csGame, setCsGame] = useState<string | null>(null); // CS 폼에 미리 선택될 게임(게임 모달에서 열면 그 게임)
   const [scrolled, setScrolled] = useState(false);
   const [legalKey, setLegalKey] = useState<"privacy" | "terms" | null>(null);
   const [legalDoc, setLegalDoc] = useState<LegalDoc | null>(null); // 동적 import 로 로드된 법률 문서
@@ -1089,11 +1112,12 @@ export default function App() {
 
   // CS 문의 모달: nav '고객센터' 또는 게임 모달의 "고객센터 문의" 에서 열림.
   // 연 요소를 기억(닫을 때 포커스 복원), 게임 모달이 열려 있으면 닫고 CS 로 전환.
-  const openCs = useCallback(() => {
+  const openCs = useCallback((game?: Game) => {
     // 게임 모달에서 CS 로 전환할 때는 게임 모달을 연 요소를 복원 대상으로 그대로 둔다(모달 버튼은 곧 사라짐).
     if (selected === null) {
       lastFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     }
+    setCsGame(game ? game.titleKo || game.title : null); // 게임 지정 시 CS 폼에 그 게임을 기본 선택
     setSelected(null);
     setCsOpen(true);
   }, [selected]);
@@ -1125,7 +1149,7 @@ export default function App() {
       </div>
       <Drawer open={menuOpen} onClose={closeMenu} locale={locale} setLocale={setLocale} onCsOpen={openCs} />
       {selected && <GameModal game={selected} locale={locale} onClose={closeGame} onCsOpen={openCs} />}
-      {csOpen && <CSModal locale={locale} onClose={closeCs} />}
+      {csOpen && <CSModal locale={locale} defaultGame={csGame} onClose={closeCs} />}
       {legalKey && legalDoc && <LegalPage doc={legalDoc} locale={locale} onClose={() => (window.location.hash = "")} />}
     </>
   );
