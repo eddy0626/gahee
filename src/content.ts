@@ -76,9 +76,9 @@ export const copy = {
     drawerCta: "파트너십 문의",
     aboutTitle: "우리는 게임을 발견하고, 시장에 닿게 합니다.",
     aboutBody:
-      "GAHEE는 한국에 기반을 둔 모바일·PC·콘솔 게임 퍼블리셔입니다. 2022년부터 검증된 글로벌 개발사의 게임을 한국과 아시아 시장에 선보여 왔습니다.",
+      "GAHEE는 한국에 기반을 둔 모바일 게임 퍼블리셔로, PC·콘솔 퍼블리싱으로 영역을 넓혀가고 있습니다. 2022년부터 검증된 글로벌 개발사의 게임을 한국과 아시아 시장에 선보여 왔습니다.",
     gamesTitle: "서비스 중인 타이틀",
-    gamesText: "모바일·PC·콘솔 6개 플랫폼에서 서비스하는 타이틀과 준비 중인 라인업을 한눈에 확인하세요.",
+    gamesText: "모바일에서 서비스 중인 타이틀과 준비 중인 라인업을 한눈에 확인하세요.",
     contactTitle: "좋은 게임을 가지고 계시다면, 우리에게 먼저 알려주세요.",
     contactText:
       "퍼블리싱, 사업 제휴, 채용 문의를 남겨주시면 담당자가 검토 후 연락드립니다.",
@@ -124,9 +124,9 @@ export const copy = {
     drawerCta: "Partnership Inquiry",
     aboutTitle: "We discover games and bring them to market.",
     aboutBody:
-      "GAHEE is a Korea-based mobile, PC, and console game publisher. Since 2022 we've brought titles from trusted global studios to Korea and the wider Asian market.",
+      "GAHEE is a Korea-based mobile game publisher expanding into PC and console. Since 2022 we've brought titles from trusted global studios to Korea and the wider Asian market.",
     gamesTitle: "Live titles",
-    gamesText: "Explore our live titles across 6 platforms on mobile, PC, and console, plus the reserved lineup.",
+    gamesText: "Explore our live mobile titles and the lineup in the works.",
     contactTitle: "If you have a good game, tell us first.",
     contactText:
       "Send a publishing, business, or recruiting inquiry and our team will review it.",
@@ -172,9 +172,9 @@ export const copy = {
     drawerCta: "洽談合作",
     aboutTitle: "我們發掘遊戲，並讓它抵達市場。",
     aboutBody:
-      "GAHEE 是一家總部位於韓國的行動、PC 與主機遊戲發行商。自 2022 年起，我們將值得信賴的全球工作室作品帶進韓國與更廣闊的亞洲市場。",
+      "GAHEE 是一家總部位於韓國的行動遊戲發行商，並正拓展至 PC 與主機發行。自 2022 年起，我們將值得信賴的全球工作室作品帶進韓國與更廣闊的亞洲市場。",
     gamesTitle: "營運中的作品",
-    gamesText: "一覽我們在行動、PC 與主機共 6 個平台上營運的作品，以及籌備中的陣容。",
+    gamesText: "一覽我們在行動平台上營運的作品，以及籌備中的陣容。",
     contactTitle: "如果您手上有好遊戲，請先告訴我們。",
     contactText:
       "無論是發行、商務合作或徵才需求，留言給我們，專人審閱後將與您聯繫。",
@@ -220,9 +220,9 @@ export const copy = {
     drawerCta: "Запрос о партнёрстве",
     aboutTitle: "Мы находим игры и выводим их на рынок.",
     aboutBody:
-      "GAHEE — издатель мобильных, PC- и консольных игр со штаб-квартирой в Корее. С 2022 года мы выводим проекты проверенных мировых студий на рынок Кореи и всей Азии.",
+      "GAHEE — издатель мобильных игр со штаб-квартирой в Корее, расширяющийся на PC и консоли. С 2022 года мы выводим проекты проверенных мировых студий на рынок Кореи и всей Азии.",
     gamesTitle: "Игры в сервисе",
-    gamesText: "Наши игры на 6 платформах — мобильных, PC и консолях, а также готовящиеся проекты.",
+    gamesText: "Наши мобильные игры в сервисе и готовящиеся проекты.",
     contactTitle: "Есть хорошая игра? Расскажите нам первыми.",
     contactText:
       "Оставьте запрос по изданию, бизнесу или вакансиям — наша команда рассмотрит его и свяжется с вами.",
@@ -259,8 +259,8 @@ export const copy = {
  *  6 플랫폼 근거: Google Play·App Store·One Store·Steam·Nintendo·PlayStation (platformIcons 6종).
  *  13개 시장 근거: 한국·일본·대만·홍콩·마카오·싱가포르·필리핀·말레이시아·인도네시아·태국·베트남·라오스·캄보디아 */
 export const stats = [
-  { value: "5", label: { ko: "서비스 타이틀", en: "Titles Live", zh: "營運作品", ru: "Игр в сервисе" } },
-  { value: "6", label: { ko: "서비스 플랫폼", en: "Platforms", zh: "服務平台", ru: "Платформы" } },
+  { value: "1", label: { ko: "서비스 타이틀", en: "Titles Live", zh: "營運作品", ru: "Игр в сервисе" } },
+  { value: "2", label: { ko: "서비스 플랫폼", en: "Platforms", zh: "服務平台", ru: "Платформы" } },
   { value: "13", label: { ko: "아시아 출시 시장", en: "Asia Markets", zh: "亞洲市場", ru: "Рынки Азии" } },
   { value: "8+", label: { ko: "글로벌 파트너", en: "Global Studios", zh: "全球夥伴", ru: "Мировых студий" } },
 ];
@@ -308,8 +308,11 @@ export const games: Game[] = [
     image: "/assets/games/vulcan-wide.webp",
     icon: "/assets/games/vulcan-icon.webp",
     status: "released",
-    platforms: ["Google Play"],
-    links: { "Google Play": GAHEE_PLAY_DEV_PAGE },
+    platforms: ["Google Play", "App Store"],
+    links: {
+      "Google Play": GAHEE_PLAY_DEV_PAGE,
+      "App Store": "https://apps.apple.com/kr/app/id6741363036",
+    },
     description: {
       ko: "평화로운 제국에 대장장이 신 불칸의 후손을 찾는 소식이 전해집니다. 후손이 되어 최고의 대장장이가 되어 보세요.",
       en: "In a peaceful empire, news arrives that a descendant of Vulcan, the god of blacksmiths, is being sought. Become the greatest blacksmith.",
