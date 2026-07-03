@@ -59,6 +59,7 @@ export async function submitCsInquiry(payload: Record<string, unknown>): Promise
   try {
     // Apps Script 웹앱은 CORS 응답 헤더가 없어 응답을 읽으면 막힌다.
     // → no-cors 로 "전송 보장"하고(불투명 응답), 네트워크 실패가 아니면 낙관적 성공 처리.
+    // ⚠️ 서버측 4xx/5xx 도 여기선 구분 불가 → 실제 접수 확인은 Apps Script 의 접수확인 메일이 담당.
     await fetch(CS_ENDPOINT, {
       method: "POST",
       mode: "no-cors",
@@ -71,6 +72,8 @@ export async function submitCsInquiry(payload: Record<string, unknown>): Promise
   }
 }
 
+/** mailto 폴백 — 폼 데이터로 제목([GAHEE 문의] 게임/이름)과 본문(빈 값 제외, "key: value" 줄바꿈)을
+ *  만들어 OS 기본 메일 앱을 연다. FORM_ENDPOINT 미설정 시 submitInquiry 가 이 함수를 호출한다. */
 function openMailto(data: Record<string, string>) {
   const subject = `[GAHEE 문의] ${data.game || data.name || ""}`.trim();
   const body = Object.entries(data)
