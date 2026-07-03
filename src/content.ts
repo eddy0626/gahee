@@ -63,7 +63,7 @@ export const nav = {
 export const copy = {
   ko: {
     heroText:
-      "모바일·PC·콘솔, 8개+ 글로벌 스튜디오와 함께. 좋은 게임을 한국과 아시아 13개 시장으로 잇습니다.",
+      "모바일에서 PC·콘솔까지, 8개+ 글로벌 스튜디오와 함께. 좋은 게임을 한국과 아시아 13개 시장으로 잇습니다.",
     heroEyebrow: "한국·아시아 퍼블리싱 게이트웨이 · Since 2022",
     eyebrow: {
       games: "Games — 게임 라인업",
@@ -111,7 +111,7 @@ export const copy = {
   },
   en: {
     heroText:
-      "Mobile, PC, and console — partnered with 8+ global studios. We bring great games to Korea and 13 Asian markets.",
+      "From mobile to PC and console — partnered with 8+ global studios. We bring great games to Korea and 13 Asian markets.",
     heroEyebrow: "Your Gateway to Korea & Asia · Since 2022",
     eyebrow: {
       games: "Games",
@@ -159,7 +159,7 @@ export const copy = {
   },
   zh: {
     heroText:
-      "行動裝置・PC・主機，攜手 8+ 家全球工作室。將優質遊戲帶進韓國與亞洲 13 個市場。",
+      "從行動到 PC 與主機，攜手 8+ 家全球工作室。將優質遊戲帶進韓國與亞洲 13 個市場。",
     heroEyebrow: "通往韓國與亞洲的發行門戶 · Since 2022",
     eyebrow: {
       games: "遊戲",
@@ -207,7 +207,7 @@ export const copy = {
   },
   ru: {
     heroText:
-      "Мобильные, PC и консоли — вместе с 8+ мировыми студиями. Мы приводим хорошие игры на рынок Кореи и 13 рынков Азии.",
+      "От мобильных до PC и консолей — вместе с 8+ мировыми студиями. Мы приводим хорошие игры на рынок Кореи и 13 рынков Азии.",
     heroEyebrow: "Ваш путь в Корею и Азию · Since 2022",
     eyebrow: {
       games: "Игры",
