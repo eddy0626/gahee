@@ -61,7 +61,7 @@ export async function submitInquiry(data: Record<string, string>): Promise<Inqui
      2) 아래 CS_ENDPOINT 에 붙여넣기
    엔드포인트가 비어 있으면 "notready" 를 반환해 안내 문구를 보여준다.
    ============================================================ */
-export const CS_ENDPOINT = "";
+export const CS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwFAASaFpm0BhIkfywgiEiuC5ncUPEqxLkaav07xbqEHCbh-bfhSOHSWu5_HKt7tN2u/exec";
 
 export type CsResult = "success" | "error" | "notready";
 
