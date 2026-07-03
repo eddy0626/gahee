@@ -630,9 +630,6 @@ function Footer({ locale }: { locale: Locale }) {
           <div className="foot__links">
             <a href="#terms">Terms</a>
             <a href="#privacy">Privacy</a>
-            <a href={contact.facebook} target="_blank" rel="noreferrer noopener">
-              Facebook
-            </a>
             <a href={contact.play} target="_blank" rel="noreferrer noopener">
               {t.storeLabel}
             </a>

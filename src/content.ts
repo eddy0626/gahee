@@ -423,6 +423,5 @@ export const contact = {
   business: "biz@gahee.net",
   support: "cs@gahee.net",
   address: "Gingorang-ro 14-gil, Gwangjin-gu, Seoul, Republic of Korea ZIP: 04918",
-  facebook: "https://www.facebook.com/profile.php?id=61569302554927",
   play: GAHEE_PLAY_DEV_PAGE,
 };
