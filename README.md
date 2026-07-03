@@ -1,190 +1,73 @@
-# GAHEE Website Redesign
+# GAHEE 웹사이트
 
-GAHEE 공식 웹사이트 리뉴얼 프로젝트입니다. 퍼블리싱 파트너 유치와 게임 라인업 소개를 중심으로, 기존 사이트 콘텐츠와 회사 소개서의 핵심 메시지를 React + Vite 기반 단일 페이지 사이트로 재구성했습니다. 이후 디자인을 정제하고 인터랙션·다크모드·게임 상세 모달·실제 작동 문의 폼 등의 기능을 추가했습니다.
+GAHEE(주식회사 가히) 게임 퍼블리셔 공식 마케팅 사이트. 백엔드 서버 없는 **정적 SPA**로, 개발사·퍼블리셔 문의와 게임 유저 고객센터(CS)를 함께 제공합니다.
 
-## 디자인 리뉴얼 — 다크·레드 게이밍 톤 (2026-06)
-
-"AI가 디자인한 티"(보라색 그라데이션·추상적 문구 등)를 걷어내기 위해, 디자인 워크플로 영상의 원칙(**① 카피 먼저 → ② 디자인 톤을 히어로에서 잠그고 → ③ 코드는 마지막**)을 적용해 전면 리뉴얼했습니다.
-
-- **방향 전환**: 밝은 톤 → **다크 + 레드(`#CB2957`) 게이밍 톤**. 검정 배경을 기본 테마로 승격(라이트는 토글 유지), 큰 디스플레이 타이포, 레드 글로우·깊이감. 게임 퍼블리셔에 어울리는 시각적 임팩트.
-- **히어로에서 톤 잠금 → 전 섹션 확장**: 폰트·색·밀도를 히어로에서 확정하고 같은 톤으로 모든 섹션을 확장해 "조각남"을 방지. 풀블리드 다크 배경 + 레드 글로우 + 테크 그리드, 키커 배지, 신뢰 칩(`since 2022` · `글로벌 스튜디오 8곳+` · `모바일·PC·콘솔`).
-- **공통 디자인 시스템**: 다크 토큰 심화(`--bg: #0d0d11` 등), 섹션 헤딩 레드 아이라인(`.sectionIntro h2::before`), 카드 호버 레드 글로우(게임·역량 카드), 숫자 글로우(StatStrip·공정·인덱스).
-- **카피 구체화** (뻔한 말 → 화면에서 검증 가능한 숫자): 히어로 리드("2022년부터 … 6개 플랫폼 … 글로벌 스튜디오 8곳+"), 퍼블리싱 "**6단계** 전 과정"(공정 트랙 6스텝과 일치), 게임 "**6개 플랫폼**", 마켓 패널 "**13개 시장**"(마켓 태그 13개와 일치). 실제 데이터만 사용하고 가짜 수치는 넣지 않았습니다.
-- **변경 파일**: `src/content.ts`(카피·신뢰칩 데이터 `heroHighlights`), `src/App.tsx`(히어로 키커·신뢰칩·마켓 카피), `src/styles.css`(다크 게이밍 톤), `index.html`(기본 테마 dark).
-
-## 코드 리뷰 & 품질 개선 (2026-06)
-
-멀티 에이전트로 8개 차원(정확성·React·접근성·CSS·i18n·성능·보안·SEO)을 병렬 리뷰하고, 각 지적을 적대적으로 검증(43건 중 6건 오탐 기각)해 **37건을 확정·수정**했습니다. 수정 후 다시 검증해 **32/32 fix 확인·회귀 0건**(타입체크·프로덕션 빌드·스크린샷 통과).
-
-- **콘텐츠 정확성**: 데이터와 어긋나던 지표 정정 — 서비스 타이틀 `5`, 장르 `5`, 아시아 시장 `13`(각 화면 요소와 일치). `partnershipBody` 한국어 번역.
-- **접근성**: 로케일 토글 시 `<html lang>` 동기화, 모바일 메뉴 포커스 트랩·복원, 폼 결과 `aria-live` 안내, 언어 토글 `aria-pressed`, 폼 오류색 AA 대비 토큰화(`--danger`), `prefers-reduced-motion` 커버리지 확대, 갤러리 썸네일 라벨 정정.
-- **i18n**: 폼 라벨·히어로 칩 라벨 등 하드코딩 문자열을 `content.ts`로 이동, 히어로 대표작 제목 로케일화.
-- **성능**: 프로덕션 minify 활성화(`esbuild`), 히어로 LCP 이미지 `fetchpriority`/preload + 레일 이미지 `lazy`, `.reveal` 상시 `will-change` 제거, `floaty`를 `translate`(컴포지터) 기반으로, 헤더 backdrop blur 완화.
-- **CSS/반응형**: 모바일 구분선 토큰화(다크에서 보이도록), featured 카드 2열 브레이크포인트 행 span 정정, 죽은 규칙 제거.
-- **견고성**: 히어로 쇼케이스 빈 배열 가드, 플레이스홀더 카드 더미 데이터 게이팅, `platformIcons` 미정의 가드.
-- **SEO**: `robots.txt`·`sitemap.xml` 추가, `canonical` 링크, `og:image` 치수/alt, 메타 설명 언어 일치.
-
-## 목표
-
-- 퍼블리싱 파트너가 GAHEE의 역량을 빠르게 이해할 수 있는 구조
-- 실제 서비스 중인 GAHEE 게임 이미지를 활용한 게임 포트폴리오
-- 국문/영문 전환을 지원하는 콘텐츠 구조
-- 기존 사이트의 회사 정보, 게임 설명, 문의 정보, 약관/개인정보 링크 유지
-- 검정 배경 기본의 **다크·레드 게이밍 톤** (브랜드색 `#000000`/`#CB2957`/`#DDDDDD`/`#EEEEEE`, 라이트는 선택형 토글)
+- **저장소**: `eddy0626/gahee`
+- **스택**: React 19 + TypeScript(strict) + Vite 7 · CSS 토큰(프레임워크 없음) · 상태 라이브러리 없음 · 시스템 폰트(외부 웹폰트 없음)
 
 ## 주요 기능
 
-- **국문/영문 전환** — 헤더 토글 및 모바일 메뉴에서 KO/EN 전환
-- **다크/라이트 테마 토글** — 헤더의 테마 버튼으로 전환, `localStorage`에 저장되어 재방문 시 유지. `index.html` 인라인 스크립트로 첫 페인트 전에 테마를 적용해 깜빡임(FOUC) 방지. **기본 테마는 dark**(라이트는 토글). 단, 히어로 섹션은 양 테마 모두 의도적으로 다크 밴드를 유지
-- **게임 상세 모달 + 스크린샷 갤러리** — 게임 카드 클릭/Enter 시 모달이 열리며, 스크린샷 갤러리(좌우 화살표·키보드 ←/→·썸네일), 설명, 장르, 플랫폼별 스토어 링크 표시. `Esc`·배경 클릭으로 닫힘, 포커스 트랩 및 닫을 때 포커스 복원
-- **스크롤 등장 / 호버 모션** — `IntersectionObserver` 기반으로 섹션·카드가 부드럽게 등장하고, 카드·버튼·칩에 호버 모션 적용. `prefers-reduced-motion` 사용자에겐 애니메이션 비활성
-- **실제 작동 문의 폼** — 이메일 서비스(Formspree) 전송을 지원하며, 엔드포인트 미설정 시 메일 앱(mailto)으로 폴백. 전송 중/성공/실패 상태 표시
-- **모바일 햄버거 메뉴** — 좁은 화면에서 슬라이드 오버레이 메뉴 제공(메뉴 열림 시 본문 스크롤 잠금, `Esc`·배경 클릭으로 닫힘)
-- **맨 위로 버튼** — 스크롤 시 우하단에 표시
-- **반응형 레이아웃** — 모바일/태블릿/데스크톱 브레이크포인트 분리
-- **SEO/공유 메타** — Open Graph·Twitter 카드, `theme-color` 메타 포함
+- **다크 시네마틱 디자인** — 딥블랙 + 레드(`#CB2957`) 톤, 대형 타이포, 스크롤 등장 모션(`prefers-reduced-motion` 대응)
+- **4개 언어** — 한국어 / English / 繁體中文(대만) / Русский. 언어 토글 + `<html lang>` 동기화, 번체 전용 시스템 폰트
+- **섹션** — Hero · Stats · Games · Company · Contact + 고객센터(CS) 모달
+- **문의 폼 2종 (백엔드 연결됨)**
+  - **개발사·퍼블리셔 문의** → Formspree → `biz@gahee.net` (메일 제목 자동 정리)
+  - **고객센터(CS) 문의** → Google Apps Script(구글 시트 + 드라이브 사진 저장 + `cs@gahee.net` 알림). **다게임 지원** — 문의 게임 선택, 게임 추가 시 자동 확장
+- **게임 상세 모달** — 스크린샷 갤러리, 플랫폼별 스토어 링크
+- **법률 페이지** — 개인정보처리방침·이용약관(4개 언어). 전문은 동적 import 로 지연로딩(코드 스플릿)
+- **접근성** — 오버레이 포커스 트랩·배경 inert·포커스 복원, `aria-live` 폼, AA 대비
+
+## 최근 작업 (2026-07)
+
+- **디자인 통일** — 라이트 섹션 제거, 전 섹션 다크 시네마틱 톤으로
+- **다국어 확장** — KO/EN → **KO/EN/繁中/RU** 전체 번역
+- **법률 페이지** — 개인정보처리방침·이용약관을 사이트 내 페이지로 + 4개 언어
+- **코드 리뷰 개선** — 법률 전문 코드 스플릿(메인 번들 405→240KB), 죽은 코드 제거, 접근성·타입 강화
+- **문의 폼 백엔드 연결** — Contact(Formspree)·CS(Apps Script) 실제 작동
+- **CS 폼 다게임화** — `content.ts`에 게임 추가 시 CS 문의 게임 목록 자동 확장
+- **데이터 정합** — 실제 라인업(불칸, 모바일)에 맞게 문구·수치 조정
+
+## 실행
+
+```bash
+npm install
+npm run dev      # http://127.0.0.1:5173
+npm run build    # dist/ 생성 (정적 배포용)
+```
 
 ## 프로젝트 구조
 
 ```text
-.
-├─ index.html            # 메타/OG 태그, FOUC 방지 테마 초기화 스크립트
-├─ package.json
-├─ package-lock.json
-├─ tsconfig.json
-├─ vite.config.ts
-├─ public/
-│  └─ assets/
-│     └─ games/
-│        ├─ gahee-logo.png
-│        ├─ mage-secret.webp
-│        ├─ tap-tap-builder.webp
-│        ├─ abyss.webp
-│        ├─ supreme-car-racing.webp
-│        ├─ vulcan-wide.webp
-│        └─ platform icons...
-└─ src/
-   ├─ main.tsx
-   ├─ App.tsx            # 섹션 컴포넌트 + 테마/모달/모바일 메뉴/폼 로직
-   ├─ content.ts         # 모든 텍스트·게임·회사 데이터
-   ├─ config.ts          # 문의 폼 전송 설정 및 헬퍼
-   ├─ useReveal.ts       # 스크롤 등장 애니메이션 훅
-   └─ styles.css         # 디자인 토큰 + 다크 테마 + 컴포넌트 스타일
+src/
+├─ App.tsx        # 섹션 컴포넌트 + 상태(모달·CS·법률·언어)
+├─ content.ts     # 모든 텍스트·게임·회사 데이터 (4개 언어) — 단일 출처
+├─ legal.ts       # 법률 전문(4개 언어) — 동적 import 로 지연로딩
+├─ config.ts      # 문의 폼 전송(Formspree / Apps Script)
+├─ styles.css     # 디자인 토큰 + 다크 테마 + 컴포넌트 스타일
+├─ HeroGlobe.tsx  # 히어로 캔버스 글로브
+└─ useReveal.ts   # 스크롤 등장 훅
+docs/
+└─ cs-apps-script.gs  # CS 백엔드 (구글 Apps Script)
+public/           # 게임 이미지, robots.txt, sitemap.xml
 ```
 
-## 설계 방식
+## 게임·문구 추가 (확장)
 
-### `src/content.ts`
+사이트는 대부분 **`src/content.ts` 데이터만** 고치면 확장됩니다. 코드 수정 거의 없음.
 
-사이트의 텍스트, 게임 데이터, 플랫폼 아이콘, 회사 프로필, 파트너, 로드맵, 연락처 정보를 한 곳에 모았습니다.
+- **게임 추가**: `games` 배열에 항목 추가(`slug`·`title`·`titleKo`·`genre`·`image`·`platforms`·`links`·`description` 4언어) → 게임 카드·플랫폼 필터·**CS 문의 게임 드롭다운에 자동 반영**. `placeholder: true` 면 숨김(준비 중), `featured: true` 면 큰 카드.
+- **문구·번역**: `content.ts` 의 해당 키(4개 언어 항상 함께). 법률 전문은 `legal.ts`.
 
-- `ko`, `en` 키로 국문/영문 문구를 분리했습니다.
-- `Game` 타입을 정의하고, 각 게임에 `slug`, 모달용 `screenshots?`(스크린샷 배열)·`detail?`(긴 설명) 필드를 추가했습니다. 미제공 시 대표 이미지·기본 설명으로 폴백합니다.
-- 기존 사이트의 placeholder 카드도 `placeholder: true`로 유지했습니다(모달 비활성).
-- 모달/폼/테마/메뉴용 UI 문구도 `copy`에 함께 관리합니다.
+## 폼 백엔드
 
-### `src/App.tsx`
+- **Contact** — `src/config.ts` 의 `FORM_ENDPOINT`(Formspree). 비어 있으면 `mailto` 폴백.
+- **CS** — `CS_ENDPOINT`(Apps Script 웹앱 URL). 스크립트 `docs/cs-apps-script.gs` 를 구글 시트에 배포(실행=나, 액세스=모든 사용자).
 
-페이지를 섹션 단위 컴포넌트로 나누어 구성하고, 상호작용 상태(테마, 모바일 메뉴, 선택된 게임)를 최상위에서 관리합니다.
+## 배포
 
-- `Header`: 로고, 내비게이션, KO/EN 전환, 테마 토글, 햄버거 버튼
-- `MobileNav`: 모바일 슬라이드 오버레이 메뉴
-- `Hero`: 핵심 메시지와 실제 게임 이미지 쇼케이스
-- `StatStrip`: 회사 소개서 기반 주요 수치
-- `Publishing`: 퍼블리싱 역량과 프로세스
-- `Games`: 서비스 타이틀과 예정 카드(클릭 시 상세 모달)
-- `GameModal`: 스크린샷 갤러리 + 상세 정보 모달
-- `Company`: 회사 소개, 기존 소개 문구, 파트너, 로드맵
-- `Contact`: 퍼블리싱 문의 폼(비동기 전송)
-- `Footer`: 회사 정보, 약관, 개인정보, SNS/스토어 링크
-- `BackToTop`: 맨 위로 버튼
+정적 빌드(`npm run build` → `dist/`). Netlify/Vercel 에 GitHub 저장소를 연결하면 `main` push 시 자동 배포 — **연결 예정.**
 
-### `src/config.ts`
+## ⚠️ 배포(공개) 전 확인
 
-문의 폼 전송 설정과 헬퍼(`submitInquiry`)를 담았습니다.
-
-- `FORM_ENDPOINT`가 설정되면 해당 엔드포인트로 전송(Formspree 방식), 비어 있으면 `mailto`로 폴백합니다.
-- 수신 주소 등 폼 관련 설정을 한 곳에서 관리합니다.
-
-### `src/useReveal.ts`
-
-`.reveal` 클래스 요소를 `IntersectionObserver`로 관찰하다가 화면에 들어오면 `.in`을 붙여 CSS 전환을 트리거합니다. `prefers-reduced-motion`이거나 미지원 환경에서는 즉시 모두 표시합니다.
-
-### `src/styles.css`
-
-별도 UI 라이브러리 없이 CSS로 디자인 시스템을 구성했습니다.
-
-- **시맨틱 디자인 토큰** 도입: `--bg`, `--surface`, `--text`, `--text-strong`, `--text-muted`, `--border`, `--accent` 등. 브랜드 4색을 베이스로 사용합니다.
-- **다크 테마**: `[data-theme="dark"]`에서 토큰을 오버라이드(검정/레드 브랜드는 유지, 배경·표면·텍스트만 반전).
-- 제목/본문에 `clamp()` 유동 타이포 스케일 적용.
-- 카드/버튼/칩 호버 모션, 포커스 링, 스크롤 등장(`.reveal`), 모달·모바일 메뉴·맨 위로 버튼 스타일.
-- 한글 줄바꿈을 위해 주요 제목에 `word-break: keep-all` 적용.
-- 실제 게임 이미지가 안정적으로 보이도록 고정 aspect-ratio 사용.
-- `prefers-reduced-motion` 대응 블록 포함.
-
-### `public/assets/games`
-
-실제 GAHEE 기존 사이트에서 사용 중인 게임 이미지를 프로젝트용 WebP로 정리했습니다.
-
-- `Mage's Secret`, `Tap Tap Builder`, `Abyss`, `Supreme Car Racing`, `Vulcan - Blacksmith RPG`
-- Google Play, App Store, One Store, Steam, Nintendo, PlayStation 아이콘
-
-## 실행 방법
-
-```bash
-npm install
-npm run dev
-```
-
-기본 개발 서버:
-
-```text
-http://127.0.0.1:5173/
-```
-
-> 포트가 사용 중이면 Vite가 자동으로 다른 포트(예: 5174)를 사용합니다.
-
-## 빌드
-
-```bash
-npm run build
-```
-
-빌드 스크립트는 OneDrive 작업 경로에서 `dist` 삭제 충돌이 발생하지 않도록 `vite build --emptyOutDir false`를 사용합니다.
-
-## 설정이 필요한 항목 (선택)
-
-다음 두 가지는 비워둬도 동작하며, 채우면 기능이 강화됩니다.
-
-1. **문의 폼 이메일 전송 (Formspree)**
-   - [formspree.io](https://formspree.io) 가입 → 새 Form 생성(수신: `biz@gahee.net`)
-   - 발급된 엔드포인트(예: `https://formspree.io/f/abcdwxyz`)를 `src/config.ts`의 `FORM_ENDPOINT`에 입력
-   - 비어 있으면 자동으로 메일 앱(mailto)을 여는 방식으로 폴백합니다.
-
-2. **게임 스크린샷 갤러리**
-   - 이미지를 `public/assets/games/<slug>/`(예: `mages-secret/`)에 추가
-   - `src/content.ts`의 해당 게임 `screenshots` 배열에 경로 등록
-   - 등록 전까지는 대표 이미지 1장으로 표시됩니다.
-
-## 콘텐츠 수정 가이드
-
-- 문구 수정: `src/content.ts`
-- 섹션 구조 수정: `src/App.tsx`
-- 색상/레이아웃/테마 수정: `src/styles.css`
-- 게임 이미지 교체: `public/assets/games`에 파일 추가 후 `src/content.ts`의 `image`/`screenshots` 경로 수정
-- 문의 폼 전송 설정: `src/config.ts`
-
-## 문의 폼 항목
-
-퍼블리싱 문의 폼은 다음 항목을 받도록 설계했습니다.
-
-- 이름
-- 회사명
-- 이메일
-- 게임명
-- 장르
-- 플랫폼
-- 출시 상태
-- 게임 영상 링크
-- 스토어 링크
-- 소개 내용
+- 이용약관 일부·번역본은 초안/참고용 → **법무·네이티브 검토** 필요
+- Formspree 첫 제출 **활성화** 확인 / CS 시트 테스트 데이터 정리
