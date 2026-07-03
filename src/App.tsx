@@ -8,13 +8,14 @@ import {
   GameCategory,
   gameFilters,
   games,
-  legalDocs,
   Locale,
   nav,
   platformCategory,
   platformIcons,
   stats,
 } from "./content";
+// 법률 전문(4언어)은 무겁고 자주 안 열리므로 지연로딩한다. 타입만 정적 import(런타임 청크 미포함).
+import type { LegalDoc } from "./legal";
 import { CsImage, submitCsInquiry, submitInquiry } from "./config";
 import { useReveal } from "./useReveal";
 import { HeroGlobe } from "./HeroGlobe";
@@ -31,6 +32,10 @@ const LEGAL_DISCLAIMER: Record<Locale, string> = {
   zh: "本翻譯僅供參考。如與韓文原文有任何出入，概以韓文原文為準。",
   ru: "Это справочный перевод. При любых расхождениях приоритет имеет корейский оригинал.",
 };
+
+/** 스크롤 임계값(px) — 내비 배경 블러 전환 / '맨 위로' 버튼 표시 시점 */
+const NAV_BLUR_SCROLL_PX = 40;
+const BACK_TO_TOP_SCROLL_PX = 700;
 
 /* ---------- 아이콘: 장식용 인라인 SVG (currentColor 상속, 보조기기엔 숨김) ---------- */
 const IconMenu = () => (
@@ -94,11 +99,12 @@ function Nav({ locale, setLocale, scrolled, onOpenMenu, onCsOpen }: NavProps) {
           </button>
         </nav>
         <div className="nav__actions">
-          <div className="lang" aria-label="Language">
+          <div className="lang" role="group" aria-label="Language">
             {LOCALES.map((l, i) => (
               <Fragment key={l}>
-                {i > 0 && <span>/</span>}
-                <button aria-pressed={locale === l} onClick={() => setLocale(l)}>
+                {i > 0 && <span aria-hidden="true">/</span>}
+                {/* 번체 버튼엔 lang 을 지정해 스크린리더가 한국어/영어로 오발음하지 않게 한다 */}
+                <button lang={l === "zh" ? "zh-Hant" : undefined} aria-pressed={locale === l} onClick={() => setLocale(l)}>
                   {LOCALE_LABELS[l]}
                 </button>
               </Fragment>
@@ -136,7 +142,7 @@ function Drawer({ open, onClose, locale, setLocale, onCsOpen }: { open: boolean;
       return;
     }
     // 열림: 현재 포커스를 기억해 두고 닫기 버튼부터 시작
-    triggerRef.current = document.activeElement as HTMLElement;
+    triggerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     closeRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -183,9 +189,9 @@ function Drawer({ open, onClose, locale, setLocale, onCsOpen }: { open: boolean;
         >
           {csForm.nav[locale]}
         </button>
-        <div className="drawer__lang">
+        <div className="drawer__lang" role="group" aria-label="Language">
           {LOCALES.map((l) => (
-            <button key={l} aria-pressed={locale === l} onClick={() => setLocale(l)}>
+            <button key={l} lang={l === "zh" ? "zh-Hant" : undefined} aria-pressed={locale === l} onClick={() => setLocale(l)}>
               {LOCALE_LABELS[l]}
             </button>
           ))}
@@ -402,7 +408,8 @@ function Games({ locale, onSelect }: { locale: Locale; onSelect: (g: Game) => vo
           </div>
         )}
         <div className="games__grid">
-          {matches(featured) && card(featured, "feature")}
+          {/* featured 는 visible[0] 폴백이라 게임이 하나도 없으면 undefined → 가드로 크래시 방지 */}
+          {featured && matches(featured) && card(featured, "feature")}
           {rest.filter(matches).map((g) => card(g, "wide"))}
         </div>
       </div>
@@ -410,10 +417,9 @@ function Games({ locale, onSelect }: { locale: Locale; onSelect: (g: Game) => vo
   );
 }
 
-/* ============================================================ COMPANY + PUBLISHING (병합) */
-/** 회사 소개 + 퍼블리싱 — 정체성·프로필 → 일하는 방식(프로세스·역량) → 파트너·로드맵.
- *  '전 과정 직접' 서사를 도입부 한 번으로 줄이고, 아래 프로세스·역량 카드가 그것을 증명한다.
- *  nav '퍼블리싱'(#publishing) 앵커는 가운데 퍼블리싱 블록으로 유지. */
+/* ============================================================ COMPANY */
+/** 회사 소개 — 좌측 정체성 카피(aboutTitle/aboutBody) + 우측 회사 프로필 표(companyProfile).
+ *  과거의 퍼블리싱·프로세스·역량·파트너·로드맵 블록과 #publishing 앵커는 제거됨(다크 시네마틱 축소). */
 function Company({ locale }: { locale: Locale }) {
   const t = copy[locale];
   return (
@@ -452,7 +458,9 @@ function Contact({ locale }: { locale: Locale }) {
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
-    const data = Object.fromEntries(new FormData(form).entries()) as Record<string, string>;
+    // FormData 값은 string | File 이지만 이 폼엔 파일 입력이 없으므로 문자열 항목만 취한다(캐스트 없이 안전).
+    const entries = [...new FormData(form).entries()].filter((e): e is [string, string] => typeof e[1] === "string");
+    const data = Object.fromEntries(entries);
     setStatus("sending");
     const result = await submitInquiry(data);
     setStatus(result);
@@ -532,7 +540,9 @@ function Contact({ locale }: { locale: Locale }) {
 }
 
 /* ============================================================ LEGAL PAGE */
-/** 법률 문서 본문(문자열)을 줄 단위로 훑어 소제목(1. / 1))·목록(●)·문단으로 렌더. */
+/** 법률 문서 본문(문자열)을 줄 단위로 훑어 위계별 요소로 렌더한다.
+ *  4개 언어(ko/en/zh/ru) 각각의 장·조 접두어를 정규식으로 분류하므로, 번역 시 접두어 형식
+ *  (제N장/Chapter/第N章/Глава, 제N조/Article/第N條/Статья)을 유지해야 소제목이 문단으로 떨어지지 않는다. */
 function renderLegalBody(body: string) {
   const nodes: ReactNode[] = [];
   let bullets: string[] = [];
@@ -560,10 +570,15 @@ function renderLegalBody(body: string) {
       return;
     }
     flush();
+    // 장(제N장/Chapter/第N章/Глава) → 큰 제목(레드)
     if (/^(제\d+장|Chapter \d+|第\d+章|Глава \d+)/.test(text)) nodes.push(<h2 className="legal__chapter" key={`c-${nodes.length}`}>{text}</h2>);
+    // 조·부칙(제N조/Article/第N條/Статья, 부칙/Addendum/附則/Дополнение) → 조 제목
     else if (/^(제\d+조|Article \d+|第\d+條|Статья \d+|부칙|Addendum|附則|Дополнение)/.test(text)) nodes.push(<h2 className="legal__h" key={`a-${nodes.length}`}>{text}</h2>);
+    // '1. ' 번호 소제목(개인정보처리방침의 절) → 조 제목과 동급
     else if (/^\d+\.\s/.test(text)) nodes.push(<h2 className="legal__h" key={`h-${nodes.length}`}>{text}</h2>);
+    // '1) ' 하위 항목 → 소제목
     else if (/^\d+\)\s/.test(text)) nodes.push(<h3 className="legal__sub" key={`s-${nodes.length}`}>{text}</h3>);
+    // 그 외 → 일반 문단
     else nodes.push(<p className="legal__p" key={`p-${nodes.length}`}>{text}</p>);
   });
   flush();
@@ -572,8 +587,7 @@ function renderLegalBody(body: string) {
 
 /** 개인정보처리방침·이용약관 전용 풀스크린 페이지. 푸터 링크(#privacy/#terms)로 열린다.
  *  본문은 한국어 원문(법적 문구). 배경 스크롤 잠금 + Esc 로 닫기. */
-function LegalPage({ docKey, locale, onClose }: { docKey: "privacy" | "terms"; locale: Locale; onClose: () => void }) {
-  const doc = legalDocs[docKey];
+function LegalPage({ doc, locale, onClose }: { doc: LegalDoc; locale: Locale; onClose: () => void }) {
   const closeRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     closeRef.current?.focus();
@@ -583,7 +597,6 @@ function LegalPage({ docKey, locale, onClose }: { docKey: "privacy" | "terms"; l
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
-  if (!doc) return null;
   return (
     <div className="legal" role="dialog" aria-modal="true" aria-label={doc.title[locale]}>
       <div className="legal__bar">
@@ -948,7 +961,7 @@ function CSModal({ locale, onClose }: { locale: Locale; onClose: () => void }) {
             </label>
 
             <label className="cs__check field--full">
-              <input type="checkbox" name="consentPrivacy" />
+              <input type="checkbox" name="consentPrivacy" aria-required="true" />
               <span>
                 {L(c.consents.privacy)}{" "}
                 <a href={c.privacyUrl} target="_blank" rel="noreferrer noopener">
@@ -957,7 +970,7 @@ function CSModal({ locale, onClose }: { locale: Locale; onClose: () => void }) {
               </span>
             </label>
             <label className="cs__check field--full">
-              <input type="checkbox" name="consentNotice" />
+              <input type="checkbox" name="consentNotice" aria-required="true" />
               <span>{L(c.consents.notice)}</span>
             </label>
 
@@ -965,7 +978,7 @@ function CSModal({ locale, onClose }: { locale: Locale; onClose: () => void }) {
               {status === "sending" ? L(c.sending) : L(c.submit)} <IconArrow />
             </button>
             {(err || msg) && (
-              <p className={`form__status field--full ${isErr ? "err" : "ok"}`} role={isErr ? "alert" : "status"} aria-live="polite">
+              <p className={`form__status field--full ${isErr ? "err" : "ok"}`} role={isErr ? "alert" : "status"} aria-live={isErr ? "assertive" : "polite"}>
                 {err || msg}
               </p>
             )}
@@ -981,7 +994,7 @@ function CSModal({ locale, onClose }: { locale: Locale; onClose: () => void }) {
 function BackToTop({ label }: { label: string }) {
   const [show, setShow] = useState(false);
   useEffect(() => {
-    const onScroll = () => setShow(window.scrollY > 700);
+    const onScroll = () => setShow(window.scrollY > BACK_TO_TOP_SCROLL_PX);
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
@@ -1011,7 +1024,9 @@ export default function App() {
   const [csOpen, setCsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [legalKey, setLegalKey] = useState<"privacy" | "terms" | null>(null);
+  const [legalDoc, setLegalDoc] = useState<LegalDoc | null>(null); // 동적 import 로 로드된 법률 문서
   const lastFocus = useRef<HTMLElement | null>(null);
+  const legalTrigger = useRef<HTMLElement | null>(null); // 법률 페이지를 연 요소(닫을 때 포커스 복원용)
 
   // locale 변경으로 새로 렌더된 .reveal 요소도 다시 관찰
   useReveal([locale]);
@@ -1021,25 +1036,45 @@ export default function App() {
     document.documentElement.lang = HTML_LANG[locale];
   }, [locale]);
 
-  // 드로어/모달/법률페이지가 열린 동안 배경 스크롤 잠금
-  useEffect(() => {
-    document.body.classList.toggle("is-locked", menuOpen || selected !== null || csOpen || legalKey !== null);
-  }, [menuOpen, selected, csOpen, legalKey]);
+  // 오버레이(드로어·게임/CS 모달·법률페이지) 중 하나라도 열렸는지 — 배경 스크롤잠금 + inert 공유
+  const overlayOpen = menuOpen || selected !== null || csOpen || legalKey !== null;
 
-  // 법률 페이지(#privacy/#terms) — 해시로 열고 닫아 딥링크·뒤로가기 지원. 문서 없는 해시는 무시.
+  // 오버레이가 열린 동안 배경 스크롤 잠금
+  useEffect(() => {
+    document.body.classList.toggle("is-locked", overlayOpen);
+  }, [overlayOpen]);
+
+  // 법률 페이지(#privacy/#terms) — 해시로 열고 닫아 딥링크·뒤로가기 지원.
   useEffect(() => {
     const sync = () => {
       const h = window.location.hash.replace("#", "");
-      setLegalKey((h === "privacy" || h === "terms") && legalDocs[h] ? h : null);
+      setLegalKey(h === "privacy" || h === "terms" ? h : null);
     };
     sync();
     window.addEventListener("hashchange", sync);
     return () => window.removeEventListener("hashchange", sync);
   }, []);
 
+  // legalKey 가 정해지면 법률 전문 모듈(무거움)을 동적 import 해 로드(코드스플릿) + 포커스 저장/복원.
+  useEffect(() => {
+    if (!legalKey) {
+      setLegalDoc(null);
+      legalTrigger.current?.focus(); // 닫을 때 열었던 요소(푸터 링크 등)로 포커스 복원
+      return;
+    }
+    legalTrigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    let cancelled = false;
+    import("./legal").then((m) => {
+      if (!cancelled) setLegalDoc(m.legalDocs[legalKey] ?? null);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [legalKey]);
+
   // 헤더 배경(블러) 전환용 스크롤 감지
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    const onScroll = () => setScrolled(window.scrollY > NAV_BLUR_SCROLL_PX);
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
@@ -1047,7 +1082,7 @@ export default function App() {
 
   // 모달: 연 요소를 기억해 두고 닫힐 때 그 자리로 포커스 복원
   const openGame = (game: Game) => {
-    lastFocus.current = document.activeElement as HTMLElement;
+    lastFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     setSelected(game);
   };
   const closeGame = useCallback(() => {
@@ -1058,13 +1093,17 @@ export default function App() {
   // CS 문의 모달: nav '고객센터' 또는 게임 모달의 "고객센터 문의" 에서 열림.
   // 연 요소를 기억(닫을 때 포커스 복원), 게임 모달이 열려 있으면 닫고 CS 로 전환.
   const openCs = useCallback(() => {
-    lastFocus.current = document.activeElement as HTMLElement;
+    // 게임 모달에서 CS 로 전환할 때는 게임 모달을 연 요소를 복원 대상으로 그대로 둔다(모달 버튼은 곧 사라짐).
+    if (selected === null) {
+      lastFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    }
     setSelected(null);
     setCsOpen(true);
-  }, []);
+  }, [selected]);
   const closeCs = useCallback(() => {
     setCsOpen(false);
-    lastFocus.current?.focus();
+    // 복원 대상이 DOM 에서 사라졌으면(예: 전환 중 언마운트) 건너뛴다
+    if (lastFocus.current?.isConnected) lastFocus.current.focus();
   }, []);
 
   // Drawer 가 effect 의존성으로 쓰므로 참조를 고정한다 — 리렌더(예: 드로어 안 언어 전환)마다
@@ -1073,20 +1112,24 @@ export default function App() {
 
   return (
     <>
-      <Nav locale={locale} setLocale={setLocale} scrolled={scrolled} onOpenMenu={() => setMenuOpen(true)} onCsOpen={openCs} />
+      {/* 배경(내비·본문·푸터) — 오버레이가 열리면 inert 처리해 포커스가 밖으로 새지 않고
+          스크린리더도 배경을 건너뛴다. 오버레이(드로어·모달·법률)는 이 래퍼 밖에 두어 조작 가능. */}
+      <div inert={overlayOpen ? true : undefined}>
+        <Nav locale={locale} setLocale={setLocale} scrolled={scrolled} onOpenMenu={() => setMenuOpen(true)} onCsOpen={openCs} />
+        <main>
+          <Hero locale={locale} />
+          <Stats locale={locale} />
+          <Games locale={locale} onSelect={openGame} />
+          <Company locale={locale} />
+          <Contact locale={locale} />
+        </main>
+        <Footer locale={locale} />
+        <BackToTop label={copy[locale].topLabel} />
+      </div>
       <Drawer open={menuOpen} onClose={closeMenu} locale={locale} setLocale={setLocale} onCsOpen={openCs} />
-      <main>
-        <Hero locale={locale} />
-        <Stats locale={locale} />
-        <Games locale={locale} onSelect={openGame} />
-        <Company locale={locale} />
-        <Contact locale={locale} />
-      </main>
-      <Footer locale={locale} />
-      <BackToTop label={copy[locale].topLabel} />
       {selected && <GameModal game={selected} locale={locale} onClose={closeGame} onCsOpen={openCs} />}
       {csOpen && <CSModal locale={locale} onClose={closeCs} />}
-      {legalKey && <LegalPage docKey={legalKey} locale={locale} onClose={() => (window.location.hash = "")} />}
+      {legalKey && legalDoc && <LegalPage doc={legalDoc} locale={locale} onClose={() => (window.location.hash = "")} />}
     </>
   );
 }
