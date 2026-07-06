@@ -174,8 +174,8 @@ export function GameModal({ game, locale, onClose, onCsOpen }: { game: Game; loc
               );
             })}
           </div>
-          {/* 불칸: 고객센터(CS) 문의 진입 — 클릭 시 CS 폼 모달로 전환 */}
-          {game.slug === "vulcan" && (
+          {/* CS 지원 게임(support)만: 고객센터 문의 진입 — 클릭 시 CS 폼 모달로 전환 */}
+          {game.support && (
             <button className="btn btn--ghost modal__cs" type="button" onClick={() => onCsOpen(game)}>
               {csForm.button[locale]} <IconArrow />
             </button>
@@ -197,11 +197,11 @@ const CS_MAX_BYTES = 10 * 1024 * 1024; // 장당 10MB
  */
 export function CSModal({ locale, defaultGame, onClose }: { locale: Locale; defaultGame: string | null; onClose: () => void }) {
   const c = csForm;
-  // 문의 게임 선택지 — content.ts 의 서비스 중(placeholder 아님) 게임에서 자동 생성.
-  // 게임을 content.ts 에 추가하면 여기에도 자동으로 나타난다. 값·표시는 한글명(없으면 영문명).
-  const liveGames = games.filter((g) => !g.placeholder);
+  // 문의 게임 선택지 — content.ts 에서 CS 지원(support) 플래그가 켜진 게임에서 자동 생성.
+  // 새 게임에 support: true 를 주면 여기에도 자동으로 나타난다. 값·표시는 한글명(없으면 영문명).
+  const supportGames = games.filter((g) => g.support);
   const gameName = (g: Game) => g.titleKo || g.title;
-  const defaultGameValue = defaultGame ?? (liveGames.length === 1 ? gameName(liveGames[0]) : "");
+  const defaultGameValue = defaultGame ?? (supportGames.length === 1 ? gameName(supportGames[0]) : "");
   const L = (o: Record<Locale, string>) => o[locale];
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error" | "notready">("idle");
   const [err, setErr] = useState("");
@@ -307,7 +307,7 @@ export function CSModal({ locale, defaultGame, onClose }: { locale: Locale; defa
                     {L(c.labels.gamePlaceholder)}
                   </option>
                 )}
-                {liveGames.map((g) => (
+                {supportGames.map((g) => (
                   <option key={g.slug} value={gameName(g)}>
                     {gameName(g)}
                   </option>
