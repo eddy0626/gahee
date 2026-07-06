@@ -22,15 +22,28 @@ export function HeroGlobe() {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const COUNT = 130;
 
-    type P = { x: number; y: number; z: number };
-    const base: P[] = [];
+    // 구 위 점의 기준 좌표(회전 전) — 플랫 타입배열로 보관해 프레임마다 객체를 새로 만들지 않는다.
+    const BX = new Float64Array(COUNT);
+    const BY = new Float64Array(COUNT);
+    const BZ = new Float64Array(COUNT);
     const golden = Math.PI * (3 - Math.sqrt(5));
     for (let i = 0; i < COUNT; i++) {
       const y = 1 - (i / (COUNT - 1)) * 2;
       const r = Math.sqrt(Math.max(0, 1 - y * y));
       const theta = golden * i;
-      base.push({ x: Math.cos(theta) * r, y, z: Math.sin(theta) * r });
+      BX[i] = Math.cos(theta) * r;
+      BY[i] = y;
+      BZ[i] = Math.sin(theta) * r;
     }
+
+    // 프레임 간 재사용 버퍼 — 회전 결과(x,z)와 화면 x좌표(sx). 화면 y(sy)는 회전과 무관해 resize 에서 계산.
+    const X = new Float64Array(COUNT);
+    const Z = new Float64Array(COUNT);
+    const SX = new Float64Array(COUNT);
+    const SY = new Float64Array(COUNT);
+    const CONNECT = 0.42; // 연결 임계 거리
+    const CONNECT2 = CONNECT * CONNECT; // 그 제곱 — 대부분의 쌍은 sqrt 없이 여기서 걸러낸다
+    const TAU = Math.PI * 2;
 
     let w = 0;
     let h = 0;
@@ -53,6 +66,8 @@ export function HeroGlobe() {
       radius = Math.min(w, h) * 0.46;
       cx = w * 0.52;
       cy = h * 0.5;
+      // 화면 y좌표는 회전과 무관(점의 기준 y 고정) → 리사이즈 때만 다시 계산
+      for (let i = 0; i < COUNT; i++) SY[i] = cy + BY[i] * radius;
       // 캔버스 크기 변경은 비트맵을 비우므로 즉시 한 프레임 다시 그린다
       // (reduced-motion 모드에선 루프가 없어 이 호출이 유일한 재렌더 경로)
       draw();
@@ -65,45 +80,57 @@ export function HeroGlobe() {
       const cos = Math.cos(angle);
       ctx.clearRect(0, 0, w, h);
 
-      const pts = base.map((p) => {
-        const x = p.x * cos - p.z * sin;
-        const z = p.x * sin + p.z * cos;
-        return { x, y: p.y, z, sx: cx + x * radius, sy: cy + p.y * radius };
-      });
+      // 회전 + 투영을 재사용 버퍼에 제자리로 기록(할당 없음). sy 는 회전 무관이라 이미 resize 에서 계산됨.
+      for (let i = 0; i < COUNT; i++) {
+        const bx = BX[i];
+        const bz = BZ[i];
+        const x = bx * cos - bz * sin;
+        const z = bx * sin + bz * cos;
+        X[i] = x;
+        Z[i] = z;
+        SX[i] = cx + x * radius;
+      }
 
       ctx.lineWidth = 1;
-      for (let i = 0; i < pts.length; i++) {
-        const a = pts[i];
-        if (a.z < -0.15) continue;
-        for (let j = i + 1; j < pts.length; j++) {
-          const b = pts[j];
-          if (b.z < -0.15) continue;
-          const dx = a.x - b.x;
-          const dy = a.y - b.y;
-          const dz = a.z - b.z;
-          const d = Math.sqrt(dx * dx + dy * dy + dz * dz);
-          if (d < 0.42) {
-            const depth = (a.z + b.z) * 0.25 + 0.5;
-            const alpha = (1 - d / 0.42) * 0.2 * depth;
+      for (let i = 0; i < COUNT; i++) {
+        const az = Z[i];
+        if (az < -0.15) continue;
+        const ax = X[i];
+        const ay = BY[i];
+        const asx = SX[i];
+        const asy = SY[i];
+        for (let j = i + 1; j < COUNT; j++) {
+          const bz = Z[j];
+          if (bz < -0.15) continue;
+          const dx = ax - X[j];
+          const dy = ay - BY[j];
+          const dz = az - bz;
+          const d2 = dx * dx + dy * dy + dz * dz;
+          if (d2 < CONNECT2) {
+            const d = Math.sqrt(d2); // 통과한 쌍에서만 sqrt
+            const depth = (az + bz) * 0.25 + 0.5;
+            const alpha = (1 - d / CONNECT) * 0.2 * depth;
             ctx.strokeStyle = `rgba(203,41,87,${alpha.toFixed(3)})`;
             ctx.beginPath();
-            ctx.moveTo(a.sx, a.sy);
-            ctx.lineTo(b.sx, b.sy);
+            ctx.moveTo(asx, asy);
+            ctx.lineTo(SX[j], SY[j]);
             ctx.stroke();
           }
         }
       }
 
-      for (const p of pts) {
-        const depth = p.z * 0.5 + 0.5;
+      for (let i = 0; i < COUNT; i++) {
+        const depth = Z[i] * 0.5 + 0.5;
         const core = 0.6 + depth * 1.9;
+        const sx = SX[i];
+        const sy = SY[i];
         ctx.beginPath();
         ctx.fillStyle = `rgba(255,61,110,${(0.05 + depth * 0.12).toFixed(3)})`;
-        ctx.arc(p.sx, p.sy, core * 3.2, 0, Math.PI * 2);
+        ctx.arc(sx, sy, core * 3.2, 0, TAU);
         ctx.fill();
         ctx.beginPath();
         ctx.fillStyle = `rgba(255,108,148,${(0.2 + depth * 0.75).toFixed(3)})`;
-        ctx.arc(p.sx, p.sy, core, 0, Math.PI * 2);
+        ctx.arc(sx, sy, core, 0, TAU);
         ctx.fill();
       }
     }
