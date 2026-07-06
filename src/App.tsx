@@ -18,6 +18,7 @@ import {
 import type { LegalDoc } from "./legal";
 import { CsImage, submitCsInquiry, submitInquiry } from "./config";
 import { useReveal } from "./useReveal";
+import { useFocusTrap } from "./useFocusTrap";
 import { HeroGlobe } from "./HeroGlobe";
 
 /** 지원 언어와 토글 버튼 라벨 — 한국어·영어·번체 중국어(대만)·러시아어 */
@@ -132,39 +133,10 @@ function Nav({ locale, setLocale, scrolled, onOpenMenu, onCsOpen }: NavProps) {
 function Drawer({ open, onClose, locale, setLocale, onCsOpen }: { open: boolean; onClose: () => void; locale: Locale; setLocale: (l: Locale) => void; onCsOpen: () => void }) {
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
-  const triggerRef = useRef<HTMLElement | null>(null);
   const t = copy[locale];
 
-  useEffect(() => {
-    if (!open) {
-      // 닫힘: 드로어를 열었던 요소로 포커스 복원
-      triggerRef.current?.focus();
-      return;
-    }
-    // 열림: 현재 포커스를 기억해 두고 닫기 버튼부터 시작
-    triggerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    closeRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-      if (e.key !== "Tab") return;
-      // 포커스 트랩: 패널 안 포커스 가능한 요소의 처음↔끝을 순환
-      const panel = panelRef.current;
-      if (!panel) return;
-      const f = panel.querySelectorAll<HTMLElement>('a[href], button:not([disabled])');
-      if (!f.length) return;
-      const first = f[0];
-      const last = f[f.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
+  // 드로어는 항상 마운트된 채 open 으로 토글되므로 restoreFocus 로 트리거(햄버거) 포커스를 자체 복원한다.
+  useFocusTrap({ active: open, containerRef: panelRef, initialFocusRef: closeRef, onClose, restoreFocus: true });
 
   return (
     <div className={`drawer ${open ? "open" : ""}`} aria-hidden={!open}>
@@ -666,33 +638,16 @@ function GameModal({ game, locale, onClose, onCsOpen }: { game: Game; locale: Lo
   const title = locale === "ko" ? game.titleKo : game.title;
   const body = game.detail ? game.detail[locale] : game.description[locale];
 
-  useEffect(() => {
-    closeRef.current?.focus();
-    const total = shots.length;
-    // 키보드: Esc 닫기 / ←·→ 갤러리 이동 / Tab 포커스 트랩
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
-      else if (e.key === "ArrowLeft" && total > 1) setIndex((i) => (i - 1 + total) % total);
+  // 갤러리 ←·→ 이동 (Esc·Tab 트랩은 useFocusTrap 이 담당). shots.length 만 바뀔 때 갱신.
+  const onArrows = useCallback(
+    (e: KeyboardEvent) => {
+      const total = shots.length;
+      if (e.key === "ArrowLeft" && total > 1) setIndex((i) => (i - 1 + total) % total);
       else if (e.key === "ArrowRight" && total > 1) setIndex((i) => (i + 1) % total);
-      else if (e.key === "Tab") {
-        const card = cardRef.current;
-        if (!card) return;
-        const f = card.querySelectorAll<HTMLElement>('a[href], button:not([disabled])');
-        if (!f.length) return;
-        const first = f[0];
-        const last = f[f.length - 1];
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    }
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [shots.length, onClose]);
+    },
+    [shots.length],
+  );
+  useFocusTrap({ containerRef: cardRef, initialFocusRef: closeRef, onClose, onExtraKey: onArrows });
 
   return (
     <div className="modal" role="dialog" aria-modal="true" aria-label={title}>
@@ -791,31 +746,13 @@ function CSModal({ locale, defaultGame, onClose }: { locale: Locale; defaultGame
   const closeRef = useRef<HTMLButtonElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    closeRef.current?.focus();
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
-      else if (e.key === "Tab") {
-        const card = cardRef.current;
-        if (!card) return;
-        const f = card.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])',
-        );
-        if (!f.length) return;
-        const first = f[0];
-        const last = f[f.length - 1];
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    }
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  // CS 폼은 입력 요소가 많아 셀렉터에 input/select/textarea 를 포함한다.
+  useFocusTrap({
+    containerRef: cardRef,
+    initialFocusRef: closeRef,
+    onClose,
+    focusableSelector: "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])",
+  });
 
   // 미리보기 objectURL 누수 방지 — previews 변경/언마운트 시 이전 URL 해제
   useEffect(() => () => previews.forEach((u) => URL.revokeObjectURL(u)), [previews]);
