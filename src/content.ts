@@ -39,7 +39,9 @@ export type Game = {
 };
 
 /** 상단 내비게이션 메뉴 (섹션 앵커 이동) */
-export const nav = {
+/** 내비게이션 항목 — 라벨과 섹션 앵커 */
+export type NavItem = { label: string; href: string };
+export const nav: Record<Locale, NavItem[]> = {
   ko: [
     { label: "회사", href: "#company" },
     { label: "게임", href: "#games" },
@@ -62,8 +64,51 @@ export const nav = {
   ],
 };
 
-/** UI 공통 카피 — ko/en 의 키 구조는 항상 동일하게 유지한다 (불일치 시 컴파일 에러). */
-export const copy = {
+/** UI 공통 카피의 로케일별 구조 — 모든 언어가 이 키 집합을 그대로 가져야 한다(누락/오타 시 컴파일 에러). */
+export type CopyText = {
+  heroText: string;
+  heroEyebrow: string;
+  eyebrow: { games: string; company: string; contact: string };
+  primaryCta: string;
+  secondaryCta: string;
+  navCta: string;
+  drawerCta: string;
+  aboutTitle: string;
+  aboutBody: string;
+  gamesTitle: string;
+  gamesText: string;
+  contactTitle: string;
+  contactText: string;
+  submit: string;
+  sending: string;
+  submitSuccess: string;
+  submitMailto: string;
+  submitError: string;
+  detailCta: string;
+  menuToggle: string;
+  closeLabel: string;
+  prevLabel: string;
+  nextLabel: string;
+  topLabel: string;
+  comingSoon: string;
+  imageLabel: string;
+  storeLabel: string;
+  fieldLabels: {
+    name: string;
+    company: string;
+    email: string;
+    game: string;
+    genre: string;
+    platform: string;
+    status: string;
+    video: string;
+    store: string;
+    message: string;
+  };
+};
+
+/** UI 공통 카피 — 4개 언어 모두 CopyText 구조를 동일하게 유지한다 (불일치 시 컴파일 에러). */
+export const copy: Record<Locale, CopyText> = {
   ko: {
     heroText:
       "모바일에서 PC·콘솔까지, 8개+ 글로벌 스튜디오와 함께. 좋은 게임을 한국과 아시아 13개 시장으로 잇습니다.",
@@ -261,7 +306,9 @@ export const copy = {
 /** 핵심 수치 (Stats 섹션) — 실제 수치만 쓴다. 파트너 향 신뢰 숫자(리서치 적용안 ③).
  *  6 플랫폼 근거: Google Play·App Store·One Store·Steam·Nintendo·PlayStation (platformIcons 6종).
  *  13개 시장 근거: 한국·일본·대만·홍콩·마카오·싱가포르·필리핀·말레이시아·인도네시아·태국·베트남·라오스·캄보디아 */
-export const stats = [
+/** Stats 섹션 수치 — value 는 카운트업 대상, label 은 4개 언어 */
+export type Stat = { value: string; label: LocalizedText };
+export const stats: Stat[] = [
   { value: "1", label: { ko: "서비스 타이틀", en: "Titles Live", zh: "營運作品", ru: "Игр в сервисе" } },
   { value: "2", label: { ko: "서비스 플랫폼", en: "Platforms", zh: "服務平台", ru: "Платформы" } },
   { value: "13", label: { ko: "아시아 출시 시장", en: "Asia Markets", zh: "亞洲市場", ru: "Рынки Азии" } },
@@ -359,6 +406,26 @@ export const games: Game[] = [
 /** 불칸 CS 고객 문의 폼 — 불칸 모달의 "고객센터 문의" 버튼에서 열린다.
  *  제출은 Apps Script(config.ts CS_ENDPOINT)로 → 구글 시트 + 드라이브(사진).
  *  원폼 "[불칸CS] 고객 문의사항 접수"의 핵심 항목(1~8)만. 사진 업로드 + 영상은 링크. */
+/** CS(고객센터) 문의 폼 문구 — 모든 다국어 leaf 는 LocalizedText(4개 언어). */
+export type CsForm = {
+  button: LocalizedText;
+  nav: LocalizedText;
+  title: LocalizedText;
+  intro: LocalizedText;
+  privacyUrl: string;
+  privacyLabel: LocalizedText;
+  consents: { privacy: LocalizedText; notice: LocalizedText };
+  categories: LocalizedText[];
+  labels: Record<string, LocalizedText>;
+  submit: LocalizedText;
+  sending: LocalizedText;
+  success: LocalizedText;
+  error: LocalizedText;
+  notReady: LocalizedText;
+  errFiles: LocalizedText;
+  errConsent: LocalizedText;
+};
+// satisfies 로 검사(각 leaf 가 4개 언어인지 강제)하되, labels 등 정밀 키 추론은 유지한다.
 export const csForm = {
   button: { ko: "고객센터 문의", en: "Customer Support", zh: "客服諮詢", ru: "Поддержка" },
   nav: { ko: "고객센터", en: "Support", zh: "客服", ru: "Поддержка" },
@@ -415,10 +482,11 @@ export const csForm = {
   notReady: { ko: "문의 접수 준비 중입니다. 우선 cs@gahee.net 로 보내주세요.", en: "Support intake is being set up. Please email cs@gahee.net for now.", zh: "客服受理系統準備中，請先寄信至 cs@gahee.net。", ru: "Приём обращений настраивается. Пока напишите на cs@gahee.net." },
   errFiles: { ko: "이미지는 최대 5장, 장당 10MB까지 가능합니다.", en: "Up to 5 images, 10MB each.", zh: "圖片最多 5 張，每張至多 10MB。", ru: "До 5 изображений, по 10 МБ." },
   errConsent: { ko: "필수 동의 항목에 체크해 주세요.", en: "Please check the required consents.", zh: "請勾選必填的同意項目。", ru: "Отметьте обязательные согласия." },
-};
+} satisfies CsForm;
 
-/** 회사 프로필 표 (Company 섹션 우측) */
-export const companyProfile = [
+/** 회사 프로필 표 (Company 섹션 우측) — label 은 4개 언어, value 는 언어 공통 */
+export type CompanyRow = { label: LocalizedText; value: string };
+export const companyProfile: CompanyRow[] = [
   { label: { ko: "회사명", en: "Company", zh: "公司名稱", ru: "Компания" }, value: "GAHEE., LTD" },
   { label: { ko: "설립일", en: "Founded", zh: "成立日期", ru: "Основана" }, value: "2022. 10. 31" },
   { label: { ko: "대표이사", en: "CEO", zh: "代表理事", ru: "Ген. директор" }, value: "Hyunwoo Koo" },
@@ -428,7 +496,8 @@ export const companyProfile = [
 ];
 
 /** 연락처·외부 링크 — play 는 GAHEE 공식 Google Play 개발자 페이지 */
-export const contact = {
+export type Contact = { business: string; support: string; address: string; play: string };
+export const contact: Contact = {
   business: "biz@gahee.net",
   support: "cs@gahee.net",
   address: "Gingorang-ro 14-gil, Gwangjin-gu, Seoul, Republic of Korea ZIP: 04918",
