@@ -983,6 +983,7 @@ export default function App() {
   const [legalKey, setLegalKey] = useState<"privacy" | "terms" | null>(null);
   const [legalDoc, setLegalDoc] = useState<LegalDoc | null>(null); // 동적 import 로 로드된 법률 문서
   const lastFocus = useRef<HTMLElement | null>(null);
+  const prevModalOpen = useRef(false); // 게임/CS 모달 열림 상태의 직전 값(닫힘 전이 감지용)
   const legalTrigger = useRef<HTMLElement | null>(null); // 법률 페이지를 연 요소(닫을 때 포커스 복원용)
 
   // locale 변경으로 새로 렌더된 .reveal 요소도 다시 관찰
@@ -1037,15 +1038,12 @@ export default function App() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // 모달: 연 요소를 기억해 두고 닫힐 때 그 자리로 포커스 복원
+  // 모달: 연 요소를 기억해 두고 닫힐 때 그 자리로 포커스 복원(복원은 아래 effect 에서).
   const openGame = (game: Game) => {
     lastFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     setSelected(game);
   };
-  const closeGame = useCallback(() => {
-    setSelected(null);
-    lastFocus.current?.focus();
-  }, []);
+  const closeGame = useCallback(() => setSelected(null), []);
 
   // CS 문의 모달: nav '고객센터' 또는 게임 모달의 "고객센터 문의" 에서 열림.
   // 연 요소를 기억(닫을 때 포커스 복원), 게임 모달이 열려 있으면 닫고 CS 로 전환.
@@ -1058,11 +1056,18 @@ export default function App() {
     setSelected(null);
     setCsOpen(true);
   }, [selected]);
-  const closeCs = useCallback(() => {
-    setCsOpen(false);
-    // 복원 대상이 DOM 에서 사라졌으면(예: 전환 중 언마운트) 건너뛴다
-    if (lastFocus.current?.isConnected) lastFocus.current.focus();
-  }, []);
+  const closeCs = useCallback(() => setCsOpen(false), []);
+
+  // 게임/CS 모달이 완전히 닫히면(게임→CS 전환 중엔 modalOpen 이 계속 true 라 제외) 연 요소로 포커스 복원.
+  // 복원을 동기 호출이 아닌 effect(커밋 이후)에서 하는 이유: 그 시점엔 배경 inert 가 이미 걷혀
+  // inert 하위로의 focus() 무시 문제를 피한다. (전환 중 언마운트된 대상은 isConnected 로 건너뜀.)
+  const modalOpen = selected !== null || csOpen;
+  useEffect(() => {
+    if (prevModalOpen.current && !modalOpen && lastFocus.current?.isConnected) {
+      lastFocus.current.focus();
+    }
+    prevModalOpen.current = modalOpen;
+  }, [modalOpen]);
 
   // Drawer 가 effect 의존성으로 쓰므로 참조를 고정한다 — 리렌더(예: 드로어 안 언어 전환)마다
   // 포커스 트랩이 재설치되어 포커스 복원 대상이 드로어 내부 요소로 덮이는 문제 방지
