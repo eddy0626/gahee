@@ -20,6 +20,9 @@ export type Game = {
   icon?: string;
   featured?: boolean;
   placeholder?: boolean;
+  /** CS(고객센터) 문의 지원 여부 — true 면 게임 모달에 "고객센터 문의" 버튼이 뜨고
+   *  CS 폼 '문의 게임' 드롭다운에 포함된다. (미지정=미지원) 새 게임에 CS 채널이 생기면 이 플래그만 켠다. */
+  support?: boolean;
   /** 출시 상태 — 데이터 모델용. 현재 화면 배지는 미표시(전부 released)이며,
    *  향후 실제 Coming Soon 타이틀이 생기면 배지 렌더를 켠다. 미지정=released 취급. */
   status?: "released" | "coming-soon";
@@ -308,6 +311,7 @@ export const games: Game[] = [
     image: "/assets/games/vulcan-wide.webp",
     icon: "/assets/games/vulcan-icon.webp",
     status: "released",
+    support: true, // CS(고객센터) 문의 지원 — 게임 모달 CS 버튼 + CS 폼 드롭다운에 노출
     platforms: ["Google Play", "App Store"],
     links: {
       "Google Play": GAHEE_PLAY_DEV_PAGE,
