@@ -109,7 +109,7 @@ export function HeroGlobe() {
           if (d2 < CONNECT2) {
             const d = Math.sqrt(d2); // 통과한 쌍에서만 sqrt
             const depth = (az + bz) * 0.25 + 0.5;
-            const alpha = (1 - d / CONNECT) * 0.2 * depth;
+            const alpha = (1 - d / CONNECT) * 0.3 * depth; // 라이트 배경 대비 위해 상향
             ctx.strokeStyle = `rgba(203,41,87,${alpha.toFixed(3)})`;
             ctx.beginPath();
             ctx.moveTo(asx, asy);
@@ -125,11 +125,11 @@ export function HeroGlobe() {
         const sx = SX[i];
         const sy = SY[i];
         ctx.beginPath();
-        ctx.fillStyle = `rgba(255,61,110,${(0.05 + depth * 0.12).toFixed(3)})`;
+        ctx.fillStyle = `rgba(203,41,87,${(0.03 + depth * 0.07).toFixed(3)})`; /* 은은한 레드 헤일로 */
         ctx.arc(sx, sy, core * 3.2, 0, TAU);
         ctx.fill();
         ctx.beginPath();
-        ctx.fillStyle = `rgba(255,108,148,${(0.2 + depth * 0.75).toFixed(3)})`;
+        ctx.fillStyle = `rgba(203,41,87,${(0.32 + depth * 0.5).toFixed(3)})`; /* 라이트 배경 위 진한 레드 점 */
         ctx.arc(sx, sy, core, 0, TAU);
         ctx.fill();
       }
