@@ -510,18 +510,18 @@ p {
   position: absolute;
   inset: 0;
   z-index: 1;
-  /* 라이트 히어로: 은은한 레드 글로우 + 하단으로 paper 페이드(글로브 위 텍스트 가독) — 검정 비네트 제거 */
+  /* 라이트 히어로: 넓고 부드러운 레드 글로우 + 하단으로 paper 페이드(글로브 위 텍스트 가독) */
   background:
-    radial-gradient(120% 90% at 78% 40%, rgba(203, 41, 87, 0.1), transparent 55%),
-    radial-gradient(90% 70% at 18% 88%, rgba(203, 41, 87, 0.06), transparent 60%),
-    linear-gradient(180deg, rgba(247, 245, 241, 0) 0%, rgba(247, 245, 241, 0.12) 46%, var(--paper) 100%);
+    radial-gradient(70% 60% at 74% 34%, rgba(203, 41, 87, 0.13), transparent 70%),
+    radial-gradient(55% 55% at 16% 86%, rgba(138, 85, 102, 0.08), transparent 66%),
+    linear-gradient(180deg, rgba(250, 246, 247, 0) 0%, rgba(250, 246, 247, 0.14) 48%, var(--paper) 100%);
 }
 
 .hero__inner {
   position: relative;
   z-index: 2;
-  width: 100%;
-  padding-block: 120px 80px;
+  /* width:100% 제거 → .shell 의 좌우 gutter 를 따르게(nav 와 정렬). 텍스트가 가장자리에 붙지 않도록 */
+  padding-block: clamp(128px, 17vh, 188px) 96px;
 }
 
 .hero__eyebrow {
@@ -530,11 +530,11 @@ p {
 }
 
 .hero__title {
-  margin-top: 26px;
+  margin-top: 32px;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(46px, 9.4vw, 138px);
-  line-height: 0.94;
+  font-size: clamp(44px, 8.4vw, 118px);
+  line-height: 0.98;
   letter-spacing: -0.025em;
   color: var(--text);
 }
@@ -560,7 +560,7 @@ p {
 }
 
 .hero__sub {
-  margin-top: 30px;
+  margin-top: 36px;
   max-width: 46ch;
   font-size: clamp(15px, 1.7vw, 19px);
   line-height: 1.7;
@@ -570,7 +570,7 @@ p {
 }
 
 .hero__actions {
-  margin-top: 40px;
+  margin-top: 46px;
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
@@ -1789,23 +1789,23 @@ a.platform:hover {
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
-  filter: blur(64px);
-  opacity: 0.14;
+  filter: blur(58px);
 }
 .company::after {
-  right: -140px;
-  bottom: -120px;
-  width: 460px;
-  height: 460px;
-  background: radial-gradient(circle, var(--tertiary), transparent 68%);
+  right: -120px;
+  bottom: -100px;
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(circle, var(--tertiary), transparent 65%);
+  opacity: 0.18;
 }
 #contact::before {
-  left: -120px;
-  top: 40px;
-  width: 420px;
-  height: 420px;
-  background: radial-gradient(circle, var(--red), transparent 66%);
-  opacity: 0.1;
+  left: -100px;
+  top: 8%;
+  width: 440px;
+  height: 440px;
+  background: radial-gradient(circle, var(--red), transparent 64%);
+  opacity: 0.14;
 }
 
 /* --- 헤더: 상시 border-bottom + backdrop-blur (MD3 헤더) --- */
