@@ -125,8 +125,8 @@ export const copy: Record<Locale, CopyText> = {
     aboutTitle: "우리는 게임을 발견하고, 시장에 닿게 합니다.",
     aboutBody:
       "GAHEE는 한국에 기반을 둔 모바일 게임 퍼블리셔로, PC·콘솔 퍼블리싱으로 영역을 넓혀가고 있습니다. 2022년부터 검증된 글로벌 개발사의 게임을 한국과 아시아 시장에 선보여 왔습니다.",
-    gamesTitle: "서비스 중인 타이틀",
-    gamesText: "모바일에서 서비스 중인 타이틀과 준비 중인 라인업을 한눈에 확인하세요.",
+    gamesTitle: "출시 타이틀",
+    gamesText: "GAHEE가 글로벌 시장에 선보여 온 게임들입니다.",
     contactTitle: "좋은 게임을 가지고 계시다면, 우리에게 먼저 알려주세요.",
     contactText:
       "퍼블리싱, 사업 제휴, 채용 문의를 남겨주시면 담당자가 검토 후 연락드립니다.",
@@ -173,8 +173,8 @@ export const copy: Record<Locale, CopyText> = {
     aboutTitle: "We discover games and bring them to market.",
     aboutBody:
       "GAHEE is a Korea-based mobile game publisher expanding into PC and console. Since 2022 we've brought titles from trusted global studios to Korea and the wider Asian market.",
-    gamesTitle: "Live titles",
-    gamesText: "Explore our live mobile titles and the lineup in the works.",
+    gamesTitle: "Published Titles",
+    gamesText: "Games GAHEE has published to markets around the world.",
     contactTitle: "If you have a good game, tell us first.",
     contactText:
       "Send a publishing, business, or recruiting inquiry and our team will review it.",
@@ -221,8 +221,8 @@ export const copy: Record<Locale, CopyText> = {
     aboutTitle: "我們發掘遊戲，並讓它抵達市場。",
     aboutBody:
       "GAHEE 是一家總部位於韓國的行動遊戲發行商，並正拓展至 PC 與主機發行。自 2022 年起，我們將值得信賴的全球工作室作品帶進韓國與更廣闊的亞洲市場。",
-    gamesTitle: "營運中的作品",
-    gamesText: "一覽我們在行動平台上營運的作品，以及籌備中的陣容。",
+    gamesTitle: "已發行遊戲",
+    gamesText: "GAHEE 已在全球市場推出的遊戲作品。",
     contactTitle: "如果您手上有好遊戲，請先告訴我們。",
     contactText:
       "無論是發行、商務合作或徵才需求，留言給我們，專人審閱後將與您聯繫。",
@@ -269,8 +269,8 @@ export const copy: Record<Locale, CopyText> = {
     aboutTitle: "Мы находим игры и выводим их на рынок.",
     aboutBody:
       "GAHEE — издатель мобильных игр со штаб-квартирой в Корее, расширяющийся на PC и консоли. С 2022 года мы выводим проекты проверенных мировых студий на рынок Кореи и всей Азии.",
-    gamesTitle: "Игры в сервисе",
-    gamesText: "Наши мобильные игры в сервисе и готовящиеся проекты.",
+    gamesTitle: "Выпущенные игры",
+    gamesText: "Игры, которые GAHEE выпустила на мировые рынки.",
     contactTitle: "Есть хорошая игра? Расскажите нам первыми.",
     contactText:
       "Оставьте запрос по изданию, бизнесу или вакансиям — наша команда рассмотрит его и свяжется с вами.",
@@ -369,6 +369,71 @@ export const games: Game[] = [
       en: "In a peaceful empire, news arrives that a descendant of Vulcan, the god of blacksmiths, is being sought. Become the greatest blacksmith.",
       zh: "在一個和平的帝國裡，傳來尋找鍛造之神伏爾坎後裔的消息。成為那位後裔，鍛造出最強的傳奇吧。",
       ru: "В мирной империи разносится весть: ищут потомка Вулкана, бога-кузнеца. Станьте им и достигните вершин кузнечного мастерства.",
+    },
+  },
+  // ── 이전 출시작(서비스 종료) — 퍼블리싱 실적 포트폴리오로 노출. 스토어 링크는 페이지가 내려가 생략(플랫폼 배지만). ──
+  {
+    slug: "mages-secret",
+    title: "Mage's Secret",
+    titleKo: "메이지스 시크릿",
+    genre: "Casual Merge Puzzle",
+    image: "/assets/games/mage-secret.webp",
+    icon: "/assets/games/mage-icon.webp",
+    status: "released",
+    platforms: ["Google Play"],
+    description: {
+      ko: "오랜 시간 즐길 수 있는 모험 속에서 몬스터와 맞서고, 신비한 마법사의 100개 이상 과제를 해결하며 그의 비밀에 다가갑니다.",
+      en: "In your adventure, which will keep you busy for many months of playing, you will face monsters, complete more than 100 tasks of a mysterious magician, and uncover his greatest secret.",
+      zh: "在能長時間遊玩的冒險中對抗怪物，完成神秘魔法師超過 100 項任務，逐步揭開他的祕密。",
+      ru: "В долгом приключении вам предстоит сражаться с монстрами, выполнять более 100 заданий таинственного мага и раскрыть его главный секрет.",
+    },
+  },
+  {
+    slug: "tap-tap-builder",
+    title: "Tap Tap Builder",
+    titleKo: "포켓시티빌더",
+    genre: "Simulation",
+    image: "/assets/games/tap-tap-builder.webp",
+    icon: "/assets/games/tap-icon.webp",
+    status: "released",
+    platforms: ["Google Play"],
+    description: {
+      ko: "꿈꾸던 도시를 만들고 시장이 되어 보세요. 건설, 수익, 위기 대응까지 탭 한 번으로 도시를 성장시킵니다.",
+      en: "Build the city of your dreams and become its mayor. Construct, earn, and handle crises to grow your city — all with a tap.",
+      zh: "打造夢想中的城市，成為市長。只需輕點，就能建設、賺取收益並化解危機，讓城市成長茁壯。",
+      ru: "Постройте город своей мечты и станьте его мэром. Стройте, зарабатывайте и справляйтесь с трудностями одним касанием.",
+    },
+  },
+  {
+    slug: "abyss",
+    title: "Abyss",
+    titleKo: "Abyss",
+    genre: "MMORPG",
+    image: "/assets/games/abyss.webp",
+    icon: "/assets/games/abyss-icon.webp",
+    status: "released",
+    platforms: ["Google Play", "One Store"],
+    description: {
+      ko: "빠른 성장, 치열한 경쟁, 던전 보스 공략을 위한 수동 조작의 재미를 담은 신개념 MMORPG입니다.",
+      en: "A new-concept MMORPG featuring rapid growth, intense competition, and manual control for conquering dungeon bosses.",
+      zh: "融合快速成長、激烈競爭與手動操作攻略地城首領樂趣的全新概念 MMORPG。",
+      ru: "MMORPG нового поколения с быстрым развитием, острой конкуренцией и ручным управлением в схватках с боссами подземелий.",
+    },
+  },
+  {
+    slug: "supreme-car-racing",
+    title: "Supreme Car Racing",
+    titleKo: "슈프림 카레이싱",
+    genre: "Racing",
+    image: "/assets/games/supreme-car-racing.webp",
+    icon: "/assets/games/racing-icon.webp",
+    status: "released",
+    platforms: ["Google Play", "App Store"],
+    description: {
+      ko: "현실적인 고품질 3D 그래픽과 경계 없는 드라이빙 경험을 제공하는 슈퍼카 레이싱 어드벤처입니다.",
+      en: "A supercar racing adventure with realistic driving, high-end 3D graphics, and open-world missions.",
+      zh: "以擬真高品質 3D 畫面與無邊界駕駛體驗打造的超跑競速冒險。",
+      ru: "Гоночное приключение на суперкарах с реалистичным вождением, качественной 3D-графикой и миссиями в открытом мире.",
     },
   },
   {
