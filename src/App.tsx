@@ -15,7 +15,7 @@ import {
   stats,
 } from "./content";
 import type { LegalDoc } from "./legal";
-import { submitInquiry } from "./config";
+import { submitInquiry, submitContactInquiry, CONTACT_ENDPOINT, type ContactPdf } from "./config";
 import { LOCALES, LOCALE_LABELS, HTML_LANG } from "./i18n";
 import { Brand, IconArrow, IconClose, IconMenu, IconUp } from "./icons";
 import { CSModal, GameModal, LegalPage } from "./modals";
@@ -376,22 +376,73 @@ function Company({ locale }: { locale: Locale }) {
 /* ============================================================ CONTACT */
 /** 문의 — 왼쪽 연락처 + 오른쪽 문의 폼.
  *  전송 결과는 aria-live 영역으로 보조기기에 알린다 (문구는 content.ts). */
+const CONTACT_PDF_MAX = 10 * 1024 * 1024; // 첨부 PDF 상한 10MB
+
+/** 파일 → base64(data: 접두사 제외) + 메타. Contact PDF 전송용(CS 폼 toBase64 와 동일 방식). */
+function fileToBase64(file: File): Promise<ContactPdf> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const r = String(reader.result);
+      resolve({ name: file.name, mimeType: file.type || "application/pdf", dataBase64: r.slice(r.indexOf(",") + 1) });
+    };
+    reader.onerror = () => reject(new Error("read failed"));
+    reader.readAsDataURL(file);
+  });
+}
+
 function Contact({ locale }: { locale: Locale }) {
   const t = copy[locale];
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "mailto" | "error">("idle");
+  const [pdf, setPdf] = useState<File | null>(null);
+  const [pdfErr, setPdfErr] = useState("");
   const fl = t.fieldLabels;
+  // PDF 첨부는 Apps Script 엔드포인트가 있을 때만 노출·전송(없으면 기존 Formspree 텍스트 폼 그대로).
+  const pdfEnabled = !!CONTACT_ENDPOINT;
 
-  // FormData → 평면 객체로 변환해 전송. Formspree 미설정이면 mailto 폴백(config.ts)
+  // PDF 선택 검증 — PDF 타입 + 10MB 이하만 통과. 실패 시 에러 문구, 성공 시 상태에 보관.
+  function onPickPdf(list: FileList | null) {
+    const file = list?.[0] ?? null;
+    if (!file) return;
+    const isPdf = file.type === "application/pdf" || /\.pdf$/i.test(file.name);
+    if (!isPdf) {
+      setPdf(null);
+      setPdfErr(t.pdf.errType);
+      return;
+    }
+    if (file.size > CONTACT_PDF_MAX) {
+      setPdf(null);
+      setPdfErr(t.pdf.errSize);
+      return;
+    }
+    setPdf(file);
+    setPdfErr("");
+  }
+  function clearPdf() {
+    setPdf(null);
+    setPdfErr("");
+  }
+
+  // 텍스트 항목은 FormData 로, PDF 는 상태(pdf)로 관리. 엔드포인트 유무로 전송 경로 분기.
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
-    // FormData 값은 string | File 이지만 이 폼엔 파일 입력이 없으므로 문자열 항목만 취한다(캐스트 없이 안전).
+    // 파일 input 은 name 이 없어 FormData 엔 문자열 항목만 담긴다(File 방어 필터 유지).
     const entries = [...new FormData(form).entries()].filter((e): e is [string, string] => typeof e[1] === "string");
     const data = Object.fromEntries(entries);
     setStatus("sending");
-    const result = await submitInquiry(data);
+    let result;
+    if (pdfEnabled) {
+      const pdfPayload = pdf ? await fileToBase64(pdf) : null;
+      result = await submitContactInquiry({ ...data, locale, pdf: pdfPayload });
+    } else {
+      result = await submitInquiry(data);
+    }
     setStatus(result);
-    if (result === "success") form.reset();
+    if (result === "success") {
+      form.reset();
+      clearPdf();
+    }
   }
 
   // 폼 필드 정의 — required 는 브라우저 기본 검증과 라벨의 * 표시에 함께 쓰인다
@@ -449,6 +500,29 @@ function Contact({ locale }: { locale: Locale }) {
               </span>
               <textarea name="message" rows={5} required />
             </label>
+            {/* PDF 첨부 — 선택. Apps Script 엔드포인트가 설정된 경우에만 노출된다. */}
+            {pdfEnabled && (
+              <label className="field field--full field--file">
+                <span>{t.pdf.label}</span>
+                <input
+                  type="file"
+                  accept="application/pdf,.pdf"
+                  onChange={(e) => onPickPdf(e.target.files)}
+                  aria-describedby="contact-pdf-hint"
+                />
+                {pdf && (
+                  <span className="field__file">
+                    <span className="field__file-name">{pdf.name}</span>
+                    <button type="button" className="field__file-x" onClick={clearPdf}>
+                      {t.pdf.remove}
+                    </button>
+                  </span>
+                )}
+                <small id="contact-pdf-hint" className={`field__hint${pdfErr ? " err" : ""}`} role={pdfErr ? "alert" : undefined}>
+                  {pdfErr || t.pdf.hint}
+                </small>
+              </label>
+            )}
           </div>
           <button className="btn btn--primary form__submit" type="submit" disabled={status === "sending"}>
             {status === "sending" ? t.sending : t.submit} <IconArrow />

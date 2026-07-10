@@ -55,6 +55,38 @@ export async function submitInquiry(data: Record<string, string>): Promise<Inqui
 }
 
 /* ============================================================
+   퍼블리싱 문의(Contact) — Apps Script(구글 시트 + 드라이브 PDF) 전송
+   ▶ 켜는 방법: docs/contact-apps-script.gs 를 웹앱으로 배포("모든 사용자") →
+      웹앱 URL 을 아래 CONTACT_ENDPOINT 에 입력.
+   비어 있으면(기본) 프런트가 기존 Formspree/mailto 폴백을 쓰고 PDF 첨부 UI 를 숨긴다.
+   설정되면 텍스트 + 선택 PDF 를 이 엔드포인트로 보낸다.
+   ============================================================ */
+export const CONTACT_ENDPOINT = "";
+
+/** 첨부 PDF 1개 — base64 데이터(data: 접두사 제외)와 메타. Apps Script 가 디코드해 드라이브에 저장. */
+export type ContactPdf = { name: string; mimeType: string; dataBase64: string };
+
+/**
+ * 퍼블리싱 문의 전송(Apps Script). 텍스트 + 선택 PDF JSON 을 no-cors 로 POST.
+ * CS 전송과 동일하게 Content-Type=text/plain 으로 CORS 프리플라이트를 회피하고,
+ * 불투명 응답이라 네트워크 실패가 아니면 낙관적 성공 처리(실접수 확인은 Apps Script 접수확인 메일).
+ */
+export async function submitContactInquiry(payload: Record<string, unknown>): Promise<InquiryResult> {
+  if (!CONTACT_ENDPOINT) return "error"; // 프런트는 엔드포인트 없으면 이 경로를 타지 않음(안전장치)
+  try {
+    await fetch(CONTACT_ENDPOINT, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload),
+    });
+    return "success";
+  } catch {
+    return "error";
+  }
+}
+
+/* ============================================================
    불칸 CS 고객 문의 — Apps Script(구글 시트 + 드라이브) 전송
    ▶ 켜는 방법
      1) Apps Script 웹앱 배포(액세스: "모든 사용자") → 웹앱 URL 복사
