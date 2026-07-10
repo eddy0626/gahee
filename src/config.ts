@@ -61,7 +61,7 @@ export async function submitInquiry(data: Record<string, string>): Promise<Inqui
    비어 있으면(기본) 프런트가 기존 Formspree/mailto 폴백을 쓰고 PDF 첨부 UI 를 숨긴다.
    설정되면 텍스트 + 선택 PDF 를 이 엔드포인트로 보낸다.
    ============================================================ */
-export const CONTACT_ENDPOINT = "";
+export const CONTACT_ENDPOINT = "https://script.google.com/macros/s/AKfycbyPsVzdKDisIcbcdkEdiqjSVDTEJwLbHfetFBaKO2cJIlEB7n5bNFydEv-DiUZ4AQY/exec";
 
 /** 첨부 PDF 1개 — base64 데이터(data: 접두사 제외)와 메타. Apps Script 가 디코드해 드라이브에 저장. */
 export type ContactPdf = { name: string; mimeType: string; dataBase64: string };
