@@ -557,7 +557,6 @@ export const companyProfile: CompanyRow[] = [
   { label: { ko: "대표이사", en: "CEO", zh: "代表理事", ru: "Ген. директор" }, value: "Hyunwoo Koo" },
   { label: { ko: "사업분야", en: "Business", zh: "營業項目", ru: "Деятельность" }, value: "Mobile · PC · Console Publishing" },
   { label: { ko: "본사", en: "HQ", zh: "總部", ru: "Штаб-квартира" }, value: "Gwangjin-gu, Seoul" },
-  { label: { ko: "사업자번호", en: "CRN", zh: "統一編號", ru: "Рег. номер" }, value: "508-86-02578" },
 ];
 
 /** 연락처·외부 링크 — play 는 GAHEE 공식 Google Play 개발자 페이지 */
