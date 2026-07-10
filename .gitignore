@@ -6,6 +6,11 @@ dist/
 .env.*
 .idea/
 
+# Cloudflare Wrangler — 로컬 캐시·시크릿만 제외 (배포 설정 wrangler.jsonc 는 커밋함)
+.wrangler/
+.dev.vars
+.dev.vars.*
+
 # Claude Code / Obsidian / agentmemory — 개인 도구·로컬 데이터 (사이트와 무관)
 .claude/
 CLAUDE.md
