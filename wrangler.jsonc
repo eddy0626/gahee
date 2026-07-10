@@ -1,0 +1,10 @@
+{
+  // Cloudflare 배포 설정 — 기존 워커(dawn-mouse-ab0a, 커스텀도메인 www/apex 연결됨)에 dist 정적 자산을 재배포한다.
+  // name 을 기존 워커명과 정확히 일치시켜야 새 워커가 생기지 않고 커스텀 도메인이 유지된다.
+  "name": "dawn-mouse-ab0a",
+  "compatibility_date": "2026-07-08",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  }
+}
