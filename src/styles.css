@@ -1054,6 +1054,67 @@ p {
   min-height: 130px;
 }
 
+/* Contact PDF 첨부 필드 — 선택 업로드 (네이티브 file input + 선택 파일 표시) */
+.field--file input[type="file"] {
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+.field--file input[type="file"]::file-selector-button {
+  margin-right: 12px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.field--file input[type="file"]::file-selector-button:hover {
+  border-color: var(--red);
+}
+.field__file {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text);
+}
+.field__file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 70%;
+}
+.field__file-x {
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-dim);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.field__file-x:hover {
+  color: var(--red-ink);
+  border-color: var(--red);
+}
+.field__hint {
+  font-family: var(--font-body);
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-dim);
+}
+.field__hint.err {
+  color: var(--red-ink);
+}
+
 .form__submit {
   margin-top: 20px;
   width: 100%;

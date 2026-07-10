@@ -105,6 +105,15 @@ export type CopyText = {
     store: string;
     message: string;
   };
+  /** Contact 폼 PDF 첨부 UI 문구 (선택 업로드) */
+  pdf: {
+    label: string;
+    hint: string;
+    choose: string;
+    remove: string;
+    errType: string;
+    errSize: string;
+  };
 };
 
 /** UI 공통 카피 — 4개 언어 모두 CopyText 구조를 동일하게 유지한다 (불일치 시 컴파일 에러). */
@@ -156,6 +165,14 @@ export const copy: Record<Locale, CopyText> = {
       store: "스토어 링크",
       message: "소개 내용",
     },
+    pdf: {
+      label: "게임 소개서 (PDF)",
+      hint: "선택 · 10MB 이하 PDF 1개",
+      choose: "PDF 선택",
+      remove: "제거",
+      errType: "PDF 파일만 첨부할 수 있습니다.",
+      errSize: "PDF는 10MB 이하만 첨부할 수 있습니다.",
+    },
   },
   en: {
     heroText:
@@ -203,6 +220,14 @@ export const copy: Record<Locale, CopyText> = {
       video: "Gameplay Video Link",
       store: "Store Link",
       message: "Introduction",
+    },
+    pdf: {
+      label: "Game Deck (PDF)",
+      hint: "Optional · one PDF up to 10MB",
+      choose: "Choose PDF",
+      remove: "Remove",
+      errType: "Only PDF files can be attached.",
+      errSize: "PDF must be 10MB or less.",
     },
   },
   zh: {
@@ -252,6 +277,14 @@ export const copy: Record<Locale, CopyText> = {
       store: "商店連結",
       message: "介紹內容",
     },
+    pdf: {
+      label: "遊戲介紹 (PDF)",
+      hint: "選填 · 單一 PDF，上限 10MB",
+      choose: "選擇 PDF",
+      remove: "移除",
+      errType: "僅能附加 PDF 檔案。",
+      errSize: "PDF 檔案需在 10MB 以下。",
+    },
   },
   ru: {
     heroText:
@@ -299,6 +332,14 @@ export const copy: Record<Locale, CopyText> = {
       video: "Ссылка на видео",
       store: "Ссылка на магазин",
       message: "Описание",
+    },
+    pdf: {
+      label: "Презентация игры (PDF)",
+      hint: "Необязательно · один PDF до 10 МБ",
+      choose: "Выбрать PDF",
+      remove: "Удалить",
+      errType: "Можно прикрепить только PDF-файл.",
+      errSize: "PDF должен быть не больше 10 МБ.",
     },
   },
 };
