@@ -371,7 +371,7 @@ export const games: Game[] = [
       ru: "В мирной империи разносится весть: ищут потомка Вулкана, бога-кузнеца. Станьте им и достигните вершин кузнечного мастерства.",
     },
   },
-  // ── 이전 출시작(서비스 종료) — 퍼블리싱 실적 포트폴리오로 노출. 스토어 링크는 페이지가 내려가 생략(플랫폼 배지만). ──
+  // ── 이전 출시작(서비스 종료) — 퍼블리싱 실적 포트폴리오로 노출. 스토어가 내려가 스토어 배지·링크 모두 생략(platforms: []). 라이브 타이틀(불칸)만 배지 노출. ──
   {
     slug: "mages-secret",
     title: "Mage's Secret",
@@ -380,7 +380,7 @@ export const games: Game[] = [
     image: "/assets/games/mage-secret.webp",
     icon: "/assets/games/mage-icon.webp",
     status: "released",
-    platforms: ["Google Play"],
+    platforms: [],
     description: {
       ko: "오랜 시간 즐길 수 있는 모험 속에서 몬스터와 맞서고, 신비한 마법사의 100개 이상 과제를 해결하며 그의 비밀에 다가갑니다.",
       en: "In your adventure, which will keep you busy for many months of playing, you will face monsters, complete more than 100 tasks of a mysterious magician, and uncover his greatest secret.",
@@ -396,7 +396,7 @@ export const games: Game[] = [
     image: "/assets/games/tap-tap-builder.webp",
     icon: "/assets/games/tap-icon.webp",
     status: "released",
-    platforms: ["Google Play"],
+    platforms: [],
     description: {
       ko: "꿈꾸던 도시를 만들고 시장이 되어 보세요. 건설, 수익, 위기 대응까지 탭 한 번으로 도시를 성장시킵니다.",
       en: "Build the city of your dreams and become its mayor. Construct, earn, and handle crises to grow your city — all with a tap.",
@@ -412,7 +412,7 @@ export const games: Game[] = [
     image: "/assets/games/abyss.webp",
     icon: "/assets/games/abyss-icon.webp",
     status: "released",
-    platforms: ["Google Play", "One Store"],
+    platforms: [],
     description: {
       ko: "빠른 성장, 치열한 경쟁, 던전 보스 공략을 위한 수동 조작의 재미를 담은 신개념 MMORPG입니다.",
       en: "A new-concept MMORPG featuring rapid growth, intense competition, and manual control for conquering dungeon bosses.",
@@ -428,7 +428,7 @@ export const games: Game[] = [
     image: "/assets/games/supreme-car-racing.webp",
     icon: "/assets/games/racing-icon.webp",
     status: "released",
-    platforms: ["Google Play", "App Store"],
+    platforms: [],
     description: {
       ko: "현실적인 고품질 3D 그래픽과 경계 없는 드라이빙 경험을 제공하는 슈퍼카 레이싱 어드벤처입니다.",
       en: "A supercar racing adventure with realistic driving, high-end 3D graphics, and open-world missions.",
