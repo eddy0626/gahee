@@ -451,9 +451,6 @@ function Contact({ locale }: { locale: Locale }) {
     { name: "company", label: fl.company, type: "text", required: false },
     { name: "email", label: fl.email, type: "email", required: true },
     { name: "game", label: fl.game, type: "text", required: true },
-    { name: "genre", label: fl.genre, type: "text", required: false },
-    { name: "platform", label: fl.platform, type: "text", required: false },
-    { name: "status", label: fl.status, type: "text", required: false },
     { name: "video", label: fl.video, type: "url", required: false },
     { name: "store", label: fl.store, type: "url", required: false },
   ];

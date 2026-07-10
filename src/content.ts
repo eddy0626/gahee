@@ -98,9 +98,6 @@ export type CopyText = {
     company: string;
     email: string;
     game: string;
-    genre: string;
-    platform: string;
-    status: string;
     video: string;
     store: string;
     message: string;
@@ -158,9 +155,6 @@ export const copy: Record<Locale, CopyText> = {
       company: "회사명",
       email: "이메일",
       game: "게임명",
-      genre: "장르",
-      platform: "플랫폼",
-      status: "출시 상태",
       video: "게임 영상 링크",
       store: "스토어 링크",
       message: "소개 내용",
@@ -214,9 +208,6 @@ export const copy: Record<Locale, CopyText> = {
       company: "Company",
       email: "Email",
       game: "Game Title",
-      genre: "Genre",
-      platform: "Platform",
-      status: "Release Status",
       video: "Gameplay Video Link",
       store: "Store Link",
       message: "Introduction",
@@ -270,9 +261,6 @@ export const copy: Record<Locale, CopyText> = {
       company: "公司名稱",
       email: "電子郵件",
       game: "遊戲名稱",
-      genre: "類型",
-      platform: "平台",
-      status: "上線狀態",
       video: "遊戲影片連結",
       store: "商店連結",
       message: "介紹內容",
@@ -326,9 +314,6 @@ export const copy: Record<Locale, CopyText> = {
       company: "Компания",
       email: "Эл. почта",
       game: "Название игры",
-      genre: "Жанр",
-      platform: "Платформа",
-      status: "Статус выпуска",
       video: "Ссылка на видео",
       store: "Ссылка на магазин",
       message: "Описание",
